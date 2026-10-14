@@ -18,9 +18,13 @@ const FADE_UP: Keyframe[] = [{ opacity: 0, transform: "translateY(24px)" }, { op
 export function Reveal() {
   useEffect(() => {
     if (!prefersMotion()) return;
-    const anims: Animation[] = [];
-    const animate = (el: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
-      anims.push(el.animate(keyframes, { ...options, fill: "backwards" }));
+    // Running animations, cancelled if the component goes away (dev remount) before they finish.
+    const running = new Set<Animation>();
+    const animate = (el: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions) => {
+      const a = el.animate(keyframes, { ...options, fill: "backwards" });
+      running.add(a);
+      a.onfinish = () => running.delete(a);
+    };
     let queued = 0;
     let resetTimer = 0;
     // Elements revealed within 150ms of each other form one staggered batch.
@@ -78,7 +82,7 @@ export function Reveal() {
       cancelAnimationFrame(raf);
       clearTimeout(resetTimer);
       document.removeEventListener("visibilitychange", scheduleScan);
-      anims.forEach((a) => a.cancel());
+      running.forEach((a) => a.cancel());
     };
   }, []);
 

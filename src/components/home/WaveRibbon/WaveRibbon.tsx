@@ -70,7 +70,7 @@ export function WaveRibbon({ titles }: { titles: string[] }) {
   }, [vb, one]);
 
   // Run the titles along the wave while it is on screen; dragging moves them by hand and turns
-  // the run to the drag direction (prototype `tick` / pointer handlers). Still with reduced motion.
+  // the run to the drag direction (prototype `tick` / pointer handlers). Static with reduced motion.
   useEffect(() => {
     const el = rootRef.current;
     const tp = textPathRef.current;
@@ -94,10 +94,10 @@ export function WaveRibbon({ titles }: { titles: string[] }) {
       }
       raf = requestAnimationFrame(tick);
     };
-    const io = new IntersectionObserver(([e]) => {
+    const io = new IntersectionObserver((entries) => {
       cancelAnimationFrame(raf);
       last = 0;
-      if (e.isIntersecting) raf = requestAnimationFrame(tick);
+      if (entries[entries.length - 1].isIntersecting) raf = requestAnimationFrame(tick);
     });
     io.observe(el);
 
