@@ -7,6 +7,12 @@
   box-sizing: border-box;
 }
 
+// The sticky header shrinks past 40px of scroll; with scroll anchoring the page then scrolls back
+// under the threshold and the header jitters (the prototype does too). Content just moves up instead.
+html {
+  overflow-anchor: none;
+}
+
 html[data-scroll-lock] {
   overflow: hidden;
 }

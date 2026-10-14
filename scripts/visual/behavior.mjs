@@ -1,5 +1,5 @@
 // App-only behaviour checks: theme toggle + persistence, Контакты scroll, active nav, mobile menu
-// (Esc, resize, navigation) and console errors / failed requests. Usage: node behavior.mjs
+// (Esc, resize, navigation), request drawer and console errors / failed requests. Usage: node behavior.mjs
 import { APP_URL, launch, skipRemotePhotos } from "./_lib.mjs";
 const browser = await launch();
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
@@ -50,6 +50,47 @@ await page.waitForTimeout(1600);
 await page.locator('[data-sm="panel"] a[href="/info"]').click();
 await page.waitForTimeout(900);
 r.menuNav = await page.evaluate(() => [location.pathname, !document.querySelector('[data-sm="panel"]')]);
+// request drawer: open from «Покупателям», Esc / scrim close, add from a work, persistence, validation, send
+await page.setViewportSize({ width: 1280, height: 800 });
+const drawer = () => page.evaluate(() => {
+  const a = document.querySelector('aside[aria-label="Заявка"]');
+  return a && { lines: a.querySelectorAll('button[aria-label="Убрать"]').length, text: a.innerText.replace(/\s+/g, " ").slice(0, 90), focused: a.contains(document.activeElement) };
+});
+await page.getByRole("button", { name: "Обсудить размер" }).click();
+await page.waitForTimeout(700);
+r.drawerOpen = await drawer();
+await page.keyboard.press("Escape");
+await page.waitForTimeout(600);
+r.drawerEscClosed = !(await drawer());
+await page.goto(APP_URL + "/work/kz-001", { waitUntil: "networkidle" });
+await page.getByRole("button", { name: /Добавить в заявку/ }).click();
+await page.waitForTimeout(700);
+r.drawerAdded = await drawer();
+await page.mouse.click(100, 400);
+await page.waitForTimeout(600);
+r.drawerScrimClosed = !(await drawer());
+await page.reload({ waitUntil: "networkidle" });
+r.countAfterReload = await page.evaluate(() => document.querySelector("header button:has(svg) + *, header button")?.closest("header").innerText.match(/Заявка\s*(\d+)/)?.[1]);
+await page.locator("header button", { hasText: "Заявка" }).first().click();
+await page.waitForTimeout(700);
+await page.getByRole("button", { name: /Отправить заявку/ }).click();
+r.drawerError = await page.evaluate(() => document.querySelector('aside [role="alert"]')?.innerText);
+await page.getByPlaceholder("Ваше имя").fill("Алексей");
+await page.getByPlaceholder("+998 __ ___ __ __").fill("90 316");
+await page.getByRole("button", { name: /Отправить заявку/ }).click();
+r.drawerPhoneError = await page.evaluate(() => document.querySelector('aside [role="alert"]')?.innerText);
+await page.getByPlaceholder("+998 __ ___ __ __").fill("+998 90 316 59 13");
+await page.getByPlaceholder("Комментарий: идея, размер, интерьер").fill("В гостиную");
+const sent = page.waitForResponse((res) => res.url().endsWith("/api/requests"));
+await page.getByRole("button", { name: /Отправить заявку/ }).click();
+r.apiStatus = (await sent).status();
+await page.waitForTimeout(300);
+r.drawerThanks = await drawer();
+await page.keyboard.press("Escape");
+await page.waitForTimeout(600);
+await page.locator("header button", { hasText: "Заявка" }).first().click();
+await page.waitForTimeout(700);
+r.drawerAfterSend = [await drawer(), await page.getByPlaceholder("Комментарий: идея, размер, интерьер").inputValue(), await page.evaluate(() => localStorage.getItem("kz_order"))];
 console.log(JSON.stringify(r, null, 1));
 console.log(logs.join("\n") || "no console errors/warnings");
 await browser.close();

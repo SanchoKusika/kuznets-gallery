@@ -30,10 +30,10 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 | Скрипт | Что делает |
 |---|---|
 | `geometry.mjs [ширины] [путь]` | сравнивает позиции и высоты блоков страницы в прототипе и в приложении |
-| `compare.mjs <папка> <селектор> [ширины] [темы] [роут] [путь]` | скриншот элемента в обоих и попиксельный дифф (PNG в указанную папку, обычно `.visual/`); `ACTION` — JS перед снимком |
+| `compare.mjs <папка> <селектор> [ширины] [темы] [роут] [путь]` | скриншот элемента в обоих и попиксельный дифф (PNG в указанную папку, обычно `.visual/`); `ACTION` — JS перед снимком, `BEFORE` — JS до поиска элемента (например, открыть заявку) |
 | `menu.mjs <папка> [ширины]` | мобильное меню: середина анимации, открытое состояние, закрытие |
 | `probe.mjs <ширина> "<выражение>"` | вычисляет выражение в обоих и печатает результат |
-| `behavior.mjs` | только приложение: тема, «Контакты», меню, ошибки в консоли |
+| `behavior.mjs` | только приложение: тема, «Контакты», меню, заявка, ошибки в консоли |
 
 ```bash
 node scripts/visual/geometry.mjs 1440,960,375 /
@@ -47,15 +47,17 @@ node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 lig
 ```
 src/
   app/                  маршруты; (site)/ — публичный сайт с шапкой и подвалом
+  app/api/requests/     POST /api/requests: zod-валидация заявки (запись в БД — этап 7)
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
   components/catalog/   Collection, ArtworkCard, ArtworkRow
   components/work/      WorkDetails, NextWork, RelatedWorks
+  components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
-  features/             theme, order (заявка), catalog (фильтры коллекции), scroll, motion
+  features/             theme, order (заявка и её drawer), catalog (фильтры коллекции), scroll, motion
   content/site.ts       тексты и справочники из прототипа
-  lib/                  каталог, картинки, форматирование, маршруты, bem()
+  lib/                  каталог, заявка (правила и тип), картинки, форматирование, маршруты, bem()
   styles/               _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)
   assets/               логотип и фото для статических импортов
 design/                 эталонные прототипы (не входят в сборку)

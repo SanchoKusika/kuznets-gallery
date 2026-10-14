@@ -121,3 +121,25 @@ export function getArtwork(slug: string) {
 /** Works of a category; "all" means the whole catalogue (not the catalogue's `all` tag). */
 export const inCategory = (items: Artwork[], category: CategoryKey | "all") =>
   category === "all" ? items : items.filter((p) => p.tags.includes(category));
+
+/**
+ * Price list for «Покупателям»: the cheapest price of every standard size in the catalogue,
+ * sorted by price, then width (prototype `priceMap` / `priceTable`).
+ */
+export function getPriceTable() {
+  const cheapest = new Map<string, ArtworkSize & { p: number }>();
+  for (const p of getCatalog()) {
+    for (const z of p.sizes) {
+      if (!z.p) continue;
+      const key = `${z.w}/${z.h}`;
+      const known = cheapest.get(key);
+      if (!known || known.p > z.p) cheapest.set(key, { ...z, p: z.p });
+    }
+  }
+  const sizes = [...cheapest.values()].sort((a, z) => a.p - z.p || a.w - z.w);
+  return {
+    rows: sizes.map((z) => ({ size: `${z.w} / ${z.h}`, format: formatOf(z), price: `от ${formatPrice(z.p)}` })),
+    min: sizes[0]?.p ?? 90000,
+    max: sizes[sizes.length - 1]?.p ?? null,
+  };
+}

@@ -1,0 +1,44 @@
+@use "mixins" as *;
+
+.framing-options {
+  padding-top: var(--section-gap);
+
+  &__title {
+    @include ruled-title;
+  }
+
+  &__custom {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 16px;
+    align-items: center;
+    background: var(--paper-2);
+  }
+
+  &__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  &__custom-body {
+    padding: clamp(24px, 3vw, 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__label {
+    @include label(12px);
+  }
+
+  &__text {
+    font-size: clamp(26px, 2.6vw, 40px);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  &__cta {
+    align-self: flex-start;
+  }
+}

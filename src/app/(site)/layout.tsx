@@ -1,5 +1,6 @@
 import { Footer } from "@/components/layout/Footer/Footer";
 import { Header } from "@/components/layout/Header/Header";
+import { OrderDrawer } from "@/features/order/OrderDrawer";
 import { getCatalog } from "@/lib/catalog";
 import { bem } from "@/lib/bem";
 import s from "./layout.module.scss";
@@ -13,6 +14,7 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <Header total={total} />
       {children}
       <Footer />
+      <OrderDrawer />
     </div>
   );
 }

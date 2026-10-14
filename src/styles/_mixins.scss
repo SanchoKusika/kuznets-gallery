@@ -80,6 +80,13 @@
   line-height: 1;
 }
 
+// Display M heading with an ink rule above («Пять шагов…», «Холст, багет или стекло»).
+@mixin ruled-title {
+  @include rule-top;
+  @include display-m;
+  margin: 0 0 28px;
+}
+
 // <button> that renders like the prototype's clickable <span>: inherits text, no chrome.
 @mixin button-reset {
   appearance: none;
