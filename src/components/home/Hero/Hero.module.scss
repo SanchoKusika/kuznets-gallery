@@ -1,0 +1,129 @@
+@use "mixins" as *;
+
+.hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr));
+  gap: clamp(28px, 3vw, 56px);
+  padding: clamp(20px, 3vw, 40px);
+  align-items: stretch;
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+    padding-top: 12px;
+  }
+
+  &__lede-group {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 640px;
+  }
+
+  &__eyebrow {
+    @include label(12px);
+  }
+
+  &__lede {
+    @include serif;
+    margin: 0;
+    font-size: clamp(29.44px, 3.13vw, 51.52px);
+    line-height: 1.08;
+    text-wrap: pretty;
+  }
+
+  &__cta {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  &__buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  &__stat-value {
+    font-size: clamp(22px, 2vw, 30px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+
+  &__stat-label {
+    @include label(11px);
+    color: var(--ink-3);
+  }
+
+  &__thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    align-self: end;
+  }
+
+  &__thumb {
+    position: relative;
+    display: block;
+    cursor: pointer;
+    color: var(--ink);
+  }
+
+  &__thumb-media {
+    aspect-ratio: 1;
+  }
+
+  &__thumb-img {
+    @include zoom(0.7s, 1.07);
+  }
+
+  &__chip {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    max-width: calc(100% - 16px);
+    background: var(--glass);
+    padding: 5px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    pointer-events: none;
+
+    @include below(600) {
+      display: none;
+    }
+  }
+
+  &__chip-dot {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  &__chip-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

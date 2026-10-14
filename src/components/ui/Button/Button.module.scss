@@ -1,0 +1,78 @@
+// Primitive: zero-specificity (:where) so a consumer class can tweak padding, margins, etc.
+
+:where(.button) {
+  display: inline-block;
+  border: 0;
+  border-radius: 99px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    transform 0.3s;
+}
+
+// Links mimic <button>'s built-in vertical centring of its content.
+:where(a.button) {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+:where(.button--primary) {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:where(.button--primary:hover) {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:where(.button--outline) {
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+}
+
+:where(.button--outline:hover) {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:where(.button--md) {
+  padding: 14px 24px;
+  font-size: 14px;
+}
+
+:where(.button--lg) {
+  padding: 18px 30px;
+  font-size: 15px;
+}
+
+// Outline has a 1px border; trim padding so lg outline matches lg primary height.
+:where(.button--outline.button--lg) {
+  padding: 17px 26px;
+}
+
+:where(.button--regular) {
+  font-weight: 400;
+}
+
+:where(.button--block) {
+  width: 100%;
+}
+
+:where(.button__inner) {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+:where(.button--block .button__inner) {
+  justify-content: center;
+}

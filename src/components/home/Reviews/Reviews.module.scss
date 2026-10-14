@@ -1,0 +1,111 @@
+@use "mixins" as *;
+
+.reviews {
+  padding: var(--section-gap) 0 0;
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px 32px;
+    flex-wrap: wrap;
+    margin: 0 var(--gutter) 20px;
+    border-top: 1px solid var(--ink);
+    padding-top: 20px;
+  }
+
+  &__title {
+    @include section-title;
+    margin: 0;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__counter {
+    @include tabular;
+    font-size: 13px;
+    min-width: 60px;
+    text-align: center;
+  }
+
+  &__current {
+    color: var(--accent);
+  }
+
+  &__nav {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--line-medium);
+    background: transparent;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+      background 0.3s,
+      color 0.3s,
+      border-color 0.3s,
+      opacity 0.3s;
+    -webkit-tap-highlight-color: transparent;
+
+    &:hover {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+  }
+
+  &__slides {
+    display: grid;
+    margin: 0 var(--gutter);
+    padding-top: clamp(8px, 2vw, 24px);
+  }
+
+  &__slide {
+    grid-area: 1 / 1;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.6s var(--ease-out),
+      transform 0.9s var(--ease-out);
+
+    &--active {
+      opacity: 1;
+      transform: translateY(0px);
+      pointer-events: auto;
+    }
+
+    &--before {
+      transform: translateY(-14px);
+    }
+
+    &--after {
+      transform: translateY(14px);
+    }
+  }
+
+  &__quote {
+    @include serif;
+    margin: 0;
+    font-size: clamp(27.6px, 3.31vw, 55.2px);
+    line-height: 1.08;
+    max-width: 1100px;
+    text-wrap: pretty;
+  }
+
+  &__author {
+    @include label(12px);
+  }
+}
