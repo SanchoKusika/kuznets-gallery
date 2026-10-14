@@ -22,6 +22,18 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 
 Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build`.
 
+### Сверка с прототипом
+
+При запущенных `npm run dev` (:3000) и `npx serve design -l 4000` скрипты из `scripts/visual/`
+снимают одно и то же в прототипе и в приложении через системный Chrome (`CHROME_PATH`), результаты — в `.visual/`:
+
+```bash
+node scripts/visual/geometry.mjs 1440,960,375 /                 # позиции и высоты блоков страницы
+node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 light,dark "" /   # попиксельный дифф
+```
+
+В Git Bash добавляйте `MSYS_NO_PATHCONV=1`, иначе `/` превратится в путь Windows.
+
 ## Структура
 
 ```
