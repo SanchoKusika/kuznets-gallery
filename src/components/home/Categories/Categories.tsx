@@ -11,7 +11,7 @@ type Row = { key: string; name: string; desc: string; count: number; img: string
 
 /**
  * "Выберите направление": one row per category. With a mouse the cover follows the
- * cursor (stage 5); on touch screens ≥960px it is shown as a thumbnail instead.
+ * cursor (`data-preview`, see Cursor); on touch screens ≥960px it is shown as a thumbnail instead.
  */
 export function Categories({ rows }: { rows: Row[] }) {
   return (

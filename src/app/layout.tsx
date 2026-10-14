@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { MOTION_INIT_SCRIPT } from "@/features/motion/prefers-motion";
 import { THEME_INIT_SCRIPT } from "@/features/theme/constants";
 import { InlineScript } from "@/features/theme/InlineScript";
 import { ThemeSync } from "@/features/theme/ThemeSync";
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" className={`${onest.variable} ${piazzolla.variable}`} suppressHydrationWarning>
       <head>
-        <InlineScript html={THEME_INIT_SCRIPT} />
+        <InlineScript html={`${THEME_INIT_SCRIPT};${MOTION_INIT_SCRIPT}`} />
       </head>
       <body>
         <ThemeSync />

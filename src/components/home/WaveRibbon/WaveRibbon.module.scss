@@ -13,6 +13,10 @@ $pad: clamp(8px, 2vw, 28px);
   min-height: 40px;
 
   // Reserve the ribbon's height until it is measured on the client (no layout shift).
+  &--dragging {
+    cursor: grabbing;
+  }
+
   &:not(&--ready) {
     min-height: calc(#{$pad} + max(min(#{math.div($svg-h * 100, 600)}vw, #{$svg-h}px), #{math.div($svg-h * 100, 1440)}vw));
   }

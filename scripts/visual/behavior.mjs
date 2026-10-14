@@ -1,5 +1,6 @@
 // App-only behaviour checks: theme toggle + persistence, Контакты scroll, active nav, mobile menu
-// (Esc, resize, navigation), request drawer and console errors / failed requests. Usage: node behavior.mjs
+// (Esc, resize, navigation), request drawer, motion (reveal, wave, cursor, Lenis) and console
+// errors / failed requests. Usage: node behavior.mjs
 import { APP_URL, launch, skipRemotePhotos } from "./_lib.mjs";
 const browser = await launch();
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
@@ -91,6 +92,32 @@ await page.waitForTimeout(600);
 await page.locator("header button", { hasText: "Заявка" }).first().click();
 await page.waitForTimeout(700);
 r.drawerAfterSend = [await drawer(), await page.getByPlaceholder("Комментарий: идея, размер, интерьер").inputValue(), await page.evaluate(() => localStorage.getItem("kz_order"))];
+// motion: reveal lifted the pre-paint hiding, Lenis runs, the wave moves in view and can be turned, cursor grows
+await page.keyboard.press("Escape");
+await page.goto(APP_URL + "/", { waitUntil: "networkidle" });
+r.motionReady = await page.evaluate(() => [!document.documentElement.hasAttribute("data-motion"), document.documentElement.classList.contains("lenis")]);
+const ribbon = page.locator('[title="Потяните, чтобы изменить направление"]');
+await ribbon.scrollIntoViewIfNeeded();
+await page.waitForTimeout(1200);
+const offset = () => page.evaluate(() => parseFloat(document.querySelector("textPath").getAttribute("startOffset")));
+const o1 = await offset();
+await page.waitForTimeout(300);
+const o2 = await offset();
+const box = await ribbon.boundingBox();
+await page.mouse.move(box.x + 300, box.y + box.height / 2);
+await page.mouse.down();
+await page.mouse.move(box.x + 500, box.y + box.height / 2, { steps: 5 });
+await page.mouse.up();
+const o3 = await offset();
+await page.waitForTimeout(300);
+r.waveRunsLeftThenRight = [o2 < o1 || o2 - o1 > 100, (await offset()) > o3];
+const thumb = await page.locator('[data-cursor="Смотреть"]').first();
+await thumb.scrollIntoViewIfNeeded();
+await page.waitForTimeout(1200);
+const tb = await thumb.boundingBox();
+await page.mouse.move(tb.x + 20, tb.y + 20, { steps: 3 });
+await page.waitForTimeout(500);
+r.cursorLabel = await page.evaluate(() => document.querySelector('[class*="cursor__dot"]').textContent);
 console.log(JSON.stringify(r, null, 1));
 console.log(logs.join("\n") || "no console errors/warnings");
 await browser.close();

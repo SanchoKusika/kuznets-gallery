@@ -19,8 +19,3 @@ export function sectionOf(pathname: string): Section {
   if (pathname.startsWith("/info")) return "info";
   return null;
 }
-
-/** "Контакты": smooth-scroll to the footer (prototype: 60ms after closing the menu). */
-export function scrollToContacts() {
-  setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }), 60);
-}

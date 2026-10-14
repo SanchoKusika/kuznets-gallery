@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/Icon/Icon";
 import { Media } from "@/components/ui/Media/Media";
 import { CONTACTS } from "@/content/site";
 import { prefersMotion } from "@/features/motion/prefers-motion";
+import { lockScroll, unlockScroll } from "@/features/scroll/scroll-lock";
 import { bem } from "@/lib/bem";
 import { formatPrice } from "@/lib/format";
 import { isPhoneValid, type RequestPayload } from "@/lib/request";
@@ -63,6 +64,13 @@ export function OrderDrawer() {
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     panelRef.current?.focus({ preventScroll: true });
     return () => opener?.focus({ preventScroll: true });
+  }, [drawerOpen]);
+
+  // Smooth scroll pauses while the drawer is open; the page keeps its scrollbar under the scrim.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    lockScroll("drawer", { keepScrollbar: true });
+    return () => unlockScroll("drawer");
   }, [drawerOpen]);
 
   // The form (and its focused button) gives way to "Спасибо": keep focus inside the panel.

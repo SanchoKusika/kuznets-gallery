@@ -1,0 +1,69 @@
+@use "mixins" as *;
+
+// Positions are written every frame through ref.style.transform (see Cursor.tsx).
+
+.cursor {
+  pointer-events: none;
+
+  &__preview {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 55;
+    width: min(280px, 22vw);
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--paper-3);
+    box-shadow: var(--shadow-float);
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.7;
+    transition:
+      opacity 0.35s,
+      scale 0.5s var(--ease-out);
+
+    &--shown {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  &__preview-img {
+    @include media-fill;
+  }
+
+  &__dot {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 60;
+    width: 14px;
+    height: 14px;
+    margin: -7px 0 0 -7px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    transition:
+      width 0.4s var(--ease-out),
+      height 0.4s var(--ease-out),
+      margin 0.4s var(--ease-out),
+      font-size 0.25s,
+      opacity 0.3s;
+
+    &--big {
+      width: 96px;
+      height: 96px;
+      margin: -48px 0 0 -48px;
+      font-size: 12px;
+      opacity: 1;
+    }
+  }
+}

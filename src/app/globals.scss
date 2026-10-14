@@ -63,6 +63,25 @@ img::selection {
   mix-blend-mode: normal;
 }
 
+// Until <Reveal> first runs (motion on, see MOTION_INIT_SCRIPT): blocks wait hidden for their
+// entrance instead of flashing in the server HTML. If scripts never run, they appear after 3s.
+[data-motion] [data-reveal] {
+  opacity: 0;
+  animation: reveal-fallback 0s 3s forwards;
+}
+
+[data-motion] [data-rise] {
+  transform: translateY(105%);
+  animation: reveal-fallback 0s 3s forwards;
+}
+
+@keyframes reveal-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 // Touch: CSS :hover sticks after a tap — no zoom on interactive imagery.
 @media (hover: none) {
   [data-cursor] img[src]:hover,
