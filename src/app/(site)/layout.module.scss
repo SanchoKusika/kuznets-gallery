@@ -3,4 +3,10 @@
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
+
+  // notFound() in a page (unknown work or category) renders the 404 inside this layout; the 404
+  // brings its own header and footer, so the site's step aside.
+  &:has([data-page="404"]) > :is(header, footer) {
+    display: none;
+  }
 }

@@ -1,14 +1,16 @@
 // App-only behaviour checks: theme toggle + persistence, Контакты scroll, active nav, mobile menu
-// (Esc, resize, navigation), request drawer, motion (reveal, wave, cursor, Lenis) and console
-// errors / failed requests. Usage: node behavior.mjs
+// (Esc, resize, navigation), request drawer, motion (reveal, wave, cursor, Lenis), the 404 page and
+// console errors / failed requests. Usage: node behavior.mjs
 import { APP_URL, launch, skipRemotePhotos } from "./_lib.mjs";
 const browser = await launch();
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
 await skipRemotePhotos(ctx);
 const page = await ctx.newPage();
 const logs = [];
-page.on("console", (m) => { if (["error", "warning"].includes(m.type()) && !/_next\/image|kuznets\.uz/.test(m.location().url || "")) logs.push(m.type() + ": " + m.text().slice(0, 300) + " @ " + (m.location().url || "")); });
-page.on("response", (res) => { if (res.status() >= 400) logs.push("HTTP " + res.status() + " " + res.url()); });
+// Ignored: catalogue photos (blocked) and two dev-only notices: a reload (Cache-Control: no-cache)
+// bypasses server caches, and the 404 page's CSS chunk is preloaded on every page.
+page.on("console", (m) => { if (["error", "warning"].includes(m.type()) && !/_next\/image|kuznets\.uz/.test(m.location().url || "") && !/server caches disabled|preloaded using link preload/.test(m.text()) && !/\/nope$|\/kz-999$/.test(m.location().url || "")) logs.push(m.type() + ": " + m.text().slice(0, 300) + " @ " + (m.location().url || "")); });
+page.on("response", (res) => { if (res.status() >= 400 && !/\/nope$|\/kz-999$/.test(res.url())) logs.push("HTTP " + res.status() + " " + res.url()); });
 page.on("pageerror", (e) => logs.push("pageerror: " + e.message));
 await page.goto(APP_URL + "/", { waitUntil: "networkidle" });
 await page.waitForTimeout(600);
@@ -118,6 +120,24 @@ const tb = await thumb.boundingBox();
 await page.mouse.move(tb.x + 20, tb.y + 20, { steps: 3 });
 await page.waitForTimeout(500);
 r.cursorLabel = await page.evaluate(() => document.querySelector('[class*="cursor__dot"]').textContent);
+// 404: status, standalone and inside the site layout (unknown work), straighten, hang a work, open it
+for (const path of ["/nope", "/work/kz-999"]) {
+  const res = await page.goto(APP_URL + path, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: "Поправить раму" }).click();
+  await page.getByRole("button", { name: /Повесить/ }).click();
+  await page.waitForTimeout(300);
+  r[`notFound ${path}`] = await page.evaluate(([status]) => [
+    status,
+    document.querySelectorAll("header:not([hidden])").length - [...document.querySelectorAll("header")].filter((h) => !h.offsetParent).length,
+    document.querySelector("footer:last-of-type").innerText.replace(/\s+/g, " "),
+    document.querySelector('[role="img"]').getAttribute("aria-label"),
+  ], [res.status()]);
+}
+const artLink = page.getByRole("link", { name: "Открыть эту картину →" });
+const artHref = await artLink.getAttribute("href");
+await artLink.click();
+await page.waitForURL(APP_URL + artHref);
+r.notFoundOpensWork = [artHref, await page.locator("h1").first().innerText()];
 console.log(JSON.stringify(r, null, 1));
 console.log(logs.join("\n") || "no console errors/warnings");
 await browser.close();

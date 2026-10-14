@@ -33,14 +33,15 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 | `compare.mjs <папка> <селектор> [ширины] [темы] [роут] [путь]` | скриншот элемента в обоих и попиксельный дифф (PNG в указанную папку, обычно `.visual/`); `ACTION` — JS перед снимком, `BEFORE` — JS до поиска элемента (например, открыть заявку) |
 | `menu.mjs <папка> [ширины]` | мобильное меню: середина анимации, открытое состояние, закрытие |
 | `probe.mjs <ширина> "<выражение>"` | вычисляет выражение в обоих и печатает результат |
-| `behavior.mjs` | только приложение: тема, «Контакты», меню, заявка, движение (появление, волна, курсор, Lenis), ошибки в консоли |
+| `behavior.mjs` | только приложение: тема, «Контакты», меню, заявка, движение (появление, волна, курсор, Lenis), 404, ошибки в консоли |
 
 ```bash
 node scripts/visual/geometry.mjs 1440,960,375 /
 node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 light,dark "" /
 ```
 
-В Git Bash добавляйте `MSYS_NO_PATHCONV=1`, иначе `/` превратится в путь Windows.
+В Git Bash добавляйте `MSYS_NO_PATHCONV=1`, иначе `/` превратится в путь Windows. Для 404 укажите прототип через
+`PROTO_URL=http://localhost:4000/404.dc.html`, путь в приложении — любой несуществующий (`/nope`).
 
 ## Структура
 
@@ -55,6 +56,7 @@ src/
   components/work/      WorkDetails, NextWork, RelatedWorks
   components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
+  components/not-found/ страница 404: рама-маятник, этикетка
   features/             theme, order (заявка и её drawer), catalog (фильтры коллекции),
                         motion (появление при скролле, курсор), scroll (Lenis, блокировка скролла)
   content/site.ts       тексты и справочники из прототипа

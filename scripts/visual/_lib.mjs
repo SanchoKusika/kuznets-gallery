@@ -36,7 +36,7 @@ export async function open(browser, url, { width, height = 900, theme = "light",
   await skipRemotePhotos(ctx);
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: "networkidle" });
-  await page.waitForSelector("header");
+  await page.waitForSelector("header:visible");
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(settle);
   return { ctx, page };
