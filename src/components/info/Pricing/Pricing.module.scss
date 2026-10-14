@@ -1,0 +1,99 @@
+@use "mixins" as *;
+
+.pricing {
+  @include rule-top(14px);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: clamp(32px, 4vw, 64px);
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-self: start;
+
+    @include from(960) {
+      position: sticky;
+      top: 100px;
+    }
+  }
+
+  &__title {
+    @include display-m;
+    margin: 0;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 520px;
+  }
+
+  &__from {
+    font-size: clamp(44px, 5vw, 84px);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+  }
+
+  &__max {
+    @include label(12px);
+    color: var(--ink-3);
+    margin-top: -8px;
+  }
+
+  &__figure {
+    position: relative;
+    max-width: 620px;
+  }
+
+  &__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  &__img {
+    @include zoom(1.1s, 1.04);
+  }
+
+  &__plate {
+    @include label(11px);
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    background: var(--paper);
+    padding: 6px 12px;
+    border-radius: 99px;
+  }
+
+  // —— price list
+  &__table {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+
+    &--head {
+      @include label(11px);
+      padding: 10px 0;
+      color: var(--ink-3);
+      border-bottom-color: var(--ink);
+    }
+  }
+
+  &__size {
+    font-weight: 500;
+  }
+
+  &__format {
+    color: var(--ink-3);
+  }
+}

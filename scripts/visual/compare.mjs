@@ -1,6 +1,7 @@
 // Pixel diff of one element in the prototype and the app.
 // Usage: node compare.mjs <outDir> <selector> [widths] [themes] [protoRoute] [appPath]
-// Env: ACTION (JS run in the page before the shot, e.g. a click), ACTION_WAIT (ms).
+// Env: ACTION (JS run in the page before the shot, e.g. a click), ACTION_WAIT (ms);
+// BEFORE (JS run before the element is looked up, e.g. opening the request drawer).
 // Writes <outDir>/<theme>-<width>-{proto,app,diff}.png and prints the mismatch per size.
 import fs from "node:fs";
 import path from "node:path";
@@ -15,6 +16,10 @@ const browser = await launch();
 
 async function shot(url, route, width, theme, file) {
   const { ctx, page } = await open(browser, url, { width, theme, route });
+  if (process.env.BEFORE) {
+    await page.evaluate(process.env.BEFORE);
+    await page.waitForTimeout(Number(process.env.ACTION_WAIT || 1200));
+  }
   const el = page.locator(selector).first();
   await el.scrollIntoViewIfNeeded();
   await page.waitForTimeout(900);

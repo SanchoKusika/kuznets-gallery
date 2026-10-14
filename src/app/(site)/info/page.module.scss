@@ -1,0 +1,28 @@
+@use "mixins" as *;
+
+.info-page {
+  padding: 0 var(--gutter);
+
+  &__intro {
+    padding: clamp(32px, 4vw, 56px) 0 clamp(40px, 5vw, 72px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__title {
+    margin: 0;
+    font-weight: 600;
+    font-size: clamp(48px, 11vw, 184px);
+    line-height: 0.82;
+    letter-spacing: -0.07em;
+  }
+
+  &__lede {
+    @include serif;
+    margin: 0;
+    font-size: clamp(22.08px, 2.21vw, 31.28px);
+    line-height: 1.15;
+    max-width: 760px;
+  }
+}
