@@ -1,34 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kuznetsovs Gallery
 
-## Getting Started
+Сайт kuznets.uz — галерея принт-картин (Ташкент): каталог, карточка работы, заявка, админ-панель и 404.
+Собирается по hi-fi прототипам из `design/` (эталон — `*.dc.html`, спецификация — `design/README.md`).
 
-First, run the development server:
+## Стек
+
+- Next.js 16 (App Router, Cache Components), React 19, TypeScript
+- SCSS Modules + BEM, токены — CSS-переменные (`src/styles/_tokens.scss`), тёмная тема — `<html data-theme="dark">`
+- Шрифты через `next/font`: Onest + Piazzolla Italic (opsz)
+- Анимации — Web Animations API и CSS, как в прототипе; плавный скролл — Lenis (только сайт)
+- Данные: Supabase (с этапа 7), до этого — `src/data/products.json`
+- Хостинг: Cloudflare Workers через `@opennextjs/cloudflare`
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npx serve design -l 4000   # прототип для сверки: http://localhost:4000/Kuznetsovs%20Gallery.dc.html
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Структура
 
-## Learn More
+```
+src/
+  app/              маршруты; (site)/ — публичный сайт с шапкой и подвалом
+  components/ui/    примитивы дизайн-системы (Icon, Logo, ThemeToggle…)
+  components/layout Header, StaggeredMenu, Footer
+  features/         theme, order (заявка), scroll, motion
+  content/site.ts   тексты и справочники из прототипа
+  lib/              каталог, форматирование, маршруты, bem()
+  styles/           _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)
+design/             эталонные прототипы (не входят в сборку)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Соглашения
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Один компонент — один BEM-блок и свой `.module.scss`; классы собираются через `bem(styles, "block")`.
+- Инлайн-стилей в разметке нет. Исключения — значения, меняющиеся каждый кадр (курсор, волна, маятник 404),
+  и геометрия из данных (графики админки); они задаются через `ref.style` или CSS-переменные.
+- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (по умолчанию `https://kuznets.uz/wp-content/uploads/`).

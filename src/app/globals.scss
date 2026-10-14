@@ -1,0 +1,66 @@
+@use "tokens";
+
+// Base styles — 1:1 with the prototype's global <style>.
+// Link colours use :where() so any component class overrides them.
+
+* {
+  box-sizing: border-box;
+}
+
+html[data-scroll-lock] {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(a) {
+  color: var(--ink);
+}
+
+:where(a:hover) {
+  color: var(--accent);
+}
+
+button {
+  font-family: inherit;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-3);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+img::selection {
+  background: transparent;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+// Touch: CSS :hover sticks after a tap — no zoom on interactive imagery.
+@media (hover: none) {
+  [data-cursor] img[src]:hover,
+  [data-cursor]:hover img[src] {
+    transform: none !important;
+  }
+}

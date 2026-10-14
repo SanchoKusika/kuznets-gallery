@@ -1,0 +1,31 @@
+:root{
+  /* base — paper */
+  --paper:#F2EFE9; --paper-2:#E9E5DD; --paper-3:#E4E0D8; --paper-hover:#EAE6DE; --paper-raised:#F7F5F1; --paper-selected:#E6E1D7;
+  /* base — ink */
+  --ink:#151515; --ink-2:#3A3732; --ink-3:#5E5A53; --ink-4:#A8A399;
+  /* base — accent (from the orange dot in the Kuznetsovs logo) */
+  --accent:#E0502E;
+  /* text/icons placed ON the accent: dark for orange, ochre, emerald; switch to #F7F5F1 for cobalt */
+  --on-accent:#151515;
+  /* lines & overlays */
+  --line:rgba(21,21,21,.15); --line-soft:rgba(21,21,21,.12); --line-strong:#151515; --line-on-dark:rgba(242,239,233,.2);
+  --scrim:rgba(21,21,21,.45); --glass:rgba(242,239,233,.94);
+  /* semantic */
+  --surface-page:var(--paper); --surface-card:var(--paper-2); --surface-media:var(--paper-3); --surface-hover:var(--paper-hover);
+  --surface-raised:var(--paper-raised); --surface-selected:var(--paper-selected); --surface-inverse:var(--ink);
+  --text-primary:var(--ink); --text-body:var(--ink-2); --text-muted:var(--ink-3); --text-inverse:var(--paper); --text-inverse-muted:var(--ink-4); --text-accent:var(--accent);
+  --border-default:var(--line); --border-soft:var(--line-soft); --border-strong:var(--line-strong); --border-inverse:var(--line-on-dark);
+  --action-primary:var(--ink); --action-primary-hover:var(--accent); --action-accent:var(--accent);
+  --selection-bg:var(--accent); --selection-fg:var(--ink);
+}
+
+/* Dark theme — same roles, inverted paper/ink; accent unchanged. Inverse blocks (footer, menu, next-work) stay dark. Apply with <html data-theme="dark">. */
+[data-theme="dark"]{
+  --paper:#141413; --paper-2:#1E1D1B; --paper-3:#272522; --paper-hover:#1C1B19; --paper-raised:#1A1917; --paper-selected:#2B2926;
+  --ink:#EFEAE2; --ink-2:#CFC9BF; --ink-3:#A39D93; --ink-4:#958F85;
+  --line:rgba(239,234,226,.16); --line-soft:rgba(239,234,226,.12); --line-strong:#EFEAE2;
+  --glass:rgba(20,20,19,.92);
+  --surface-inverse:#0B0B0A; --text-inverse:#EFEAE2; --line-on-dark:rgba(239,234,226,.16);
+  /* imagery is dimmed on dark: filter brightness(.88) contrast(1.04) */
+}
+/* Accent alternates offered as tweaks: cobalt #2F5BD3, emerald #1F8A5B, ochre #C08A1E */
