@@ -1,0 +1,13 @@
+@use "mixins" as *;
+
+// Primitive: zero-specificity (:where) so consumers set ratio, background and zoom.
+
+:where(.media) {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-3);
+}
+
+:where(.media__img) {
+  @include media-fill;
+}

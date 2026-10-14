@@ -1,0 +1,61 @@
+@use "mixins" as *;
+
+.frame-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+
+  @include from(700) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  &--home {
+    gap: 32px clamp(12px, 1.5vw, 24px);
+  }
+
+  &--info {
+    gap: 32px clamp(12px, 1.6vw, 24px);
+  }
+
+  &__card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__media {
+    background: #fff;
+    aspect-ratio: 4 / 3;
+  }
+
+  &--info &__media {
+    aspect-ratio: 1;
+  }
+
+  &__img {
+    @include zoom;
+  }
+
+  &__name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  &--info &__name {
+    font-size: 22px;
+    letter-spacing: -0.03em;
+  }
+
+  &__text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-3);
+    max-width: 360px;
+  }
+
+  &--info &__text {
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: none;
+  }
+}

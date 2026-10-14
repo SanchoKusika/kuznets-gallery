@@ -1,0 +1,16 @@
+.hero-word {
+  padding: 0 var(--gutter);
+  overflow: hidden;
+
+  &__text {
+    margin: 0;
+    padding: 0.06em 0 0.08em;
+    font-weight: 600;
+    font-size: clamp(60px, 16.5vw, 330px);
+    line-height: 0.86;
+    letter-spacing: -0.075em;
+    white-space: nowrap;
+    display: flex;
+    align-items: flex-end;
+  }
+}

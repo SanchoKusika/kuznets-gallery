@@ -1,0 +1,35 @@
+@use "mixins" as *;
+
+.occasions {
+  @include section;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: clamp(24px, 3vw, 48px);
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__media {
+    aspect-ratio: 4 / 3;
+  }
+
+  &__img {
+    @include zoom;
+  }
+
+  &__title {
+    @include display-m;
+    margin: 0;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 520px;
+  }
+}
