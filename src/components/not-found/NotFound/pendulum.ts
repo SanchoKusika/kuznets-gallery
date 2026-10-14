@@ -14,7 +14,7 @@ const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(ma
  * Frame swinging on its nail (prototype 404): `v += (rest − a) · .018; v *= .968`. It can be pulled
  * (±40° around the nail), a mouse moving near it nudges it, "Поправить раму" sets rest to 0 and
  * 2.2s later it slips to 3–9° (one time in five the other way). Static at `rest` with reduced motion.
- * The angle is written to `frame.style.transform` every frame.
+ * The angle goes to `frame.style.transform` (every frame while it swings).
  */
 export function usePendulum(slotRef: RefObject<HTMLElement | null>, frameRef: RefObject<HTMLElement | null>, grabbingClass: string) {
   const state = useRef({ a: REST, v: 0, rest: REST, drag: false, calm: false });
