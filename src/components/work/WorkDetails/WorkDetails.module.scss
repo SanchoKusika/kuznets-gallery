@@ -1,0 +1,212 @@
+@use "mixins" as *;
+
+.work-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+  gap: clamp(24px, 4vw, 64px);
+  padding: 0 var(--gutter);
+  align-items: start;
+
+  // Image stays in view while the panel scrolls (≥960px).
+  &__image {
+    width: 100%;
+    aspect-ratio: 1;
+    max-height: 70vh;
+
+    @include from(960) {
+      position: sticky;
+      top: 84px;
+      max-height: calc(100vh - 110px);
+    }
+  }
+
+  &__image-img {
+    object-fit: contain;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-bottom: 40px;
+  }
+
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__meta {
+    @include tabular;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: clamp(48px, 6vw, 104px);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.88;
+  }
+
+  &__description {
+    @include serif;
+    margin: 0;
+    font-size: clamp(20.24px, 1.84vw, 25.76px);
+    line-height: 1.2;
+    max-width: 560px;
+    text-wrap: pretty;
+  }
+
+  // —— sizes
+  &__sizes {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--ink);
+  }
+
+  &__sizes-head {
+    @include label(12px);
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+  }
+
+  &__size {
+    @include button-reset;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px;
+    margin: 0 -14px;
+    border-top: 1px solid var(--line);
+    transition: background 0.25s;
+
+    &:hover,
+    &--selected {
+      background: var(--paper-selected);
+    }
+  }
+
+  &__size-label {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  &__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    background: transparent;
+  }
+
+  &__size--selected &__dot {
+    background: var(--ink);
+  }
+
+  &__size-price {
+    font-size: 16px;
+  }
+
+  // —— framing
+  &__framing {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__label {
+    @include label(12px);
+  }
+
+  &__frames {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  &__frame {
+    @include button-reset;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper-raised);
+    transition:
+      border-color 0.3s,
+      transform 0.35s var(--ease-out);
+
+    &:hover {
+      border-color: var(--ink);
+      transform: translateY(-3px);
+    }
+
+    &--selected {
+      border-color: var(--ink);
+    }
+  }
+
+  &__frame-media {
+    aspect-ratio: 4 / 3;
+    background: none;
+  }
+
+  &__frame-img {
+    @include zoom;
+  }
+
+  &__frame-name {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  &__frame-note {
+    @include label(10px);
+    color: var(--ink-3);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  // —— specs
+  &__specs {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--ink);
+    font-size: 14px;
+  }
+
+  &__spec {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+
+    @include below(600) {
+      grid-template-columns: 96px minmax(0, 1fr);
+    }
+  }
+
+  &__spec-key {
+    @include label(12px);
+    color: var(--ink-3);
+  }
+
+  &__spec-value {
+    line-height: 1.5;
+  }
+}

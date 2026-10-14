@@ -1,0 +1,22 @@
+@use "mixins" as *;
+
+.work-page {
+  &__crumbs {
+    @include label(12px);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px var(--gutter);
+  }
+
+  &__back {
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}

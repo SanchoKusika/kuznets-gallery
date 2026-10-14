@@ -1,11 +1,12 @@
 // App-only behaviour checks: theme toggle + persistence, Контакты scroll, active nav, mobile menu
 // (Esc, resize, navigation) and console errors / failed requests. Usage: node behavior.mjs
-import { APP_URL, launch } from "./_lib.mjs";
+import { APP_URL, launch, skipRemotePhotos } from "./_lib.mjs";
 const browser = await launch();
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+await skipRemotePhotos(ctx);
 const page = await ctx.newPage();
 const logs = [];
-page.on("console", (m) => { if (["error", "warning"].includes(m.type())) logs.push(m.type() + ": " + m.text().slice(0, 300) + " @ " + (m.location().url || "")); });
+page.on("console", (m) => { if (["error", "warning"].includes(m.type()) && !/_next\/image|kuznets\.uz/.test(m.location().url || "")) logs.push(m.type() + ": " + m.text().slice(0, 300) + " @ " + (m.location().url || "")); });
 page.on("response", (res) => { if (res.status() >= 400) logs.push("HTTP " + res.status() + " " + res.url()); });
 page.on("pageerror", (e) => logs.push("pageerror: " + e.message));
 await page.goto(APP_URL + "/", { waitUntil: "networkidle" });
