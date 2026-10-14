@@ -8,7 +8,7 @@
 - Next.js 16 (App Router, Cache Components), React 19, TypeScript
 - SCSS Modules + BEM, токены — CSS-переменные (`src/styles/_tokens.scss`), тёмная тема — `<html data-theme="dark">`
 - Шрифты через `next/font`: Onest + Piazzolla Italic (opsz)
-- Анимации — Web Animations API и CSS, как в прототипе; плавный скролл — Lenis (только сайт)
+- Анимации — Web Animations API и CSS, как в прототипе; плавный скролл — Lenis (только сайт). При `prefers-reduced-motion` всё движение выключено, поэтому сверка с прототипом идёт в этом режиме
 - Данные: Supabase (с этапа 7), до этого — `src/data/products.json`
 - Хостинг: Cloudflare Workers через `@opennextjs/cloudflare`
 
@@ -33,7 +33,7 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 | `compare.mjs <папка> <селектор> [ширины] [темы] [роут] [путь]` | скриншот элемента в обоих и попиксельный дифф (PNG в указанную папку, обычно `.visual/`); `ACTION` — JS перед снимком, `BEFORE` — JS до поиска элемента (например, открыть заявку) |
 | `menu.mjs <папка> [ширины]` | мобильное меню: середина анимации, открытое состояние, закрытие |
 | `probe.mjs <ширина> "<выражение>"` | вычисляет выражение в обоих и печатает результат |
-| `behavior.mjs` | только приложение: тема, «Контакты», меню, заявка, ошибки в консоли |
+| `behavior.mjs` | только приложение: тема, «Контакты», меню, заявка, движение (появление, волна, курсор, Lenis), ошибки в консоли |
 
 ```bash
 node scripts/visual/geometry.mjs 1440,960,375 /
@@ -55,7 +55,8 @@ src/
   components/work/      WorkDetails, NextWork, RelatedWorks
   components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
-  features/             theme, order (заявка и её drawer), catalog (фильтры коллекции), scroll, motion
+  features/             theme, order (заявка и её drawer), catalog (фильтры коллекции),
+                        motion (появление при скролле, курсор), scroll (Lenis, блокировка скролла)
   content/site.ts       тексты и справочники из прототипа
   lib/                  каталог, заявка (правила и тип), картинки, форматирование, маршруты, bem()
   styles/               _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)

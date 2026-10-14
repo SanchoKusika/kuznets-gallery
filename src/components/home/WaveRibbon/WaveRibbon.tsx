@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { prefersMotion } from "@/features/motion/prefers-motion";
 import { bem } from "@/lib/bem";
 import { RIBBON } from "./geometry";
 import s from "./WaveRibbon.module.scss";
@@ -8,6 +9,9 @@ import s from "./WaveRibbon.module.scss";
 const b = bem(s, "wave-ribbon");
 
 const SEPARATOR = " ✦ ";
+/** Prototype loopSpeed 60, direction "forward": 60/55 viewBox units per 60 Hz frame, leftwards. */
+const SPEED = 60 / 55;
+const FRAME_MS = 1000 / 60;
 
 /** viewBox width follows the element, clamped to 600–1440 so text stays readable on phones. */
 const viewBoxWidth = (el: HTMLElement) => Math.round(Math.max(600, Math.min(1440, el.clientWidth || 1440)));
@@ -31,6 +35,7 @@ export function WaveRibbon({ titles }: { titles: string[] }) {
   const measureRef = useRef<SVGTextElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const textPathRef = useRef<SVGTextPathElement>(null);
+  const spanRef = useRef(0);
   const [vb, setVb] = useState<number | null>(null);
   const pathId = "kzc" + useId().replace(/[^\w-]/g, "");
   const one = titles.map((t) => t.toUpperCase()).join(SEPARATOR) + SEPARATOR;
@@ -57,11 +62,79 @@ export function WaveRibbon({ titles }: { titles: string[] }) {
     const measure = () => {
       const span = measureRef.current?.getComputedTextLength() ?? 0;
       const length = pathRef.current?.getTotalLength() ?? 0;
+      spanRef.current = span;
       if (span) tp.textContent = one.repeat(Math.ceil((length + span) / span) + 1);
     };
     measure();
     document.fonts?.ready.then(measure);
   }, [vb, one]);
+
+  // Run the titles along the wave while it is on screen; dragging moves them by hand and turns
+  // the run to the drag direction (prototype `tick` / pointer handlers). Static with reduced motion.
+  useEffect(() => {
+    const el = rootRef.current;
+    const tp = textPathRef.current;
+    if (!el || !tp || vb === null || !prefersMotion()) return;
+    let offset = 0;
+    let velocity = -SPEED;
+    let dragging = false;
+    let lastX = 0;
+    let last = 0;
+    let raf = 0;
+
+    const tick = (now: number) => {
+      const span = spanRef.current;
+      const frames = last ? Math.min(now - last, 100) / FRAME_MS : 1;
+      last = now;
+      if (span) {
+        if (!dragging) offset += velocity * frames;
+        while (offset <= -span) offset += span;
+        while (offset > 0) offset -= span;
+        tp.setAttribute("startOffset", `${offset}px`);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver((entries) => {
+      cancelAnimationFrame(raf);
+      last = 0;
+      if (entries[entries.length - 1].isIntersecting) raf = requestAnimationFrame(tick);
+    });
+    io.observe(el);
+
+    const setDragging = (on: boolean) => {
+      dragging = on;
+      el.classList.toggle(s["wave-ribbon--dragging"], on);
+    };
+    const onDown = (e: PointerEvent) => {
+      setDragging(true);
+      lastX = e.clientX;
+      el.setPointerCapture(e.pointerId);
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      const dx = (e.clientX - lastX) * (vb / el.clientWidth);
+      lastX = e.clientX;
+      offset += dx;
+      if (dx) velocity = Math.sign(dx) * SPEED;
+    };
+    const onUp = () => setDragging(false);
+    el.addEventListener("pointerdown", onDown);
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerup", onUp);
+    el.addEventListener("pointercancel", onUp);
+    el.addEventListener("pointerleave", onUp);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+      el.removeEventListener("pointerdown", onDown);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerup", onUp);
+      el.removeEventListener("pointercancel", onUp);
+      el.removeEventListener("pointerleave", onUp);
+      setDragging(false);
+    };
+  }, [vb]);
 
   return (
     <div ref={rootRef} className={b(null, { ready: vb !== null })} title="Потяните, чтобы изменить направление">

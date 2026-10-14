@@ -3,7 +3,7 @@ import s from "./HeroWord.module.scss";
 
 const b = bem(s, "hero-word");
 
-/** Full-width "картины" under the hero (rises from a mask on load — stage 5). */
+/** Full-width "картины" under the hero; rises from its mask on load (`data-rise`, see Reveal). */
 export function HeroWord() {
   return (
     <div className={b()}>

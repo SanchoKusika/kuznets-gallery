@@ -9,8 +9,9 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle/ThemeToggle";
 import { PRIMARY_PHONE } from "@/content/site";
 import { order, useOrder } from "@/features/order/store";
 import { lockScroll, unlockScroll } from "@/features/scroll/scroll-lock";
+import { scrollToContacts } from "@/features/scroll/smooth-scroll";
 import { bem } from "@/lib/bem";
-import { routes, scrollToContacts, sectionOf } from "@/lib/routes";
+import { routes, sectionOf } from "@/lib/routes";
 import { StaggeredMenu } from "../StaggeredMenu/StaggeredMenu";
 import s from "./Header.module.scss";
 
