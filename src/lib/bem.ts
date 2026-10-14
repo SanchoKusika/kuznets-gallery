@@ -12,7 +12,7 @@ export type Mods = Record<string, ModValue>;
  *   b("cell", { size: "lg" })    → header__cell header__cell--size-lg
  */
 export function bem(styles: Styles, block: string) {
-  return (element?: string | null, mods?: Mods, ...extra: (string | false | null | undefined)[]) => {
+  return (element?: string | null, mods?: Mods | null, ...extra: (string | false | null | undefined)[]) => {
     const base = element ? `${block}__${element}` : block;
     const names = [pick(styles, base)];
 

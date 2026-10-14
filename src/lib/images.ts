@@ -5,7 +5,12 @@
  */
 export const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE ?? "https://kuznets.uz/wp-content/uploads/";
 
-/** Same rule as the prototype: absolute, data: and local asset paths pass through. */
+/**
+ * Prototype rule: absolute URLs, data: URIs and local assets pass through; anything else
+ * is a path inside the uploads folder. The prototype's relative `assets/…` maps to `/assets/…`.
+ */
 export function imageUrl(path: string) {
-  return /^(https?:|data:|\/)/.test(path) ? path : IMAGE_BASE + path;
+  if (/^(https?:|data:|\/)/.test(path)) return path;
+  if (path.startsWith("assets/")) return "/" + path;
+  return IMAGE_BASE + path;
 }

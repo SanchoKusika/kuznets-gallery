@@ -1,6 +1,9 @@
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+import { bem } from "@/lib/bem";
 import s from "./Logo.module.scss";
+
+const b = bem(s, "logo");
 
 /**
  * Brand logo (499×192 PNG, 28 KB). Multiplied onto paper in light theme,
@@ -14,7 +17,7 @@ export function Logo({ className }: { className?: string }) {
       alt="Kuznetsovs Gallery"
       unoptimized
       loading="eager"
-      className={className ? `${s.logo} ${className}` : s.logo}
+      className={b(null, null, className)}
     />
   );
 }

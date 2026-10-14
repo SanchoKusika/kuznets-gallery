@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
+import { bem } from "@/lib/bem";
 import s from "./Icon.module.scss";
+
+const b = bem(s, "icon");
 
 // Lucide-style line icons exactly as drawn in the prototype (24 grid, stroke 1.6, round caps).
 const PATHS = {
@@ -38,7 +41,7 @@ export type IconName = keyof typeof PATHS;
 export function Icon({ name, size = 16 }: { name: IconName; size?: number }) {
   return (
     <svg
-      className={s.icon}
+      className={b()}
       width={size}
       height={size}
       viewBox="0 0 24 24"

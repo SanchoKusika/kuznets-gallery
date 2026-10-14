@@ -48,6 +48,9 @@ export function Header({ total }: { total: number }) {
     setMenu(MENU_CLOSED);
   }, []);
 
+  // Never leave the page locked if the header goes away with the menu open.
+  useEffect(() => () => unlockScroll("menu"), []);
+
   // Esc closes; growing past the mobile breakpoint unmounts the menu at once.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
