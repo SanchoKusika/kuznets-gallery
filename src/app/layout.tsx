@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { THEME_INIT_SCRIPT } from "@/features/theme/constants";
+import { InlineScript } from "@/features/theme/InlineScript";
 import { ThemeSync } from "@/features/theme/ThemeSync";
+import { SITE_URL } from "@/lib/site-url";
 import { onest, piazzolla } from "./fonts";
 import "./globals.scss";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Kuznetsovs Gallery — принт-картины в Ташкенте",
     template: "%s — Kuznetsovs Gallery",
@@ -22,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" className={`${onest.variable} ${piazzolla.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <InlineScript html={THEME_INIT_SCRIPT} />
       </head>
       <body>
         <ThemeSync />

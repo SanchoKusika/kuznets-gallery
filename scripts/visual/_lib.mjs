@@ -9,6 +9,15 @@ export const launch = () =>
   chromium.launch({ executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 
 /**
+ * Catalogue photos come from kuznets.uz and differ anyway (JPEG vs optimised WebP); skip them
+ * so checks don't depend on that host. WITH_IMAGES=1 keeps them.
+ */
+export async function skipRemotePhotos(ctx) {
+  if (process.env.WITH_IMAGES) return;
+  await ctx.route(/kuznets\.uz\/wp-content|\/_next\/image\?url=https?%3A%2F%2Fkuznets\.uz/, (r) => r.abort());
+}
+
+/**
  * Opens `url` with the theme (and, for the prototype, its stored route) preset in localStorage,
  * waits for the network, fonts and a settle delay. Returns { ctx, page }; close ctx when done.
  */
@@ -24,11 +33,7 @@ export async function open(browser, url, { width, height = 900, theme = "light",
     },
     [theme, route],
   );
-  // Catalogue photos come from kuznets.uz and differ anyway (JPEG vs optimised WebP);
-  // skip them so the host's availability doesn't matter. WITH_IMAGES=1 keeps them.
-  if (!process.env.WITH_IMAGES) {
-    await ctx.route(/kuznets\.uz\/wp-content|\/_next\/image\?url=https?%3A%2F%2Fkuznets\.uz/, (r) => r.abort());
-  }
+  await skipRemotePhotos(ctx);
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForSelector("header");

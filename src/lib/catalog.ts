@@ -2,7 +2,9 @@ import "server-only";
 
 import raw from "@/data/products.json";
 import type { CategoryKey, FormatKey } from "@/content/site";
+import { formatPrice } from "@/lib/format";
 import { imageUrl } from "@/lib/images";
+import { routes } from "@/lib/routes";
 
 type RawSize = { w: number; h: number; p: number | null };
 type RawProduct = {
@@ -72,3 +74,45 @@ export function getCatalog(): Artwork[] {
     .filter((p): p is Artwork => p !== null);
   return cache;
 }
+
+/** Everything a card, list row or related tile needs (prototype `card()`). Plain data for client components. */
+export type ArtworkCard = {
+  code: string;
+  href: string;
+  title: string;
+  description: string;
+  src: string;
+  format: FormatKey;
+  minPrice: number | null;
+  /** "от 90 000 сум" or "Цена по запросу". */
+  from: string;
+  /** "25×25 — 70×100 см", "50×70 см" or "Размер на заказ". */
+  range: string;
+  /** "25/25 · 50/70 · 70/100 см". */
+  sizesText: string;
+};
+
+export function toCard(p: Artwork): ArtworkCard {
+  const first = p.sizes[0];
+  const last = p.sizes[p.sizes.length - 1];
+  const wh = (s: ArtworkSize) => `${s.w}×${s.h}`;
+  return {
+    code: p.code,
+    href: routes.work(p.slug),
+    title: p.title,
+    description: p.description,
+    src: p.src,
+    format: p.format,
+    minPrice: p.minPrice,
+    from: p.minPrice ? `от ${formatPrice(p.minPrice)}` : "Цена по запросу",
+    range: !first ? "Размер на заказ" : p.sizes.length > 1 ? `${wh(first)} — ${wh(last)} см` : `${wh(first)} см`,
+    sizesText: p.sizes.map((s) => `${s.w}/${s.h}`).join(" · ") + (p.sizes.length ? " см" : ""),
+  };
+}
+
+export function getArtwork(slug: string) {
+  return getCatalog().find((p) => p.slug === slug.toLowerCase());
+}
+
+export const inCategory = (items: Artwork[], category: CategoryKey | "all") =>
+  category === "all" ? items : items.filter((p) => p.tags.includes(category));

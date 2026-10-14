@@ -1,0 +1,83 @@
+@use "mixins" as *;
+
+.artwork-card {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  color: var(--ink);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ink);
+  }
+
+  &__media {
+    aspect-ratio: 4 / 5;
+  }
+
+  &__img {
+    @include zoom(0.7s, 1.04);
+  }
+
+  &--related &__img {
+    @include zoom;
+  }
+
+  &__line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 12px;
+    align-items: baseline;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  &__code {
+    @include tabular;
+    font-size: 11px;
+    color: var(--ink-3);
+    white-space: nowrap;
+
+    @include below(600) {
+      display: none;
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 12px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__price {
+    color: var(--ink);
+  }
+
+  // "Ещё": title 15/600 and a muted price on one line.
+  &--related &__line {
+    gap: 2px 10px;
+    align-items: normal;
+  }
+
+  &--related &__title {
+    font-size: 15px;
+    letter-spacing: normal;
+    line-height: normal;
+  }
+
+  &--related &__price {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+}

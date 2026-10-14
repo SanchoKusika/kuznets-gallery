@@ -3,15 +3,15 @@ import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
 import { OrderButton } from "@/features/order/OrderButton";
 import { bem } from "@/lib/bem";
+import type { ArtworkCard } from "@/lib/catalog";
 import { worksWord } from "@/lib/format";
 import { routes } from "@/lib/routes";
 import s from "./Hero.module.scss";
 
 const b = bem(s, "hero");
 
-type Thumb = { title: string; src: string; href: string };
 
-export function Hero({ thumbs, total }: { thumbs: Thumb[]; total: number }) {
+export function Hero({ thumbs, total }: { thumbs: ArtworkCard[]; total: number }) {
   const stats = [
     ["от 90 000 сум", "за картину"],
     ["3–7 дней", "изготовление"],
