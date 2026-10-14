@@ -34,8 +34,17 @@ export function OrderDrawer() {
   const panelRef = useRef<HTMLElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
 
-  // Mount on open; closing is handled below after the exit animation.
-  if (drawerOpen && !mounted) setMounted(true);
+  // Mount on open with the last messages cleared; a sent request also clears the comment
+  // (also when it finished after the drawer was closed). Name and phone are kept.
+  if (drawerOpen && !mounted) {
+    setMounted(true);
+    setError(false);
+    setFailed(false);
+    if (sent) {
+      setSent(false);
+      setComment("");
+    }
+  }
 
   // Open: the panel slides in over a fading scrim (prototype `[data-slide]` / `[data-fade]`).
   useLayoutEffect(() => {
@@ -61,19 +70,10 @@ export function OrderDrawer() {
     if (sent) panelRef.current?.focus({ preventScroll: true });
   }, [sent]);
 
-  // Close: reverse both layers, then unmount and reset (a sent request clears the comment).
-  // Reopening mid-way cancels the exit.
+  // Close: reverse both layers, then unmount. Reopening mid-way cancels the exit.
   useEffect(() => {
     if (drawerOpen || !mounted) return;
-    const finish = () => {
-      setMounted(false);
-      setError(false);
-      setFailed(false);
-      if (sent) {
-        setSent(false);
-        setComment("");
-      }
-    };
+    const finish = () => setMounted(false);
     if (!prefersMotion()) {
       finish();
       return;
@@ -89,7 +89,7 @@ export function OrderDrawer() {
       cancelled = true;
       anims.forEach((a) => a.cancel());
     };
-  }, [drawerOpen, mounted, sent]);
+  }, [drawerOpen, mounted]);
 
   useEffect(() => {
     if (!drawerOpen) return;
