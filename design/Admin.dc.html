@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Piazzolla:ital,opsz,wght@1,8..30,300;1,8..30,400&amp;display=swap">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/base.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/styles.css">
+  <script src="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/_ds_bundle.js"></script>
+  <style>
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:'Onest',sans-serif;-webkit-font-smoothing:antialiased}
+    *{box-sizing:border-box}
+    a{color:var(--ink)} a:hover{color:var(--accent)}
+    ::selection{background:var(--accent);color:var(--on-accent)}
+    input,textarea,select,button{font:inherit;color:inherit}
+    input::placeholder,textarea::placeholder{color:var(--ink-4)}
+    input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+    [data-theme="dark"]{color-scheme:dark}
+    ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+  </style>
+</helmet>
+<div style="display:flex; flex-wrap:wrap; align-items:flex-start; min-height:100vh; overflow-x:clip; background:var(--paper); color:var(--ink); font-family:'Onest',sans-serif">
+
+  <sc-if value="{{ needAuth }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:100; background:var(--paper); overflow-y:auto; display:flex; flex-direction:column; gap:32px; padding:clamp(20px,3vw,40px)">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px">
+        <a href="Kuznetsovs%20Gallery.dc.html" style="display:flex; align-items:baseline; gap:10px; text-decoration:none; color:var(--ink)"><span style="font-weight:600; font-size:26px; letter-spacing:-.065em">kuznetsovs<span style="color:var(--accent)">.</span></span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Админ-панель</span></a>
+        <a href="Kuznetsovs%20Gallery.dc.html" style="font-size:14px; text-decoration:none">← На сайт</a>
+      </div>
+      <div style="flex:1 0 auto; display:flex; align-items:center; justify-content:center">
+        <div style="width:min(100%,420px); display:flex; flex-direction:column; gap:28px">
+          <h1 style="margin:0; font-weight:600; font-size:clamp(64px,10vw,112px); line-height:.82; letter-spacing:-.07em">вход</h1>
+          <div style="display:flex; flex-direction:column; gap:20px">
+            <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Логин</span><input value="{{ lgName }}" onChange="{{ setLgName }}" onKeyDown="{{ lgKey }}" autocomplete="username" placeholder="Имя или телефон" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:8px 0 12px; font-size:18px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+            <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Пароль</span><input type="password" value="{{ lgPass }}" onChange="{{ setLgPass }}" onKeyDown="{{ lgKey }}" autocomplete="current-password" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:8px 0 12px; font-size:18px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+          </div>
+          <button onClick="{{ toggleRem }}" style="display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; padding:14px 16px; border:0; background:var(--paper-2); cursor:pointer; text-align:left">
+            <span><span style="display:block; font-size:15px; font-weight:500">Запомнить это устройство</span><span style="display:block; margin-top:4px; font-size:13px; line-height:1.45; color:var(--ink-3)">Не придётся входить снова, а на сайте появится кнопка «Админка»</span></span>
+            <span style="flex:none; position:relative; width:36px; height:20px; border-radius:99px; background:{{ lgSw.swBg }}; transition:background .25s"><span style="position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:{{ lgSw.knob }}; transform:{{ lgSw.swX }}; transition:transform .25s var(--ease-out)"></span></span>
+          </button>
+          <div style="display:flex; flex-direction:column; gap:12px">
+            <sc-if value="{{ lgErr }}" hint-placeholder-val="{{ false }}"><span style="font-size:14px; color:var(--accent)">{{ lgErrT }}</span></sc-if>
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="lg" full-width="{{ true }}" on-click="{{ login }}" hint-size="100%,52px">Войти</x-import>
+            <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Демо: любой логин, пароль {{ demoPass }}</span>
+          </div>
+        </div>
+      </div>
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Kuznetsovs Gallery · Ташкент</span>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSide }}" hint-placeholder-val="{{ true }}">
+    <aside style="flex:0 0 240px; position:sticky; top:0; height:100vh; display:flex; flex-direction:column; padding:32px 16px 24px">
+      <a href="Kuznetsovs%20Gallery.dc.html" style="display:flex; flex-direction:column; gap:10px; padding:0 14px; text-decoration:none; color:var(--ink)">
+        <span style="font-weight:600; font-size:28px; line-height:.9; letter-spacing:-.065em">kuznetsovs<span style="color:var(--accent)">.</span></span>
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Админ-панель</span>
+      </a>
+      <nav style="display:flex; flex-direction:column; gap:4px; margin-top:48px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button onClick="{{ n.go }}" style="display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; border:0; cursor:pointer; text-align:left; padding:11px 16px; border-radius:99px; background:{{ n.bg }}; color:{{ n.fg }}; font-size:15px; font-weight:500; transition:opacity .25s" style-hover="opacity:.7">
+            <span>{{ n.n }}</span>
+            <span style="display:flex; align-items:center; gap:6px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px">
+              <sc-if value="{{ n.dot }}" hint-placeholder-val="{{ false }}"><span style="width:6px; height:6px; border-radius:50%; background:var(--accent)"></span></sc-if>
+              <span>{{ n.c }}</span>
+            </span>
+          </button>
+        </sc-for>
+      </nav>
+      <div style="margin-top:auto; display:flex; align-items:center; gap:10px; padding:0 14px 20px">
+        <span style="flex:none; width:32px; height:32px; border-radius:50%; display:grid; place-items:center; background:var(--ink); color:var(--paper); font-size:13px; font-weight:600">{{ who1 }}</span>
+        <span style="flex:1; min-width:0; font-size:14px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ who }}</span>
+        <button onClick="{{ logout }}" style="flex:none; border:0; background:transparent; padding:6px 0; cursor:pointer; font-size:13px; color:var(--ink-3); transition:color .25s" style-hover="color:var(--accent)">Выйти</button>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 14px">
+        <a href="Kuznetsovs%20Gallery.dc.html" style="font-size:14px; text-decoration:none">← На сайт</a>
+        <dc-import name="ThemeToggle" variant="scene" dark="{{ isDark }}" on-toggle="{{ toggleTheme }}" hint-size="56px,30px"></dc-import>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{ isRail }}" hint-placeholder-val="{{ false }}">
+    <aside style="flex:0 0 88px; position:sticky; top:0; height:100vh; display:flex; flex-direction:column; align-items:center; padding:26px 6px 20px; min-width:0">
+      <a href="Kuznetsovs%20Gallery.dc.html" title="На сайт" style="font-weight:600; font-size:30px; line-height:.9; letter-spacing:-.065em; text-decoration:none; color:var(--ink)">k<span style="color:var(--accent)">.</span></a>
+      <nav style="display:flex; flex-direction:column; gap:10px; margin-top:44px; width:100%">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button onClick="{{ n.go }}" aria-label="{{ n.n }}" style="position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; min-width:0; width:100%; border:0; background:transparent; cursor:pointer; padding:4px 0; color:{{ n.lc }}; font-size:11px; font-weight:500; transition:opacity .25s" style-hover="opacity:.7">
+            <span style="display:grid; place-items:center; width:52px; height:30px; border-radius:99px; background:{{ n.bg }}; color:{{ n.fg }}; transition:background .25s, color .25s"><span style="width:20px; height:20px; background:currentColor; -webkit-mask-image:{{ n.mask }}; mask-image:{{ n.mask }}; -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center"></span></span>
+            <span style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ n.n }}</span>
+            <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:0; left:calc(50% + 12px); min-width:18px; height:18px; padding:0 5px; border-radius:99px; background:var(--accent); color:var(--on-accent); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10px; line-height:18px; text-align:center">{{ n.bc }}</span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+      <div style="margin-top:auto; display:flex; flex-direction:column; align-items:center; gap:16px">
+        <dc-import name="ThemeToggle" variant="icon" dark="{{ isDark }}" on-toggle="{{ toggleTheme }}" hint-size="38px,38px"></dc-import>
+        <div style="position:relative; flex:none">
+          <button onClick="{{ toggleAcct }}" aria-label="Аккаунт" style="width:36px; height:36px; border-radius:50%; border:0; padding:0; background:var(--ink); color:var(--paper); font-size:14px; font-weight:600; cursor:pointer; transition:opacity .25s" style-hover="opacity:.8">{{ who1 }}</button>
+          <sc-if value="{{ acctOpen }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ closeAcct }}" style="position:fixed; inset:0; z-index:48"></div>
+            <div style="position:absolute; left:calc(100% + 12px); bottom:0; z-index:49; min-width:200px; display:flex; flex-direction:column; padding:6px; border-radius:18px; background:var(--ink); color:var(--paper)">
+              <span style="padding:10px 12px 8px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; opacity:.7; white-space:nowrap; font-weight:500">{{ who }}</span>
+              <a href="Kuznetsovs%20Gallery.dc.html" style="padding:10px 12px; border-radius:12px; color:var(--paper); text-decoration:none; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--accent); color:var(--on-accent)">На сайт</a>
+              <button onClick="{{ logout }}" style="text-align:left; border:0; background:transparent; color:var(--paper); padding:10px 12px; border-radius:12px; font-size:14px; cursor:pointer; transition:background .25s, color .25s" style-hover="background:var(--accent); color:var(--on-accent)">Выйти</button>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </aside>
+  </sc-if>
+
+  <sc-if value="{{ isBar }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1 0 100%; min-width:0; position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:var(--glass); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px)">
+      <a href="Kuznetsovs%20Gallery.dc.html" style="display:flex; align-items:baseline; gap:8px; min-width:0; text-decoration:none; color:var(--ink)">
+        <span style="font-weight:600; font-size:22px; letter-spacing:-.065em">kuznetsovs<span style="color:var(--accent)">.</span></span>
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">Админ</span>
+      </a>
+      <div style="display:flex; align-items:center; gap:10px; flex:none">
+        <div style="position:relative; flex:none">
+          <button onClick="{{ toggleAcct }}" aria-label="Аккаунт" style="width:36px; height:36px; border-radius:50%; border:0; padding:0; background:var(--ink); color:var(--paper); font-size:14px; font-weight:600; cursor:pointer; transition:opacity .25s" style-hover="opacity:.8">{{ who1 }}</button>
+          <sc-if value="{{ acctOpen }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ closeAcct }}" style="position:fixed; inset:0; z-index:48"></div>
+            <div style="position:absolute; right:0; top:calc(100% + 8px); z-index:49; min-width:200px; display:flex; flex-direction:column; padding:6px; border-radius:18px; background:var(--ink); color:var(--paper)">
+              <span style="padding:10px 12px 8px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; opacity:.7; white-space:nowrap; font-weight:500">{{ who }}</span>
+              <a href="Kuznetsovs%20Gallery.dc.html" style="padding:10px 12px; border-radius:12px; color:var(--paper); text-decoration:none; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--accent); color:var(--on-accent)">На сайт</a>
+              <button onClick="{{ logout }}" style="text-align:left; border:0; background:transparent; color:var(--paper); padding:10px 12px; border-radius:12px; font-size:14px; cursor:pointer; transition:background .25s, color .25s" style-hover="background:var(--accent); color:var(--on-accent)">Выйти</button>
+            </div>
+          </sc-if>
+        </div>
+        <dc-import name="ThemeToggle" variant="scene" dark="{{ isDark }}" on-toggle="{{ toggleTheme }}" hint-size="56px,30px"></dc-import>
+      </div>
+    </div>
+    <nav style="position:fixed; left:0; right:0; bottom:0; z-index:30; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); padding:8px 4px calc(8px + env(safe-area-inset-bottom)); background:var(--glass); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-top:1px solid var(--line-soft)">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <button onClick="{{ n.go }}" aria-label="{{ n.n }}" style="position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; min-width:0; width:100%; border:0; background:transparent; cursor:pointer; padding:2px 0; color:{{ n.lc }}; font-size:11px; font-weight:500; transition:opacity .25s" style-hover="opacity:.7">
+            <span style="display:grid; place-items:center; width:52px; height:30px; border-radius:99px; background:{{ n.bg }}; color:{{ n.fg }}; transition:background .25s, color .25s"><span style="width:20px; height:20px; background:currentColor; -webkit-mask-image:{{ n.mask }}; mask-image:{{ n.mask }}; -webkit-mask-size:contain; mask-size:contain; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center"></span></span>
+            <span style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ n.n }}</span>
+            <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:0; left:calc(50% + 12px); min-width:18px; height:18px; padding:0 5px; border-radius:99px; background:var(--accent); color:var(--on-accent); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10px; line-height:18px; text-align:center">{{ n.bc }}</span></sc-if>
+          </button>
+      </sc-for>
+    </nav>
+  </sc-if>
+
+  <main data-screen-label="{{ tabName }}" style="flex:1 1 0; min-width:0; padding:{{ mainPt }} clamp(16px,3vw,40px) {{ mainPb }}">
+    <div style="max-width:1440px; margin:0 auto">
+      <header style="display:flex; align-items:flex-end; justify-content:space-between; gap:20px 32px; flex-wrap:wrap; margin-bottom:28px">
+        <div style="min-width:0">
+          <div style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">{{ tabSub }}</div>
+          <h1 style="margin:14px 0 0; font-weight:600; font-size:clamp(44px,5.4vw,80px); line-height:.85; letter-spacing:-.065em">{{ tabTitle }}</h1>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+          <sc-if value="{{ isReq }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; gap:2px; padding:3px; border-radius:99px; background:var(--paper-2)">
+              <sc-for list="{{ viewOpts }}" as="v" hint-placeholder-count="2">
+                <button onClick="{{ v.pick }}" style="border:0; cursor:pointer; padding:8px 16px; border-radius:99px; font-size:13px; font-weight:500; background:{{ v.bg }}; color:{{ v.fg }}; transition:background .25s, color .25s">{{ v.n }}</button>
+              </sc-for>
+            </div>
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="md" on-click="{{ newReq }}" hint-size="160px,44px">Новая заявка</x-import>
+          </sc-if>
+          <sc-if value="{{ isCat }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="md" on-click="{{ newProd }}" hint-size="180px,44px">Добавить картину</x-import>
+          </sc-if>
+          <sc-if value="{{ isRev }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="md" on-click="{{ addRev }}" hint-size="170px,44px">Добавить отзыв</x-import>
+          </sc-if>
+        </div>
+      </header>
+
+      <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid; grid-template-columns:{{ kpiCols }}; gap:12px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <button onClick="{{ k.go }}" style="text-align:left; border:0; cursor:pointer; background:var(--paper-2); padding:clamp(18px,1.8vw,24px); display:flex; flex-direction:column; gap:16px; min-height:{{ kpiMinH }}; min-width:0; transition:background .25s" style-hover="background:var(--paper-3)">
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">{{ k.l }}</span>
+              <span style="display:flex; align-items:baseline; gap:8px; margin-top:auto; min-width:0">
+                <span style="font-weight:600; font-size:{{ kpiFs }}; line-height:.9; letter-spacing:-.06em; white-space:nowrap">{{ k.v }}</span>
+                <span style="display:{{ kpiUnitD }}; font-size:14px; color:var(--ink-3)">{{ k.unit }}</span>
+              </span>
+              <span style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink-2); min-width:0">
+                <sc-if value="{{ k.dot }}" hint-placeholder-val="{{ false }}"><span style="flex:none; width:7px; height:7px; border-radius:50%; background:var(--accent)"></span></sc-if>
+                <sc-if value="{{ k.hasArrow }}" hint-placeholder-val="{{ false }}"><span style="flex:none; color:{{ k.arrowC }}; font-weight:600">{{ k.arrow }}</span></sc-if>
+                <span>{{ k.sub }}</span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="display:grid; grid-template-columns:{{ triCols }}; gap:12px; margin-top:12px">
+          <section style="background:var(--paper-2); padding:clamp(18px,1.8vw,24px); display:flex; flex-direction:column; min-width:0">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Ждут ответа</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ waitN }}</span>
+            </div>
+            <sc-for list="{{ waiting }}" as="wr" hint-placeholder-count="3">
+              <div style="width:calc(100% + 24px); margin:0 -12px; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:6px"><button onClick="{{ wr.open }}" style="min-width:0; text-align:left; border:0; background:transparent; cursor:pointer; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:11px 12px; transition:background .25s, padding .3s var(--ease-out)" style-hover="background:var(--paper-3); padding-left:18px">
+                <span style="min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <span style="font-size:15px; font-weight:500">{{ wr.name }}</span>
+                  <span style="font-size:13px; color:var(--ink-3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ wr.what }}</span>
+                </span>
+                <span style="display:flex; align-items:center; gap:7px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-2); white-space:nowrap">
+                  <sc-if value="{{ wr.late }}" hint-placeholder-val="{{ false }}"><span style="width:6px; height:6px; border-radius:50%; background:var(--accent)"></span></sc-if>
+                  <span>{{ wr.age }}</span>
+                </span>
+              </button><a href="{{ wr.tel }}" aria-label="Позвонить" title="{{ wr.phone }}" style="flex:none; width:40px; height:40px; margin-right:12px; border-radius:50%; display:grid; place-items:center; background:var(--paper); color:var(--ink); text-decoration:none; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"></path></svg></a></div>
+            </sc-for>
+            <sc-if value="{{ waitEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; padding:12px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:20.24px; color:var(--ink-3)">Все новые заявки разобраны.</p>
+            </sc-if>
+            <button onClick="{{ goNew }}" style="margin-top:auto; padding-top:14px; align-self:flex-start; border:0; background:transparent; cursor:pointer; font-size:14px; font-weight:500; transition:color .25s" style-hover="color:var(--accent)">Все новые заявки →</button>
+          </section>
+
+          <section style="background:var(--paper-2); padding:clamp(18px,1.8vw,24px); display:flex; flex-direction:column; min-width:0">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Ближайшие сроки</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ dueN }}</span>
+            </div>
+            <sc-for list="{{ dues }}" as="du" hint-placeholder-count="3">
+              <button onClick="{{ du.open }}" style="width:calc(100% + 24px); margin:0 -12px; text-align:left; border:0; background:transparent; cursor:pointer; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:center; padding:11px 12px; transition:background .25s, padding .3s var(--ease-out)" style-hover="background:var(--paper-3); padding-left:18px">
+                <span style="min-width:0; display:flex; flex-direction:column; gap:3px">
+                  <span style="font-size:15px; font-weight:500">{{ du.name }}</span>
+                  <span style="font-size:13px; color:var(--ink-3)">{{ du.sub }}</span>
+                </span>
+                <span style="display:flex; align-items:center; gap:7px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-2); white-space:nowrap">
+                  <sc-if value="{{ du.late }}" hint-placeholder-val="{{ false }}"><span style="width:6px; height:6px; border-radius:50%; background:var(--accent)"></span></sc-if>
+                  <span>{{ du.left }}</span>
+                </span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ dueEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; padding:12px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:20.24px; color:var(--ink-3)">Сроки не назначены.</p>
+            </sc-if>
+          </section>
+
+          <section style="background:var(--paper-2); padding:clamp(18px,1.8vw,24px); display:flex; flex-direction:column; min-width:0; grid-column:{{ span3 }}">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:8px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Этапы</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ stagesL }}</span>
+            </div>
+            <sc-for list="{{ stages }}" as="sg" hint-placeholder-count="5">
+              <button onClick="{{ sg.go }}" style="width:calc(100% + 24px); margin:0 -12px; text-align:left; border:0; background:transparent; cursor:pointer; display:grid; grid-template-columns:8px 112px minmax(0,1fr) 28px; gap:12px; align-items:center; padding:12px; transition:background .25s" style-hover="background:var(--paper-3)">
+                <span style="width:7px; height:7px; border-radius:50%; background:{{ sg.dot }}"></span>
+                <span style="font-size:14px">{{ sg.n }}</span>
+                <span style="height:6px; border-radius:99px; background:var(--paper-3); overflow:hidden"><span style="display:block; height:100%; width:{{ sg.w }}; border-radius:99px; background:{{ sg.dot }}; transition:width .6s var(--ease-out)"></span></span>
+                <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; text-align:right">{{ sg.c }}</span>
+              </button>
+            </sc-for>
+          </section>
+        </div>
+
+        <section style="background:var(--paper-2); padding:clamp(18px,2vw,28px); margin-top:12px">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:20px 32px">
+            <div style="display:flex; flex-direction:column; gap:12px; min-width:0">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Продажи</h2>
+              <div style="display:flex; align-items:baseline; gap:8px 12px; flex-wrap:wrap">
+                <span style="font-weight:600; font-size:clamp(40px,4vw,60px); line-height:.9; letter-spacing:-.06em">{{ chTotal }}</span>
+                <span style="font-size:15px; color:var(--ink-3)">{{ chUnit }}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px 14px; flex-wrap:wrap; font-size:13px">
+                <span style="display:flex; gap:6px; color:var(--ink)"><span style="color:{{ chArrowC }}; font-weight:600">{{ chArrow }}</span><span>{{ chDelta }}</span></span>
+                <span style="color:var(--ink-3)">{{ chPrevL }}</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px">
+              <div style="display:flex; gap:2px; padding:3px; border-radius:99px; background:var(--paper)">
+                <sc-for list="{{ metOpts }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.pick }}" style="border:0; cursor:pointer; padding:8px 14px; border-radius:99px; font-size:13px; font-weight:500; background:{{ o.bg }}; color:{{ o.fg }}; transition:background .25s, color .25s">{{ o.n }}</button>
+                </sc-for>
+              </div>
+              <div style="display:flex; gap:2px; padding:3px; border-radius:99px; background:var(--paper)">
+                <sc-for list="{{ perOpts }}" as="o" hint-placeholder-count="3">
+                  <button onClick="{{ o.pick }}" style="border:0; cursor:pointer; padding:8px 14px; border-radius:99px; font-size:13px; font-weight:500; background:{{ o.bg }}; color:{{ o.fg }}; transition:background .25s, color .25s">{{ o.n }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px; margin-top:22px">
+            <span style="position:relative; display:inline-flex; align-items:center">
+              <select value="{{ cSrc }}" onChange="{{ setCSrc }}" aria-label="Источник" style="appearance:none; -webkit-appearance:none; border:0; background:var(--paper); color:var(--ink); padding:9px 34px 9px 16px; border-radius:99px; font-size:13px; cursor:pointer; outline:none">
+                <sc-for list="{{ srcSel }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+              </select>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; right:14px; pointer-events:none"><path d="M6 9l6 6 6-6"></path></svg>
+            </span>
+            <span style="position:relative; display:inline-flex; align-items:center">
+              <select value="{{ cDir }}" onChange="{{ setCDir }}" aria-label="Направление" style="appearance:none; -webkit-appearance:none; border:0; background:var(--paper); color:var(--ink); padding:9px 34px 9px 16px; border-radius:99px; font-size:13px; cursor:pointer; outline:none">
+                <sc-for list="{{ dirSel }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}">{{ o.l }}</option></sc-for>
+              </select>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; right:14px; pointer-events:none"><path d="M6 9l6 6 6-6"></path></svg>
+            </span>
+            <button onClick="{{ toggleCmp }}" style="display:flex; align-items:center; gap:10px; border:0; background:transparent; cursor:pointer; padding:6px 8px; font-size:13px">
+              <span style="position:relative; width:36px; height:20px; border-radius:99px; background:{{ cmp.swBg }}; transition:background .25s"><span style="position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:{{ cmp.knob }}; transform:{{ cmp.swX }}; transition:transform .25s var(--ease-out)"></span></span>
+              <span>Сравнить с прошлым периодом</span>
+            </button>
+            <sc-if value="{{ cmpOn }}" hint-placeholder-val="{{ true }}">
+              <span style="margin-left:auto; display:flex; gap:16px; font-size:12px; color:var(--ink-3)">
+                <span style="display:flex; align-items:center; gap:6px"><span style="width:10px; height:10px; background:var(--ink)"></span>{{ perName }}</span>
+                <span style="display:flex; align-items:center; gap:6px"><span style="width:10px; height:10px; background:var(--ink-4); opacity:.45"></span>Прошлый период</span>
+              </span>
+            </sc-if>
+          </div>
+
+          <div onMouseLeave="{{ chLeave }}" style="position:relative; margin:32px {{ chMr }} 0 0; height:clamp(200px,22vw,300px)">
+            <span style="position:absolute; left:0; right:0; top:0; border-top:1px dashed var(--line)"></span>
+            <span style="position:absolute; left:0; right:0; top:50%; border-top:1px dashed var(--line)"></span>
+            <span style="position:absolute; left:calc(100% + 10px); top:0; transform:translateY(-50%); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3); white-space:nowrap">{{ yTop }}</span>
+            <span style="position:absolute; left:calc(100% + 10px); top:50%; transform:translateY(-50%); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3); white-space:nowrap">{{ yMid }}</span>
+            <span style="position:absolute; left:calc(100% + 10px); bottom:0; transform:translateY(50%); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3)">0</span>
+            <div style="position:absolute; inset:0; display:flex; align-items:stretch; gap:{{ chGap }}">
+              <sc-for list="{{ bars }}" as="b" hint-placeholder-count="30">
+                <div onMouseEnter="{{ b.hover }}" onClick="{{ b.hover }}" style="flex:1 1 0; min-width:0; position:relative">
+                  <span style="position:absolute; left:0; right:0; bottom:0; height:{{ b.ph }}; background:var(--ink-4); opacity:{{ cmpO }}; transition:height .5s var(--ease-out), opacity .3s"></span>
+                  <span style="position:absolute; left:{{ barIn }}; right:{{ barIn }}; bottom:0; height:{{ b.h }}; background:{{ b.c }}; transition:height .5s var(--ease-out), left .3s, right .3s, background .2s"></span>
+                </div>
+              </sc-for>
+            </div>
+            <span style="position:absolute; left:0; right:0; bottom:0; border-top:1px solid var(--ink-4)"></span>
+            <sc-if value="{{ tipOn }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; top:0; left:{{ tipL }}; transform:{{ tipX }}; pointer-events:none; z-index:3; background:var(--ink); color:var(--paper); padding:12px 14px; display:flex; flex-direction:column; gap:6px; white-space:nowrap">
+                <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; opacity:.7; font-weight:500">{{ tip.t }}</span>
+                <span style="font-size:16px; font-weight:600; letter-spacing:-.02em">{{ tip.v }}</span>
+                <sc-if value="{{ tip.hasN }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px">{{ tip.n }}</span></sc-if>
+                <sc-if value="{{ cmpOn }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; opacity:.7">{{ tip.p }}</span></sc-if>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex; gap:{{ chGap }}; margin:10px {{ chMr }} 0 0">
+            <sc-for list="{{ xl }}" as="x" hint-placeholder-count="30">
+              <span style="flex:1 1 0; min-width:0; display:flex; justify-content:center; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3); white-space:nowrap">{{ x.l }}</span>
+            </sc-for>
+          </div>
+        </section>
+
+        <div style="display:grid; grid-template-columns:{{ triCols }}; gap:12px; margin-top:12px">
+          <section style="background:var(--paper-2); padding:clamp(18px,1.8vw,24px); min-width:0">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:18px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Источники</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">{{ perName }}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:18px">
+              <sc-for list="{{ srcRows }}" as="sr" hint-placeholder-count="4">
+                <div style="display:flex; flex-direction:column; gap:8px">
+                  <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px"><span style="font-weight:500">{{ sr.n }}</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px">{{ sr.pct }}</span></div>
+                  <span style="height:6px; border-radius:99px; background:var(--paper-3); overflow:hidden"><span style="display:block; height:100%; width:{{ sr.w }}; border-radius:99px; background:var(--ink); transition:width .6s var(--ease-out)"></span></span>
+                  <span style="font-size:12px; color:var(--ink-3)">{{ sr.sub }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+          <section style="background:var(--paper-2); padding:clamp(18px,1.8vw,24px); min-width:0">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:18px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Направления</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">{{ perName }}</span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:18px">
+              <sc-for list="{{ dirRows }}" as="dr" hint-placeholder-count="4">
+                <div style="display:flex; flex-direction:column; gap:8px">
+                  <div style="display:flex; justify-content:space-between; gap:12px; font-size:14px"><span style="font-weight:500">{{ dr.n }}</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px">{{ dr.pct }}</span></div>
+                  <span style="height:6px; border-radius:99px; background:var(--paper-3); overflow:hidden"><span style="display:block; height:100%; width:{{ dr.w }}; border-radius:99px; background:var(--ink); transition:width .6s var(--ease-out)"></span></span>
+                  <span style="font-size:12px; color:var(--ink-3)">{{ dr.sub }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+          <section style="background:var(--paper-2); padding:clamp(18px,1.8vw,24px); min-width:0; grid-column:{{ span3 }}">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:10px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Популярные картины</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">{{ perName }}</span>
+            </div>
+            <sc-for list="{{ popRows }}" as="pp" hint-placeholder-count="5">
+              <button onClick="{{ pp.open }}" style="width:calc(100% + 24px); margin:0 -12px; text-align:left; border:0; background:transparent; cursor:pointer; display:grid; grid-template-columns:22px 44px minmax(0,1fr) auto; gap:12px; align-items:center; padding:8px 12px; transition:background .25s" style-hover="background:var(--paper-3)">
+                <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ pp.i }}</span>
+                <span style="display:block; width:44px; height:44px; background:var(--paper-3); overflow:hidden"><img src="{{ pp.img }}" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block"></span>
+                <span style="min-width:0; display:flex; flex-direction:column; gap:3px"><span style="font-size:14px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ pp.t }}</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3)">{{ pp.k }}</span></span>
+                <span style="display:flex; flex-direction:column; align-items:flex-end; gap:3px"><span style="font-size:14px; font-weight:500">{{ pp.q }}</span><span style="font-size:12px; color:var(--ink-3); white-space:nowrap">{{ pp.r }}</span></span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ popEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; padding:12px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:20.24px; color:var(--ink-3)">Нет продаж за период.</p>
+            </sc-if>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isReq }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 24px; margin-bottom:16px">
+          <div style="display:flex; flex-wrap:{{ chipWrap }}; gap:6px; min-width:0; flex:{{ chipFlex }}; overflow-x:auto; scrollbar-width:none; margin:{{ chipM }}; padding:{{ chipP }}">
+            <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+              <sc-for list="{{ reqChips }}" as="ch" hint-placeholder-count="8">
+                <span style="flex:none; display:flex"><x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Chip" label="{{ ch.label }}" count="{{ ch.count }}" active="{{ ch.active }}" on-click="{{ ch.pick }}" hint-size="96px,36px"></x-import></span>
+              </sc-for>
+            </sc-if>
+          </div>
+          <div style="flex:0 1 320px; min-width:200px">
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.TextField" value="{{ rq }}" on-change="{{ setRq }}" placeholder="Имя, телефон, компания, №" size="sm" hint-size="100%,40px"></x-import>
+          </div>
+        </div>
+
+        <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+          <div style="background:var(--paper-2); padding:6px clamp(14px,1.6vw,22px) 10px">
+            <div style="display:grid; grid-template-columns:{{ reqCols }}; gap:16px; padding:12px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">
+              <span>№</span><span>Клиент</span><span style="display:{{ wdFull }}">Состав</span><span style="display:{{ wd }}">Сумма</span><span style="display:{{ wdFull }}">Источник</span><span>Статус</span><span style="display:{{ wdFull }}">Получена</span>
+            </div>
+            <sc-for list="{{ reqRows }}" as="r" hint-placeholder-count="8">
+              <div onClick="{{ r.open }}" style="display:grid; grid-template-columns:{{ reqCols }}; gap:16px; align-items:center; padding:14px 12px; margin:0 -12px; border-top:1px solid var(--line-soft); cursor:pointer; transition:background .25s, padding .3s var(--ease-out)" style-hover="background:var(--paper-3); padding-left:18px">
+                <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ r.no }}</span>
+                <span style="min-width:0; display:flex; flex-direction:column; gap:4px">
+                  <span style="font-size:15px; font-weight:{{ r.fw }}">{{ r.name }}</span>
+                  <span style="font-size:13px; color:var(--ink-3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ r.sub }}</span>
+                </span>
+                <span style="display:{{ wdFull }}; min-width:0; font-size:14px; color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ r.what }}</span>
+                <span style="display:{{ wd }}; font-size:14px; white-space:nowrap">{{ r.sum }}</span>
+                <span style="display:{{ wdFull }}; font-size:13px; color:var(--ink-3)">{{ r.src }}</span>
+                <span><span style="display:inline-flex; align-items:center; gap:7px; padding:6px 11px; background:var(--paper); border-radius:99px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; white-space:nowrap; font-weight:500"><span style="width:6px; height:6px; border-radius:50%; background:{{ r.dot }}"></span>{{ r.st }}</span></span>
+                <span style="display:{{ wdFull }}; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ r.ago }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ reqEmpty }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; padding:28px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:23.92px; color:var(--ink-3)">Ничего не найдено.</p>
+            </sc-if>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-top:20px">
+            <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">{{ rCountL }}</span>
+            <sc-if value="{{ rMore }}" hint-placeholder-val="{{ false }}">
+              <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="secondary" size="md" on-click="{{ moreReq }}" hint-size="170px,44px">Показать ещё</x-import>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isBoard }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid; grid-auto-flow:column; grid-auto-columns:{{ boardCol }}; gap:12px; overflow-x:auto; margin:0 calc(-1 * clamp(16px,3vw,40px)); padding:0 clamp(16px,3vw,40px) 12px; scroll-padding:0 clamp(16px,3vw,40px); scroll-snap-type:{{ boardSnap }}; overscroll-behavior-x:contain; align-items:start">
+            <sc-for list="{{ board }}" as="col" hint-placeholder-count="7">
+              <div onDragOver="{{ col.over }}" onDragLeave="{{ col.leave }}" onDrop="{{ col.drop }}" style="background:{{ col.bg }}; box-shadow:inset 0 0 0 1px {{ col.ring }}; padding:12px; display:flex; flex-direction:column; gap:8px; min-width:0; scroll-snap-align:start; transition:background .2s, box-shadow .2s">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 4px 8px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">
+                  <span style="display:flex; align-items:center; gap:8px"><span style="width:7px; height:7px; border-radius:50%; background:{{ col.dot }}"></span>{{ col.n }}</span>
+                  <span style="color:var(--ink-3)">{{ col.c }}</span>
+                </div>
+                <sc-for list="{{ col.cards }}" as="cd" hint-placeholder-count="2">
+                  <div onClick="{{ cd.open }}" draggable="{{ dnd }}" onDragStart="{{ cd.drag }}" onDragEnd="{{ dragEnd }}" style="background:var(--paper); padding:14px; display:flex; flex-direction:column; gap:8px; cursor:pointer; opacity:{{ cd.op }}; transition:background .25s, opacity .2s" style-hover="background:var(--paper-hover)">
+                    <div style="display:flex; justify-content:space-between; gap:8px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3)"><span>{{ cd.no }}</span><span>{{ cd.ago }}</span></div>
+                    <div style="font-size:15px; font-weight:500">{{ cd.name }}</div>
+                    <div style="font-size:13px; line-height:1.4; color:var(--ink-3)">{{ cd.what }}</div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:4px">
+                      <span style="font-size:13px; white-space:nowrap">{{ cd.sum }}</span>
+                      <sc-if value="{{ cd.hasNext }}" hint-placeholder-val="{{ true }}">
+                        <button onClick="{{ cd.advance }}" style="border:0; background:var(--paper-2); border-radius:99px; padding:6px 11px; font-size:12px; cursor:pointer; white-space:nowrap; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">{{ cd.next }}</button>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ col.empty }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:10px 4px; font-size:13px; color:var(--ink-3)">Пусто</div>
+                </sc-if>
+                <sc-if value="{{ col.hasMore }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ col.more }}" style="border:0; background:transparent; padding:8px 4px; cursor:pointer; text-align:left; font-size:13px; font-weight:500; transition:color .25s" style-hover="color:var(--accent)">{{ col.moreL }}</button>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ isCat }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px 24px; margin-bottom:16px">
+          <div style="display:flex; flex-wrap:{{ chipWrap }}; gap:6px; min-width:0; flex:{{ chipFlex }}; overflow-x:auto; scrollbar-width:none; margin:{{ chipM }}; padding:{{ chipP }}">
+            <sc-for list="{{ catChips }}" as="ch" hint-placeholder-count="6">
+              <span style="flex:none; display:flex"><x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Chip" label="{{ ch.label }}" count="{{ ch.count }}" active="{{ ch.active }}" on-click="{{ ch.pick }}" hint-size="110px,36px"></x-import></span>
+            </sc-for>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; flex:0 1 480px; min-width:240px">
+            <div style="flex:1; min-width:0">
+              <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.TextField" value="{{ cq }}" on-change="{{ setCq }}" placeholder="Название или код KZ-…" size="sm" hint-size="100%,40px"></x-import>
+            </div>
+            <span style="position:relative; display:inline-flex; align-items:center; flex:none">
+              <select value="{{ sort }}" onChange="{{ setSort }}" aria-label="Сортировка" style="appearance:none; -webkit-appearance:none; border:0; background:var(--paper-2); color:var(--ink); padding:9px 34px 9px 16px; border-radius:99px; font-size:13px; cursor:pointer; outline:none">
+                <option value="site">Как на сайте</option>
+                <option value="code">По коду</option>
+                <option value="title">По названию</option>
+                <option value="price">По цене</option>
+              </select>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; right:14px; pointer-events:none"><path d="M6 9l6 6 6-6"></path></svg>
+            </span>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+          <div style="position:sticky; top:{{ selTop }}; z-index:15; display:flex; flex-wrap:wrap; align-items:center; gap:8px 20px; padding:8px 8px 8px 20px; margin-bottom:12px; background:var(--ink); color:var(--paper); border-radius:99px">
+            <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">{{ selL }}</span>
+            <div style="display:flex; flex-wrap:wrap; gap:4px; margin-left:auto">
+              <button onClick="{{ showSel }}" style="border:0; background:transparent; color:inherit; padding:8px 14px; border-radius:99px; cursor:pointer; font-size:14px" style-hover="opacity:.7">Показать на сайте</button>
+              <button onClick="{{ hideSel }}" style="border:0; background:transparent; color:inherit; padding:8px 14px; border-radius:99px; cursor:pointer; font-size:14px" style-hover="opacity:.7">Скрыть</button>
+              <button onClick="{{ delSel }}" style="border:0; background:var(--accent); color:var(--on-accent); padding:8px 16px; border-radius:99px; cursor:pointer; font-size:14px; font-weight:500">Удалить</button>
+              <button onClick="{{ clearSel }}" aria-label="Снять выделение" style="border:0; background:transparent; color:inherit; width:36px; border-radius:50%; cursor:pointer" style-hover="opacity:.7">✕</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:var(--paper-2); padding:6px clamp(14px,1.6vw,22px) 10px">
+          <div style="display:grid; grid-template-columns:{{ catCols }}; gap:16px; align-items:center; padding:12px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">
+            <button onClick="{{ selAll }}" aria-label="Выбрать все" style="width:18px; height:18px; border:1px solid var(--ink-3); background:{{ allBg }}; color:var(--paper); padding:0; display:grid; place-items:center; cursor:pointer; font-size:12px; line-height:1">{{ allChk }}</button>
+            <sc-if value="{{ thumbs }}" hint-placeholder-val="{{ true }}"><span></span></sc-if>
+            <span style="display:{{ wdFull }}">Код</span><span>Картина</span><span style="display:{{ wdFull }}">Направления</span><span style="display:{{ wd }}">Размеры</span><span style="display:{{ wd }}">Цена</span><span>Сайт</span>
+          </div>
+          <sc-for list="{{ catRows }}" as="p" hint-placeholder-count="10">
+            <div onClick="{{ p.open }}" style="display:grid; grid-template-columns:{{ catCols }}; gap:16px; align-items:center; padding:10px 12px; margin:0 -12px; border-top:1px solid var(--line-soft); cursor:pointer; background:{{ p.rowBg }}; transition:background .25s" style-hover="background:var(--paper-3)">
+              <button onClick="{{ p.toggleSel }}" aria-label="Выбрать" style="width:18px; height:18px; border:1px solid var(--ink-3); background:{{ p.chkBg }}; color:var(--paper); padding:0; display:grid; place-items:center; cursor:pointer; font-size:12px; line-height:1">{{ p.chk }}</button>
+              <sc-if value="{{ thumbs }}" hint-placeholder-val="{{ true }}">
+                <span style="display:block; width:100%; aspect-ratio:1; background:var(--paper-3); overflow:hidden"><img src="{{ p.img }}" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block; opacity:{{ p.imgO }}"></span>
+              </sc-if>
+              <span style="display:{{ wdFull }}; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ p.k }}</span>
+              <span style="min-width:0; display:flex; flex-direction:column; gap:4px">
+                <span style="font-size:15px; font-weight:500">{{ p.t }}</span>
+                <span style="font-size:13px; color:var(--ink-3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ p.d }}</span>
+              </span>
+              <span style="display:{{ wdFull }}; font-size:13px; line-height:1.45; color:var(--ink-2)">{{ p.dirs }}</span>
+              <span style="display:{{ wd }}; min-width:0">
+                <span style="display:block; font-size:13px">{{ p.szN }}</span>
+                <span style="display:block; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3); margin-top:4px">{{ p.szR }}</span>
+              </span>
+              <span style="display:{{ wd }}; font-size:14px; white-space:nowrap">{{ p.price }}</span>
+              <button onClick="{{ p.toggle }}" aria-label="Показывать на сайте" style="width:36px; height:20px; border-radius:99px; border:0; background:{{ p.swBg }}; padding:0; position:relative; cursor:pointer; transition:background .25s"><span style="position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:{{ p.knob }}; transform:{{ p.swX }}; transition:transform .25s var(--ease-out)"></span></button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ catEmpty }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0; padding:28px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:23.92px; color:var(--ink-3)">Ничего не найдено.</p>
+          </sc-if>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-top:20px">
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">{{ catCountL }}</span>
+          <sc-if value="{{ hasMore }}" hint-placeholder-val="{{ false }}">
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="secondary" size="md" on-click="{{ more }}" hint-size="170px,44px">Показать ещё</x-import>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPrice }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr)); gap:12px; align-items:start">
+          <section style="background:var(--paper-2); padding:clamp(18px,2vw,28px); min-width:0">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Стандартные размеры</h2>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ sizesN }}</span>
+            </div>
+            <p style="margin:10px 0 14px; font-size:14px; line-height:1.6; color:var(--ink-2); text-wrap:pretty">Новая цена применяется ко всем картинам этого размера с текущей ценой. Нажмите Enter или уйдите из поля — сохранится сразу.</p>
+            <div style="display:grid; grid-template-columns:{{ szCols }}; gap:16px; padding:10px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">
+              <span>Размер</span><span style="display:{{ szCntD }}">Картин</span><span style="text-align:right">Цена, сум</span>
+            </div>
+            <sc-for list="{{ sizes }}" as="z" hint-placeholder-count="10">
+              <div style="display:grid; grid-template-columns:{{ szCols }}; gap:16px; align-items:center; padding:8px 0; border-top:1px solid var(--line-soft)">
+                <span style="min-width:0; font-size:15px; font-weight:500">{{ z.label }}<span style="display:{{ szSubD }}; margin-top:3px; font-size:12px; font-weight:400; color:var(--ink-3)">{{ z.n }}</span></span>
+                <span style="display:{{ szCntD }}; font-size:13px; color:var(--ink-3)">{{ z.n }}<span style="display:block; margin-top:2px; font-size:12px">{{ z.others }}</span></span>
+                <input value="{{ z.val }}" onChange="{{ z.setV }}" onBlur="{{ z.commit }}" onKeyDown="{{ z.onKey }}" inputmode="numeric" aria-label="Цена" style="width:100%; border:0; background:var(--paper); padding:9px 12px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:14px; outline:none; border-radius:99px; text-align:right; box-shadow:inset 0 0 0 1px transparent; transition:box-shadow .2s" style-focus="box-shadow:inset 0 0 0 1px var(--accent)">
+              </div>
+            </sc-for>
+          </section>
+          <section style="background:var(--paper-2); padding:clamp(18px,2vw,28px); display:flex; flex-direction:column; gap:26px; position:{{ pctPos }}; top:24px; min-width:0">
+            <div>
+              <h2 style="margin:0; font-weight:600; font-size:20px; letter-spacing:-.03em">Изменить все цены</h2>
+              <p style="margin:12px 0 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:22.08px; line-height:1.25; text-wrap:pretty">Когда дорожает холст или багет — поднимите цены сразу во всём каталоге.</p>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Изменение</span>
+              <div style="display:flex; align-items:baseline; gap:10px">
+                <input value="{{ pct }}" onChange="{{ setPct }}" inputmode="numeric" aria-label="Процент" style="width:130px; border:0; border-bottom:1px solid var(--ink-3); background:transparent; padding:4px 0; font-weight:600; font-size:56px; line-height:1; letter-spacing:-.05em; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)">
+                <span style="font-weight:600; font-size:40px; letter-spacing:-.05em">%</span>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px">
+                <sc-for list="{{ pctChips }}" as="pc" hint-placeholder-count="5">
+                  <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Chip" label="{{ pc.label }}" active="{{ pc.active }}" on-click="{{ pc.pick }}" hint-size="64px,36px"></x-import>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Округлять до</span>
+              <div style="display:flex; flex-wrap:wrap; gap:6px">
+                <sc-for list="{{ roundChips }}" as="rc" hint-placeholder-count="3">
+                  <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Chip" label="{{ rc.label }}" active="{{ rc.active }}" on-click="{{ rc.pick }}" hint-size="80px,36px"></x-import>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:var(--paper); padding:6px 16px">
+              <sc-for list="{{ preview }}" as="pv" hint-placeholder-count="4">
+                <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:10px 0; font-size:14px">
+                  <span>{{ pv.label }}</span>
+                  <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; white-space:nowrap"><span style="color:var(--ink-3)">{{ pv.from }}</span> → {{ pv.to }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="lg" full-width="{{ true }}" on-click="{{ applyPct }}" hint-size="100%,52px">Применить ко всем картинам</x-import>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isRev }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0 0 16px; font-size:14px; color:var(--ink-3)">Порядок — как в слайдере на главной. Скрытые отзывы на сайте не показываются.</p>
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <sc-for list="{{ revRows }}" as="rv" hint-placeholder-count="5">
+            <div style="background:var(--paper-2); padding:clamp(16px,1.8vw,24px); display:grid; grid-template-columns:{{ revCols }}; gap:12px 20px; align-items:start; opacity:{{ rv.rowO }}; transition:opacity .3s">
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; color:var(--accent); padding-top:8px">{{ rv.i }}</span>
+              <div style="min-width:0; display:flex; flex-direction:column; gap:8px">
+                <textarea value="{{ rv.q }}" onChange="{{ rv.setQ }}" rows="2" placeholder="Текст отзыва" aria-label="Текст отзыва" style="width:100%; border:0; background:transparent; padding:4px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(20.24px,1.84vw,25.76px); line-height:1.25; resize:vertical; outline:none; border-radius:0"></textarea>
+                <input value="{{ rv.n }}" onChange="{{ rv.setN }}" placeholder="Имя клиента" aria-label="Имя клиента" style="width:100%; max-width:360px; border:0; background:transparent; padding:4px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; outline:none; border-radius:0; font-weight:500">
+              </div>
+              <div style="grid-column:{{ revActCol }}; display:flex; align-items:center; justify-content:flex-end; gap:6px; padding-top:4px">
+                <button onClick="{{ rv.toggle }}" aria-label="Показывать на сайте" title="Показывать на сайте" style="width:36px; height:20px; border-radius:99px; border:0; background:{{ rv.swBg }}; padding:0; position:relative; cursor:pointer; margin-right:8px; transition:background .25s"><span style="position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:{{ rv.knob }}; transform:{{ rv.swX }}; transition:transform .25s var(--ease-out)"></span></button>
+                <button onClick="{{ rv.up }}" aria-label="Выше" style="width:36px; height:36px; border:0; border-radius:50%; background:var(--paper); cursor:pointer; opacity:{{ rv.upO }}; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">↑</button>
+                <button onClick="{{ rv.down }}" aria-label="Ниже" style="width:36px; height:36px; border:0; border-radius:50%; background:var(--paper); cursor:pointer; opacity:{{ rv.downO }}; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">↓</button>
+                <button onClick="{{ rv.rm }}" aria-label="Удалить" style="width:36px; height:36px; border:0; border-radius:50%; background:var(--paper); cursor:pointer; display:grid; place-items:center; transition:background .25s, color .25s" style-hover="background:var(--accent); color:var(--on-accent)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M8 6V4h8v2"></path></svg></button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <div onClick="{{ closeDrawer }}" style="position:fixed; inset:0; background:var(--scrim); opacity:{{ scrimO }}; pointer-events:{{ scrimPE }}; transition:opacity .45s var(--ease-out); z-index:40"></div>
+  <aside style="position:fixed; top:0; right:0; bottom:0; width:min(620px,100vw); background:var(--paper); z-index:41; transform:{{ drawerX }}; transition:transform .45s var(--ease-out); display:flex; flex-direction:column">
+
+    <sc-if value="{{ isReqD }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px clamp(20px,3vw,32px) 8px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">{{ d.head }}</span>
+        <button onClick="{{ closeDrawer }}" aria-label="Закрыть" style="width:40px; height:40px; border:0; border-radius:50%; background:var(--paper-2); cursor:pointer; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">✕</button>
+      </div>
+      <div style="flex:1; overflow:auto; padding:8px clamp(20px,3vw,32px) 40px">
+        <h2 style="margin:0; font-weight:600; font-size:clamp(34px,4vw,48px); line-height:.92; letter-spacing:-.055em">{{ d.title }}</h2>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:22px">
+          <sc-for list="{{ d.steps }}" as="sp" hint-placeholder-count="6">
+            <button onClick="{{ sp.pick }}" style="border:0; background:{{ sp.bg }}; color:{{ sp.fg }}; border-radius:99px; padding:8px 13px; cursor:pointer; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; transition:opacity .25s; font-weight:500" style-hover="opacity:.7">{{ sp.n }}</button>
+          </sc-for>
+        </div>
+        <button onClick="{{ d.toggleCancel }}" style="margin-top:12px; border:0; background:transparent; padding:4px 0; cursor:pointer; font-size:13px; color:var(--ink-3); text-decoration:underline; text-underline-offset:3px" style-hover="color:var(--accent)">{{ d.cancelL }}</button>
+
+        <div style="margin:36px 0 14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Клиент</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:18px 24px">
+          <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Имя</span><input value="{{ d.name }}" onChange="{{ d.setName }}" placeholder="Как обращаться" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-size:16px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+          <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Компания</span><input value="{{ d.company }}" onChange="{{ d.setCompany }}" placeholder="Для B2B-заказов" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-size:16px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+          <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Телефон</span><input value="{{ d.phone }}" onChange="{{ d.setPhone }}" inputmode="tel" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:15px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+          <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Источник</span>
+            <select value="{{ d.src }}" onChange="{{ d.setSrc }}" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:7px 0 10px; font-size:16px; cursor:pointer; outline:none; border-radius:0">
+              <sc-for list="{{ srcOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+            </select>
+          </label>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:18px">
+          <a href="{{ d.tel }}" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:99px; background:var(--ink); color:var(--paper); text-decoration:none; font-size:14px; font-weight:500; transition:background .25s, color .25s" style-hover="background:var(--accent); color:var(--on-accent)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path></svg>Позвонить</a>
+          <a href="{{ d.tg }}" target="_blank" style="display:inline-flex; align-items:center; padding:10px 18px; border-radius:99px; background:var(--paper-2); text-decoration:none; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">Telegram</a>
+          <a href="{{ d.wa }}" target="_blank" style="display:inline-flex; align-items:center; padding:10px 18px; border-radius:99px; background:var(--paper-2); text-decoration:none; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">WhatsApp</a>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; gap:16px; margin:40px 0 14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500"><span>Состав заказа</span><span>{{ d.itemsN }}</span></div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <sc-for list="{{ d.items }}" as="it" hint-placeholder-count="2">
+            <div style="display:grid; grid-template-columns:64px minmax(0,1fr); gap:16px; padding:14px; background:var(--paper-2)">
+              <span style="display:block; width:64px; height:64px; background:var(--paper-3); overflow:hidden"><img src="{{ it.img }}" alt="" style="width:100%; height:100%; object-fit:cover; display:block"></span>
+              <div style="min-width:0; display:flex; flex-direction:column; gap:10px">
+                <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start">
+                  <div style="min-width:0"><div style="font-size:15px; font-weight:500">{{ it.t }}</div><div style="margin-top:3px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3)">{{ it.k }}</div></div>
+                  <button onClick="{{ it.rm }}" aria-label="Убрать" style="flex:none; border:0; background:transparent; cursor:pointer; color:var(--ink-3); font-size:13px; padding:4px" style-hover="color:var(--accent)">✕</button>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px">
+                  <select value="{{ it.size }}" onChange="{{ it.setSize }}" aria-label="Размер" style="border:0; background:var(--paper); padding:6px 10px; border-radius:99px; font-size:13px; cursor:pointer; outline:none; max-width:100%">
+                    <sc-for list="{{ it.sizeOpts }}" as="so" hint-placeholder-count="3"><option value="{{ so.v }}">{{ so.l }}</option></sc-for>
+                  </select>
+                  <select value="{{ it.frame }}" onChange="{{ it.setFrame }}" aria-label="Оформление" style="border:0; background:var(--paper); padding:6px 10px; border-radius:99px; font-size:13px; cursor:pointer; outline:none; max-width:100%">
+                    <sc-for list="{{ frames }}" as="fo" hint-placeholder-count="3"><option value="{{ fo }}">{{ fo }}</option></sc-for>
+                  </select>
+                  <div style="display:flex; align-items:center; background:var(--paper); border-radius:99px">
+                    <button onClick="{{ it.dec }}" aria-label="Меньше" style="width:30px; height:30px; border:0; background:transparent; cursor:pointer; font-size:15px">−</button>
+                    <span style="min-width:20px; text-align:center; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px">{{ it.q }}</span>
+                    <button onClick="{{ it.inc }}" aria-label="Больше" style="width:30px; height:30px; border:0; background:transparent; cursor:pointer; font-size:15px">+</button>
+                  </div>
+                  <span style="margin-left:auto; font-size:14px; font-weight:500; white-space:nowrap">{{ it.line }}</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ d.picking }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:8px; padding:16px; background:var(--paper-2); display:flex; flex-direction:column; gap:6px">
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.TextField" value="{{ d.pq }}" on-change="{{ d.setPq }}" placeholder="Найти картину по названию или коду" size="sm" hint-size="100%,40px"></x-import>
+            <sc-for list="{{ d.results }}" as="pr" hint-placeholder-count="4">
+              <button onClick="{{ pr.add }}" style="display:grid; grid-template-columns:40px minmax(0,1fr) auto; gap:12px; align-items:center; width:100%; text-align:left; border:0; background:transparent; padding:8px; cursor:pointer; transition:background .25s" style-hover="background:var(--paper-3)">
+                <span style="display:block; width:40px; height:40px; background:var(--paper-3); overflow:hidden"><img src="{{ pr.img }}" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block"></span>
+                <span style="min-width:0; font-size:14px">{{ pr.t }}<span style="display:block; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3); margin-top:2px">{{ pr.k }}</span></span>
+                <span style="font-size:13px; color:var(--ink-2); white-space:nowrap">{{ pr.price }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <button onClick="{{ d.togglePick }}" style="margin-top:10px; border:0; background:var(--paper-2); border-radius:99px; padding:10px 18px; cursor:pointer; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">{{ d.pickL }}</button>
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-top:24px">
+          <div><div style="font-size:15px; font-weight:500">Итого</div><div style="margin-top:4px; font-size:13px; color:var(--ink-3)">{{ d.totalNote }}</div></div>
+          <div style="font-weight:600; font-size:32px; letter-spacing:-.05em; white-space:nowrap">{{ d.total }}</div>
+        </div>
+
+        <div style="margin:40px 0 14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Детали</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:18px 24px">
+          <label style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Срок готовности</span><input type="date" value="{{ d.due }}" onChange="{{ d.setDue }}" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-size:15px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+          <div style="display:flex; flex-direction:column; gap:6px"><span style="font-size:13px; color:var(--ink-3)">Производство</span><span style="padding:6px 0 10px; font-size:15px; color:var(--ink-2)">3–7 дней после утверждения макета</span></div>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:18px"><span style="font-size:13px; color:var(--ink-3)">Комментарий клиента</span>
+          <textarea value="{{ d.comment }}" onChange="{{ d.setComment }}" rows="2" placeholder="—" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:20.24px; line-height:1.3; outline:none; resize:vertical; border-radius:0" style-focus="border-bottom-color:var(--accent)"></textarea>
+        </label>
+
+        <div style="display:flex; justify-content:space-between; gap:16px; margin:40px 0 14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500"><span>Заметки менеджера</span><span>{{ d.notesN }}</span></div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+          <sc-for list="{{ d.notes }}" as="nt" hint-placeholder-count="1">
+            <div style="display:flex; flex-direction:column; gap:4px; padding:12px 14px; background:var(--paper-2)">
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--ink-3)">{{ nt.when }}</span>
+              <span style="font-size:14px; line-height:1.55">{{ nt.t }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex; gap:12px; align-items:flex-end; margin-top:12px">
+          <textarea value="{{ noteDraft }}" onChange="{{ setNote }}" rows="1" placeholder="Например: отправили макет в Telegram" aria-label="Новая заметка" style="flex:1; min-width:0; border:0; border-bottom:1px solid var(--line); background:transparent; padding:8px 0 10px; font-size:15px; outline:none; resize:vertical; border-radius:0" style-focus="border-bottom-color:var(--accent)"></textarea>
+          <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="secondary" size="sm" on-click="{{ addNote }}" hint-size="110px,36px">Добавить</x-import>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px clamp(20px,3vw,32px); background:var(--paper-2)">
+        <button onClick="{{ d.del }}" style="border:0; background:transparent; cursor:pointer; font-size:14px; color:var(--ink-3); display:flex; align-items:center; gap:8px; padding:8px 0" style-hover="color:var(--accent)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M8 6V4h8v2"></path></svg>Удалить заявку</button>
+        <div style="display:flex; align-items:center; gap:14px">
+          <span style="font-size:12px; color:var(--ink-3)">Сохраняется сразу</span>
+          <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="md" on-click="{{ closeDrawer }}" hint-size="100px,44px">Готово</x-import>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProdD }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px clamp(20px,3vw,32px) 8px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">{{ e.head }}</span>
+        <button onClick="{{ closeDrawer }}" aria-label="Закрыть" style="width:40px; height:40px; border:0; border-radius:50%; background:var(--paper-2); cursor:pointer; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">✕</button>
+      </div>
+      <div style="flex:1; overflow:auto; padding:8px clamp(20px,3vw,32px) 40px">
+        <div style="aspect-ratio:4/3; background:var(--paper-2); overflow:hidden; display:grid; place-items:center">
+          <sc-if value="{{ e.hasImg }}" hint-placeholder-val="{{ true }}"><img src="{{ e.prev }}" alt="" style="width:100%; height:100%; object-fit:cover; display:block"></sc-if>
+          <sc-if value="{{ e.noImg }}" hint-placeholder-val="{{ false }}"><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--ink-3); letter-spacing:.1em; font-weight:500">Нет изображения</span></sc-if>
+        </div>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:16px"><span style="font-size:13px; color:var(--ink-3)">Изображение — путь в uploads или ссылка</span><input value="{{ e.img }}" onChange="{{ e.setImg }}" placeholder="2024/05/kartina.jpg" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:28px"><span style="font-size:13px; color:var(--ink-3)">Название</span><input value="{{ e.t }}" onChange="{{ e.setT }}" placeholder="Название картины" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:4px 0 10px; font-weight:600; font-size:32px; letter-spacing:-.045em; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:20px"><span style="font-size:13px; color:var(--ink-3)">Описание</span><textarea value="{{ e.d }}" onChange="{{ e.setD }}" rows="3" placeholder="Пара фраз о картине" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-size:15px; line-height:1.6; outline:none; resize:vertical; border-radius:0" style-focus="border-bottom-color:var(--accent)"></textarea></label>
+
+        <div style="margin:36px 0 14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Направления</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px">
+          <sc-for list="{{ e.cats }}" as="ec" hint-placeholder-count="4">
+            <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Chip" label="{{ ec.label }}" active="{{ ec.active }}" on-click="{{ ec.pick }}" hint-size="110px,36px"></x-import>
+          </sc-for>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; gap:16px; margin:36px 0 12px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500"><span>Размеры и цены</span><span>см · сум</span></div>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <sc-for list="{{ e.sizes }}" as="es" hint-placeholder-count="3">
+            <div style="display:grid; grid-template-columns:64px 14px 64px minmax(0,1fr) 28px; gap:8px; align-items:center; padding:6px 10px; background:var(--paper-2)">
+              <input value="{{ es.w }}" onChange="{{ es.setW }}" inputmode="numeric" placeholder="ш" aria-label="Ширина" style="width:100%; border:0; background:var(--paper); padding:7px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:14px; outline:none; text-align:center; border-radius:99px">
+              <span style="text-align:center; color:var(--ink-3)">×</span>
+              <input value="{{ es.h }}" onChange="{{ es.setH }}" inputmode="numeric" placeholder="в" aria-label="Высота" style="width:100%; border:0; background:var(--paper); padding:7px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:14px; outline:none; text-align:center; border-radius:99px">
+              <input value="{{ es.p }}" onChange="{{ es.setP }}" inputmode="numeric" placeholder="по запросу" aria-label="Цена" style="width:100%; border:0; background:var(--paper); padding:7px 12px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:14px; outline:none; text-align:right; border-radius:99px">
+              <button onClick="{{ es.rm }}" aria-label="Удалить размер" style="border:0; background:transparent; cursor:pointer; color:var(--ink-3); font-size:13px" style-hover="color:var(--accent)">✕</button>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ e.addSize }}" style="margin-top:10px; border:0; background:var(--paper-2); border-radius:99px; padding:10px 18px; cursor:pointer; font-size:14px; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">+ Размер</button>
+        <label style="display:flex; flex-direction:column; gap:6px; margin-top:24px"><span style="font-size:13px; color:var(--ink-3)">Размеры по запросу — через запятую</span><input value="{{ e.xs }}" onChange="{{ e.setXs }}" placeholder="100/140 см, 35/35 см" style="width:100%; border:0; border-bottom:1px solid var(--line); background:transparent; padding:6px 0 10px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; outline:none; border-radius:0" style-focus="border-bottom-color:var(--accent)"></label>
+
+        <button onClick="{{ e.toggleH }}" style="width:100%; margin-top:32px; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; border:0; background:var(--paper-2); cursor:pointer; text-align:left">
+          <span><span style="display:block; font-size:15px; font-weight:500">Показывать на сайте</span><span style="display:block; margin-top:4px; font-size:13px; color:var(--ink-3)">Скрытая картина остаётся в админке</span></span>
+          <span style="flex:none; position:relative; width:36px; height:20px; border-radius:99px; background:{{ e.swBg }}; transition:background .25s"><span style="position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:{{ e.knob }}; transform:{{ e.swX }}; transition:transform .25s var(--ease-out)"></span></span>
+        </button>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:14px clamp(20px,3vw,32px); background:var(--paper-2)">
+        <div style="display:flex; align-items:center; gap:18px">
+          <sc-if value="{{ e.canDel }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ e.del }}" style="border:0; background:transparent; cursor:pointer; font-size:14px; color:var(--ink-3); display:flex; align-items:center; gap:8px; padding:8px 0" style-hover="color:var(--accent)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M8 6V4h8v2"></path></svg>Удалить</button>
+            <button onClick="{{ e.dup }}" style="border:0; background:transparent; cursor:pointer; font-size:14px; color:var(--ink-3); padding:8px 0" style-hover="color:var(--ink)">Дублировать</button>
+          </sc-if>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px">
+          <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="ghost" size="md" on-click="{{ closeDrawer }}" hint-size="90px,44px">Отмена</x-import>
+          <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="md" on-click="{{ saveProd }}" hint-size="120px,44px">Сохранить</x-import>
+        </div>
+      </div>
+    </sc-if>
+  </aside>
+
+  <div style="position:fixed; left:50%; bottom:{{ toastB }}; z-index:60; transform:{{ toastY }}; opacity:{{ toastO }}; pointer-events:{{ toastPE }}; transition:opacity .35s var(--ease-out), transform .35s var(--ease-out); display:flex; align-items:center; gap:16px; padding:10px 10px 10px 20px; background:var(--ink); color:var(--paper); border-radius:99px; font-size:14px; max-width:calc(100vw - 32px)">
+    <span>{{ toastT }}</span>
+    <sc-if value="{{ hasUndo }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ undo }}" style="border:0; background:var(--accent); color:var(--on-accent); padding:7px 14px; border-radius:99px; cursor:pointer; font-size:13px; font-weight:500">Вернуть</button>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// Admin settings (fixed former tweaks) — change values here.
+const CONFIG = { accent: '#E0502E', showThumbs: true, requestsView: 'list', demoPassword: 'kuznets' };
+const BASE = 'https://kuznets.uz/wp-content/uploads/';
+const CATS = [{ k: 'home', n: 'Для дома', s: 'Дом' }, { k: 'kids', n: 'Для детской', s: 'Детская' }, { k: 'office', n: 'Для офиса', s: 'Офис' }, { k: 'public', n: 'Общественные места', s: 'Общ. места' }];
+const ST = [{ k: 'new', n: 'Новая' }, { k: 'contact', n: 'Связались' }, { k: 'mockup', n: 'Макет' }, { k: 'prod', n: 'Производство' }, { k: 'ship', n: 'Доставка' }, { k: 'done', n: 'Выполнена' }, { k: 'cancel', n: 'Отменена' }];
+const STN = Object.fromEntries(ST.map(s => [s.k, s.n]));
+const ACTIVE = ['contact', 'mockup', 'prod', 'ship'];
+const SRC = ['Сайт', 'Instagram', 'Telegram', 'Телефон'];
+const FR = ['Холст на подрамнике', 'Холст с подрамником + багет', 'Бумага в рамке под стеклом'];
+const PER = { '30d': '30 дней', '90d': '3 месяца', '12m': '12 месяцев' };
+const REVIEWS_DEF = [
+  { n: 'Arina Zemskova', q: 'Реальное спасибо за реально крутые и креативные картины! Работаете чётко и качественно, подобрали к нашему интерьеру именно то, что мы хотели видеть.' },
+  { n: 'Evgeniya Lyashko', q: 'Настоящие профессионалы! Подобрали к нашему стилю лучше, чем мы себе это представляли. Качественно, быстро, ещё и с доставкой!' },
+  { n: 'Дилшод Алимханов', q: 'Индивидуальный подход и высокое качество работы! Респект! Буду ещё заказывать!' },
+  { n: 'Sergey Shevchenko', q: 'Спасибо за крутую картину в офис!' },
+  { n: 'Дилафруз Бегимкулова', q: 'Молодцы! Индивидуальный подход и отличный сервис. Удачи вам.' },
+  { n: 'Nataliya Bahramova', q: 'Спасибо большое за работу! Всё очень супер! Ребята, вы молодцы!' },
+  { n: 'Максим и Алеся', q: 'Спасибо вам за такую красоту!' },
+  { n: 'Max Nam', q: 'Картина круче, чем на фото! Не жалею, что заказал именно у вас.' },
+  { n: 'Alla Muxaramova', q: 'Это здорово!' }
+];
+const NAMES = ['Дилноза К.', 'Азиз Р.', 'Ойбек Н.', 'Екатерина Л.', 'Тимур Ю.', 'Шахноза А.', 'Малика Т.', 'Шахзод А.', 'Ольга П.', 'Жасур Х.', 'Нигора И.', 'Руслан К.', 'Камола С.', 'Бехзод М.', 'Анна В.', 'Санжар Т.', 'Лола Р.', 'Фаррух Д.', 'Мария С.', 'Улугбек А.', 'Зарина Х.', 'Дмитрий О.', 'Севара Н.', 'Алишер Б.', 'Гульнора Ш.', 'Сардор И.', 'Наталья Г.', 'Отабек Ю.', 'Мадина К.', 'Игорь Л.'];
+const COMPANIES = ['Safia', 'Kapitalbank', 'NBU', 'Anorbank', 'Click', 'Beanberry', 'Humo Arena', 'Pepsi', 'Red Bull', 'ADM Global'];
+const H = 36e5, D = 24 * H;
+const num = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009');
+const fmtP = n => n == null ? 'по запросу' : num(n) + ' сум';
+const dec1 = v => (Math.round(v * 10) / 10).toString().replace('.', ',');
+const fmtM = n => n >= 1e6 ? dec1(n / 1e6) + ' млн' : num(n);
+const fmtS = n => n >= 1e6 ? dec1(n / 1e6) + ' млн' : n >= 1e3 ? Math.round(n / 1e3) + ' тыс' : num(n);
+const src = img => !img ? '' : /^(https?:|data:|assets\/)/.test(img) ? img : BASE + img;
+const dshort = t => new Date(t).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '');
+const dstr = t => new Date(t).getFullYear() === new Date().getFullYear() ? dshort(t) : dshort(t) + ' ' + new Date(t).getFullYear();
+const hm = t => new Date(t).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+const ago = t => { const m = (Date.now() - t) / 6e4; if (m < 60) return Math.max(1, Math.round(m)) + ' мин назад'; if (m < 1440) return Math.round(m / 60) + ' ч назад'; if (m < 2880) return 'вчера'; return dstr(t); };
+const isoDay = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const plural = (n, f) => { const a = n % 10, b = n % 100; return n + ' ' + (a === 1 && b !== 11 ? f[0] : a >= 2 && a <= 4 && (b < 10 || b >= 20) ? f[1] : f[2]); };
+const word = (n, f) => plural(n, f).replace(/^\d+ /, '');
+const ORD = ['заказ', 'заказа', 'заказов'], PIC = ['картина', 'картины', 'картин'], REQ = ['заявка', 'заявки', 'заявок'];
+const LS = { get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+const reqTotal = r => { let t = 0, q = false; (r.items || []).forEach(i => { if (i.p == null) q = true; else t += i.p * (i.q || 1); }); return { t, q }; };
+const digits = s => String(s || '').replace(/\D/g, '');
+const minP = p => { const a = p.s.map(z => z.p).filter(v => v != null); return a.length ? Math.min(...a) : null; };
+const on3 = on => ({ swBg: on ? 'var(--ink)' : 'var(--ink-4)', knob: 'var(--paper)', swX: on ? 'translateX(16px)' : 'none' });
+const niceMax = (v, no25) => { if (!(v > 0)) return 1; const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e; const m = f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 && !no25 ? 2.5 : f <= 5 ? 5 : 10; return m * e; };
+const rng = a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const readAuth = () => { try { return JSON.parse(localStorage.getItem('kz_admin_auth') || sessionStorage.getItem('kz_admin_auth') || 'null'); } catch (e) { return null; } };
+const ico = b => 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' + b + '</svg>') + '")';
+const ICO = {
+  dash: ico('<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>'),
+  req: ico('<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'),
+  cat: ico('<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>'),
+  price: ico('<path d="M12.59 2.59A2 2 0 0 0 11.17 2H4a2 2 0 0 0-2 2v7.17a2 2 0 0 0 .59 1.42l8.7 8.7a2.43 2.43 0 0 0 3.42 0l6.58-6.58a2.43 2.43 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1" fill="black"/>'),
+  rev: ico('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 12a2 2 0 0 0 2-2V8H8"/><path d="M14 12a2 2 0 0 0 2-2V8h-2"/>')
+};
+
+function buckets(per, shift) {
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const Y = t.getFullYear(), M = t.getMonth(), Dd = t.getDate(), out = [];
+  if (per === '30d') {
+    for (let i = 29; i >= 0; i--) { const a = new Date(Y, M, Dd - i - shift * 30), b = new Date(Y, M, Dd - i - shift * 30 + 1); out.push({ a: +a, b: +b, lab: i % 5 === 0 ? dshort(a) : '', tip: a.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'long' }) }); }
+  } else if (per === '90d') {
+    const mon = Dd - ((t.getDay() + 6) % 7);
+    for (let i = 12; i >= 0; i--) { const off = mon - 7 * (i + shift * 13), a = new Date(Y, M, off), b = new Date(Y, M, off + 7); out.push({ a: +a, b: +b, lab: i % 2 === 0 ? dshort(a) : '', tip: dshort(a) + ' — ' + dshort(new Date(Y, M, off + 6)) }); }
+  } else {
+    for (let i = 11; i >= 0; i--) { const a = new Date(Y, M - i - shift * 12, 1), b = new Date(Y, M - i - shift * 12 + 1, 1); out.push({ a: +a, b: +b, lab: a.toLocaleDateString('ru-RU', { month: 'short' }).replace('.', ''), tip: a.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' }).replace(/\s?г\.?$/, '') }); }
+  }
+  return out;
+}
+
+function seed(products) {
+  const now = Date.now();
+  const rows = [
+    ['new', .6, 'Дилноза Каримова', '', '+998 90 123 45 67', 'Сайт', [[0, 1, 0, 1]], 'Хочу в спальню, стены бежевые. Можно сначала посмотреть макет?', null, []],
+    ['new', 3, 'Азиз Рахимов', '', '+998 93 555 12 09', 'Instagram', [[5, 2, 1, 1]], '', null, []],
+    ['new', 27, 'Ойбек Назаров', 'Safia', '+998 97 700 40 40', 'Телефон', [[12, 0, 0, 6], [13, 0, 0, 6]], 'Новый филиал на Чиланзаре — 12 картин в зал до конца месяца', null, []],
+    ['contact', 30, 'Екатерина Ли', '', '+998 99 812 33 10', 'Сайт', [[20, 1, 2, 2]], 'Подарок на новоселье', null, ['Перезвонили, ждёт фото стены']],
+    ['mockup', 50, 'Тимур Юсупов', '', '+998 90 980 77 21', 'Telegram', [[33, 0, 0, 1]], 'С нашей семейной фотографией в стиле картины', 6, ['Отправили макет в Telegram']],
+    ['mockup', 75, 'Шахноза Алиева', 'Kapitalbank', '+998 71 200 15 15', 'Телефон', [[40, 2, 1, 4]], 'Переговорные, 3 этаж', 8, ['Согласуют макет с маркетингом']],
+    ['prod', 98, 'Малика Турсунова', '', '+998 94 301 66 02', 'Сайт', [[52, 1, 0, 1], [53, 1, 0, 1]], '', 4, ['Макет утверждён']],
+    ['prod', 130, 'Шахзод Абдуллаев', '', '+998 91 444 08 18', 'Instagram', [[61, 0, 0, 3]], 'Детская, мальчик 5 лет', 3, []],
+    ['ship', 170, 'Ольга Пак', '', '+998 90 355 90 03', 'Сайт', [[70, 1, 1, 1]], 'Доставка после 18:00', 7, ['Курьер выехал']],
+    ['cancel', 330, 'Руслан Ким', '', '+998 99 004 71 17', 'Instagram', [[100, 1, 0, 1]], '', null, ['Передумал, вернётся весной']]
+  ];
+  return rows.map(([status, h, name, company, phone, srcN, items, comment, dueIn, notes], i) => {
+    const at = now - h * H;
+    return { id: 'seed' + i, at, name, company, phone, src: srcN, status, comment, due: dueIn ? isoDay(at + dueIn * D) : '',
+      notes: notes.map((t, j) => ({ at: at + (j + 1) * 2 * H, t })),
+      items: items.map(([pi, si, fi, q]) => { const p = products[pi % products.length]; const z = p.s[si] || p.s[0]; return { k: p.k, t: p.t, img: p.img, w: z ? z.w : null, h: z ? z.h : null, p: z ? z.p : null, frame: FR[fi], q }; }) };
+  });
+}
+
+function archive(products) {
+  const r = rng(20261012), out = [], t0 = new Date(); t0.setHours(0, 0, 0, 0);
+  const priced = products.filter(p => p.s.some(z => z.p != null));
+  if (!priced.length) return out;
+  const SEAS = [1.0, 1.25, 1.35, 1.0, .95, .8, .75, .8, .95, 1.05, 1.2, 1.6];
+  for (let d = 730; d >= 2; d--) {
+    const day = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() - d), wd = day.getDay();
+    const lam = .95 * SEAS[day.getMonth()] * (.6 + .4 * (1 - d / 730)) * (wd === 0 ? .6 : wd === 6 ? 1.15 : 1);
+    let n = -1, p = 1; const L = Math.exp(-lam); do { n++; p *= r(); } while (p > L);
+    for (let j = 0; j < n; j++) {
+      const at = +day + (9 + r() * 11) * H, b2b = r() < .06, items = [], cnt = r() < .18 ? 2 : 1;
+      for (let m = 0; m < cnt; m++) {
+        const pr = priced[Math.floor(Math.pow(r(), 1.8) * priced.length)], zs = pr.s.filter(z => z.p != null);
+        const z = zs[Math.min(zs.length - 1, Math.floor(Math.pow(r(), 1.4) * zs.length))];
+        items.push({ k: pr.k, t: pr.t, img: pr.img, w: z.w, h: z.h, p: z.p, frame: FR[r() < .7 ? 0 : r() < .6 ? 1 : 2], q: b2b ? 3 + Math.floor(r() * 8) : r() < .1 ? 2 : 1 });
+      }
+      const sr = r(), ph = ['90', '91', '93', '94', '97', '99'][Math.floor(r() * 6)];
+      out.push({ id: 'arc' + out.length, at, name: NAMES[Math.floor(r() * NAMES.length)], company: b2b ? COMPANIES[Math.floor(r() * COMPANIES.length)] : '',
+        phone: '+998 ' + ph + ' ' + (100 + Math.floor(r() * 900)) + ' ' + (10 + Math.floor(r() * 90)) + ' ' + (10 + Math.floor(r() * 90)),
+        src: b2b ? 'Телефон' : sr < .42 ? 'Сайт' : sr < .72 ? 'Instagram' : sr < .86 ? 'Telegram' : 'Телефон',
+        status: r() < .09 ? 'cancel' : 'done', comment: '', due: '', notes: [], items });
+    }
+  }
+  return out;
+}
+
+class Component extends DCLogic {
+  state = { ready: false, tab: 'dash', w: 1280, theme: 'light', products: [], requests: [], reviews: [], reqView: null,
+    rf: 'all', rq: '', rLimit: 50, cf: 'all', cq: '', sort: 'site', limit: 40, sel: {},
+    drawer: null, dKind: 'req', openId: null, edit: null, editNew: false, pick: false, pq: '', noteDraft: '',
+    priceDraft: {}, pct: '10', round: 5000, toast: null, toastOn: false,
+    cMet: 'rev', cPer: '30d', cSrc: 'all', cDir: 'all', cCmp: true, cHover: null, dragId: null, dragOver: null,
+    auth: readAuth(), lgName: '', lgPass: '', lgRem: true, lgErr: '', acct: false };
+
+  componentDidMount() {
+    this._rs = () => this.setState({ w: innerWidth }); this._rs(); addEventListener('resize', this._rs);
+    this._kd = e => { if (e.key === 'Escape') this.closeDrawer(); }; addEventListener('keydown', this._kd);
+    this._st = e => { if (e.key === 'kz_requests') { const r = LS.get('kz_requests'); if (r) this.setState({ requests: this.normalize(r) }); } }; addEventListener('storage', this._st);
+    const rs = document.documentElement.style;
+    [['--kz-ink', 'var(--ink)'], ['--kz-paper', 'var(--paper)'], ['--kz-line3', 'var(--line)'], ['--kz-ink3', 'var(--ink-3)']].forEach(([k, v]) => rs.setProperty(k, v));
+    let th = null; try { th = localStorage.getItem('kz_theme'); } catch (e) {}
+    this.applyTheme(th === 'dark' ? 'dark' : 'light', false);
+    this.applyAccent();
+    const go = raw => {
+      const products = raw.map((p, i) => ({ t: p.t || '', d: p.d || '', img: p.img || '', s: (p.s || []).map(z => ({ ...z })), x: p.x || [], c: p.c || [], k: p.k || 'KZ-' + String(i + 1).padStart(3, '0'), h: !!p.h }));
+      let requests = LS.get('kz_requests') || [];
+      if (LS.get('kz_admin_seed') !== 2) {
+        const own = requests.filter(r => !/^(seed|arc)/.test(r.id || ''));
+        const gen = [...archive(products), ...seed(products)].sort((a, b) => a.at - b.at);
+        gen.forEach((r, i) => { r.no = 1048 - gen.length + 1 + i; });
+        requests = [...own, ...gen];
+        LS.set('kz_admin_seed', 2);
+      }
+      requests = this.normalize(requests);
+      const reviews = LS.get('kz_reviews') || REVIEWS_DEF.map(r => ({ ...r, h: false }));
+      const tab = LS.get('kz_admin_tab');
+      const hp = new URLSearchParams(location.hash.slice(1)), ek = hp.get('edit'), ht = hp.get('tab');
+      if (ek || ht) try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+      this.setState({ ready: true, products, requests, reviews, tab: ['dash', 'req', 'cat', 'price', 'rev'].includes(tab) ? tab : 'dash' }, () => { if (ek) { this.setTab('cat'); this.openProd(ek); } else if (['dash', 'req', 'cat', 'price', 'rev'].includes(ht)) this.setTab(ht); });
+      LS.set('kz_requests', requests);
+    };
+    const cat = LS.get('kz_catalog');
+    if (cat && cat.length) go(cat); else fetch('data/products.json').then(r => r.json()).then(go).catch(() => go([]));
+  }
+  componentWillUnmount() {
+    removeEventListener('resize', this._rs); removeEventListener('keydown', this._kd); removeEventListener('storage', this._st);
+    clearTimeout(this._tt); if (this._sv) { clearTimeout(this._sv); LS.set('kz_requests', this.state.requests); }
+  }
+
+  applyTheme(t, save = true, cb) { const de = document.documentElement; de.setAttribute('data-theme', t); if (t === 'dark') de.style.setProperty('--text-inverse', 'var(--paper)'); else de.style.removeProperty('--text-inverse'); this.setState({ theme: t }, cb); if (save) try { localStorage.setItem('kz_theme', t); } catch (e) {} }
+  applyAccent() {
+    const a = CONFIG.accent, on = a.toUpperCase() === '#2F5BD3' ? '#F7F5F1' : '#151515', r = document.documentElement.style;
+    r.setProperty('--accent', a); r.setProperty('--on-accent', on); r.setProperty('--kz-accent', a); r.setProperty('--kz-on-accent', on);
+  }
+  toggleTheme = e => {
+    const next = this.state.theme === 'dark' ? 'light' : 'dark';
+    const x = e && e.clientX ? e.clientX : 80, y = e && e.clientY ? e.clientY : innerHeight - 40;
+    let ran = false;
+    const commit = () => { if (ran) return Promise.resolve(); ran = true; return new Promise(res => { this.applyTheme(next, true, res); setTimeout(res, 60); }); };
+    if (!document.startViewTransition || document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) { commit(); return; }
+    const vt = document.startViewTransition(commit);
+    setTimeout(() => { if (!ran) { try { vt.skipTransition(); } catch (er) {} commit(); } }, 400);
+    vt.ready.then(() => { const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)); document.documentElement.animate({ clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] }, { duration: 750, easing: 'cubic-bezier(.6,0,.3,1)', pseudoElement: '::view-transition-new(root)' }); }).catch(() => {});
+  };
+
+  normalize(list) {
+    let max = Math.max(1048, ...list.map(r => r.no || 0));
+    return list.map(r => ({ company: '', src: 'Сайт', status: 'new', notes: [], items: [], comment: '', due: '', phone: '', name: '', ...r }))
+      .sort((a, b) => b.at - a.at).map(r => r.no ? r : { ...r, no: ++max });
+  }
+  setReqs(requests) { this.setState({ requests }); clearTimeout(this._sv); this._sv = setTimeout(() => { this._sv = null; LS.set('kz_requests', this.state.requests); }, 250); }
+  setProds(products) { this.setState({ products }); LS.set('kz_catalog', products); }
+  setRevs(reviews) { this.setState({ reviews }); LS.set('kz_reviews', reviews); }
+  toast(t, undo) { clearTimeout(this._tt); this.setState({ toast: { t, undo }, toastOn: true }); this._tt = setTimeout(() => this.setState({ toastOn: false }), 6000); }
+  setTab = t => { this.setState({ tab: t, sel: {}, limit: 40, rLimit: 50 }); LS.set('kz_admin_tab', t); window.scrollTo(0, 0); };
+  goReq = rf => { this.setState({ rf, reqView: 'list' }); this.setTab('req'); };
+  closeDrawer = () => this.setState({ drawer: null, pick: false });
+
+  updReq(id, patch) { this.setReqs(this.state.requests.map(r => r.id === id ? { ...r, ...(typeof patch === 'function' ? patch(r) : patch) } : r)); }
+  setStatus(id, k) { this.updReq(id, r => ({ status: k, due: !r.due && (k === 'mockup' || k === 'prod') ? isoDay(Date.now() + 7 * D) : r.due })); }
+  openReq = id => this.setState({ drawer: 'req', dKind: 'req', openId: id, pick: false, pq: '', noteDraft: '' });
+  newReq = () => { const r = { id: 'r' + Date.now(), at: Date.now(), name: '', phone: '+998 ', company: '', src: 'Телефон', status: 'new', items: [], comment: '', notes: [], due: '' }; this.setReqs(this.normalize([r, ...this.state.requests])); this.openReq(r.id); };
+  dragStart(ev, id) { this._dragId = id; if (ev.dataTransfer) { ev.dataTransfer.effectAllowed = 'move'; try { ev.dataTransfer.setData('text/plain', id); } catch (e) {} } setTimeout(() => this.setState({ dragId: id }), 0); }
+  dragEnd = () => { this._dragId = null; this.setState({ dragId: null, dragOver: null }); };
+  dropTo(k) {
+    const id = this._dragId; this._dragId = null; this.setState({ dragId: null, dragOver: null });
+    const r = id && this.state.requests.find(q => q.id === id); if (!r || r.status === k) return;
+    const prev = r.status; this.setStatus(id, k);
+    this.toast('№ ' + r.no + ': ' + STN[prev] + ' → ' + STN[k], () => this.updReq(id, { status: prev }));
+  }
+  login = () => {
+    const name = this.state.lgName.trim();
+    if (!name) { this.setState({ lgErr: 'Укажите логин' }); return; }
+    if (this.state.lgPass !== CONFIG.demoPassword) { this.setState({ lgErr: 'Неверный пароль' }); return; }
+    const auth = { name, at: Date.now() };
+    try { (this.state.lgRem ? localStorage : sessionStorage).setItem('kz_admin_auth', JSON.stringify(auth)); } catch (e) {}
+    this.setState({ auth, lgPass: '', lgErr: '' }); this.toast('Здравствуйте, ' + name);
+  };
+  logout = () => { try { localStorage.removeItem('kz_admin_auth'); sessionStorage.removeItem('kz_admin_auth'); } catch (e) {} this.setState({ auth: null, acct: false, drawer: null }); };
+  addNote = () => { const t = this.state.noteDraft.trim(); if (!t) return; this.updReq(this.state.openId, r => ({ notes: [...r.notes, { at: Date.now(), t }] })); this.setState({ noteDraft: '' }); };
+
+  nextCode() { return 'KZ-' + String(Math.max(0, ...this.state.products.map(p => +((p.k.match(/\d+/) || [0])[0]))) + 1).padStart(3, '0'); }
+  openProd = k => { const p = this.state.products.find(x => x.k === k); if (!p) { this.toast('Картина ' + k + ' удалена из каталога'); return; } this.setState({ drawer: 'prod', dKind: 'prod', editNew: false, edit: { ...JSON.parse(JSON.stringify(p)), xs: p.x.join(', ') } }); };
+  newProd = () => this.setState({ drawer: 'prod', dKind: 'prod', editNew: true, edit: { k: this.nextCode(), t: '', d: '', img: '', s: [{ w: 50, h: 50, p: 310000 }], x: [], xs: '', c: ['home', 'all'], h: false } });
+  setEdit = patch => this.setState(st => ({ edit: { ...st.edit, ...(typeof patch === 'function' ? patch(st.edit) : patch) } }));
+  saveProd = () => {
+    const e = this.state.edit, isNew = this.state.editNew;
+    const c = e.c.filter(x => x !== 'all');
+    const p = { t: e.t.trim() || 'Без названия', d: e.d.trim(), img: e.img.trim(), k: e.k, h: e.h, c: c.length ? [...c, 'all'] : ['all'],
+      s: e.s.filter(z => +z.w && +z.h).map(z => ({ w: +z.w, h: +z.h, p: z.p === '' || z.p == null ? null : +z.p })),
+      x: e.xs.split(',').map(v => v.trim()).filter(Boolean) };
+    this.setProds(isNew ? [p, ...this.state.products] : this.state.products.map(x => x.k === e.k ? p : x));
+    this.setState({ drawer: null });
+    this.toast(isNew ? 'Картина ' + p.k + ' добавлена' : 'Изменения сохранены');
+  };
+  delProds(keys) {
+    const prev = this.state.products;
+    this.setProds(prev.filter(p => !keys.includes(p.k)));
+    this.setState(st => ({ sel: {}, drawer: st.dKind === 'prod' ? null : st.drawer }));
+    this.toast(keys.length > 1 ? 'Удалено: ' + plural(keys.length, PIC) : 'Картина удалена', () => this.setProds(prev));
+  }
+  setHidden(keys, h) { this.setProds(this.state.products.map(p => keys.includes(p.k) ? { ...p, h } : p)); this.setState({ sel: {} }); this.toast(h ? 'Скрыто с сайта: ' + keys.length : 'Показано на сайте: ' + keys.length); }
+  commitSize(key, mode) {
+    const v = +(this.state.priceDraft[key] || '');
+    this.setState(st => { const pd = { ...st.priceDraft }; delete pd[key]; return { priceDraft: pd }; });
+    if (!v || v === mode) return;
+    const prev = this.state.products; let n = 0;
+    this.setProds(prev.map(p => ({ ...p, s: p.s.map(z => z.w + '×' + z.h === key && z.p === mode ? (n++, { ...z, p: v }) : z) })));
+    this.toast(key + ' см: ' + num(mode) + ' → ' + num(v) + ' · ' + plural(n, PIC), () => this.setProds(prev));
+  }
+  bump(p) { const k = 1 + (+this.state.pct || 0) / 100, r = this.state.round; return Math.max(r, Math.round(p * k / r) * r); }
+  applyPct = () => {
+    if (!+this.state.pct) return;
+    const prev = this.state.products;
+    this.setProds(prev.map(p => ({ ...p, s: p.s.map(z => z.p == null ? z : { ...z, p: this.bump(z.p) }) })));
+    this.toast('Цены изменены на ' + (+this.state.pct > 0 ? '+' : '') + (+this.state.pct) + '%', () => this.setProds(prev));
+  };
+
+  renderVals() {
+    const s = this.state, P = this.props, now = Date.now();
+    const { products, requests, reviews } = s;
+    const mode = s.w >= 1024 ? 'side' : s.w >= 640 ? 'rail' : 'bar', thumbs = CONFIG.showThumbs;
+    const mw = s.w - (mode === 'side' ? 240 : mode === 'rail' ? 88 : 0) - 2 * Math.min(40, Math.max(16, s.w * .03));
+    const tier = mw >= 1040 ? 2 : mw >= 600 ? 1 : 0;
+    const newL = requests.filter(r => r.status === 'new');
+    const live = requests.filter(r => r.status !== 'cancel');
+    const cnt = k => requests.filter(r => r.status === k).length;
+    const hiddenN = products.filter(p => p.h).length;
+    const TABS = [['dash', 'Обзор', 'обзор'], ['req', 'Заявки', 'заявки'], ['cat', 'Каталог', 'каталог'], ['price', 'Прайс', 'прайс'], ['rev', 'Отзывы', 'отзывы']];
+    const ti = Math.max(0, TABS.findIndex(t => t[0] === s.tab));
+    const nav = TABS.map(([k, n]) => { const on = s.tab === k; return { n, go: () => this.setTab(k), bg: on ? 'var(--ink)' : 'transparent', mbg: on ? 'var(--ink)' : 'var(--paper-2)', fg: on ? 'var(--paper)' : 'var(--ink)', lc: on ? 'var(--ink)' : 'var(--ink-3)', mask: ICO[k], badge: k === 'req' && newL.length > 0, bc: newL.length > 99 ? '99+' : newL.length, dot: k === 'req' && newL.length > 0,
+      c: k === 'req' ? (newL.length || '') : k === 'cat' ? products.length : k === 'rev' ? reviews.length : '' }; });
+    const revShown = reviews.filter(x => !x.h).length;
+    const tabSub = [cap(new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })),
+      plural(requests.length, REQ) + (newL.length ? ' · ' + plural(newL.length, ['новая', 'новые', 'новых']) : ''),
+      plural(products.length, PIC) + (hiddenN ? ' · ' + hiddenN + ' скрыто' : ''),
+      'Цены по стандартным размерам', revShown + ' из ' + reviews.length + ' на сайте'][ti];
+
+    // KPIs (last 30 days vs previous 30)
+    const rv = l => l.reduce((a, q) => a + reqTotal(q).t, 0), pcn = l => l.filter(q => reqTotal(q).t > 0).length;
+    const k0 = buckets('30d', 0), k1 = buckets('30d', 1), kIn = (q, b) => q.at >= b[0].a && q.at < b[b.length - 1].b;
+    const L30 = live.filter(q => kIn(q, k0)), P30 = live.filter(q => kIn(q, k1));
+    const r30 = rv(L30), rp = rv(P30), a30 = pcn(L30) ? r30 / pcn(L30) : 0, ap = pcn(P30) ? rp / pcn(P30) : 0;
+    const dl = (a, b) => b ? Math.round((a - b) / b * 100) : null;
+    const arrowOf = d => d == null ? { hasArrow: false, arrow: '', arrowC: 'var(--ink)' } : { hasArrow: true, arrow: d >= 0 ? '↑' : '↓', arrowC: d >= 0 ? 'var(--accent)' : 'var(--ink-3)' };
+    const act = requests.filter(r => ACTIVE.includes(r.status));
+    const stale = newL.filter(r => now - r.at > D).length;
+    const dR = dl(r30, rp), dA = dl(a30, ap);
+    const kpis = [
+      { l: 'Новые заявки', v: newL.length, unit: '', dot: stale > 0, hasArrow: false, arrow: '', arrowC: '', sub: stale ? stale + ' ' + (stale === 1 ? 'ждёт' : 'ждут') + ' больше суток' : 'Все свежие', go: () => this.goReq('new') },
+      { l: 'В работе', v: act.length, unit: '', dot: false, hasArrow: false, arrow: '', arrowC: '', sub: cnt('prod') + ' в производстве · ' + cnt('mockup') + ' на макете', go: () => this.goReq('all') },
+      { l: 'Выручка за 30 дней', v: fmtM(r30), unit: 'сум', dot: false, ...arrowOf(dR), sub: dR == null ? plural(L30.length, ORD) : Math.abs(dR) + '% к прошлым 30 дням', go: () => this.setState({ cMet: 'rev', cPer: '30d' }) },
+      { l: 'Средний чек', v: fmtM(a30), unit: 'сум', dot: false, ...arrowOf(dA), sub: dA == null ? 'за 30 дней' : Math.abs(dA) + '% к прошлым 30 дням', go: () => this.setState({ cMet: 'avg', cPer: '30d' }) }
+    ];
+    const kpiCols = mw >= 900 ? 'repeat(4,minmax(0,1fr))' : mw >= 300 ? 'repeat(2,minmax(0,1fr))' : 'minmax(0,1fr)';
+    const triCols = mw >= 1000 ? 'repeat(3,minmax(0,1fr))' : mw >= 620 ? 'repeat(2,minmax(0,1fr))' : 'minmax(0,1fr)';
+    const span3 = mw >= 1000 || mw < 620 ? 'auto' : '1 / -1';
+
+    const what = r => !r.items.length ? 'Состав не указан' : r.items[0].t + (r.items.length > 1 ? ' + ещё ' + (r.items.length - 1) : '') + (r.items.length === 1 && r.items[0].q > 1 ? ' × ' + r.items[0].q : '');
+    const waiting = [...newL].sort((a, b) => a.at - b.at).slice(0, 5).map(r => ({ name: r.name || 'Без имени', what: what(r), age: ago(r.at), late: now - r.at > D, tel: 'tel:+' + digits(r.phone), phone: r.phone ? 'Позвонить: ' + r.phone : 'Позвонить', open: () => this.openReq(r.id) }));
+    const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+    const dueAll = act.filter(r => r.due).sort((a, b) => a.due.localeCompare(b.due));
+    const dues = dueAll.slice(0, 5).map(r => { const dd = new Date(r.due + 'T00:00'), dlt = Math.round((dd - t0) / D);
+      return { name: r.name || 'Без имени', sub: STN[r.status] + ' · до ' + dstr(dd), left: dlt < 0 ? 'просрочено ' + (-dlt) + ' дн' : dlt === 0 ? 'сегодня' : 'через ' + dlt + ' дн', late: dlt <= 0, open: () => this.openReq(r.id) }; });
+    const dotOf = k => k === 'new' ? 'var(--accent)' : k === 'done' || k === 'cancel' ? 'var(--ink-4)' : 'var(--ink)';
+    const stageKs = ['new', ...ACTIVE], smax = Math.max(1, ...stageKs.map(cnt));
+    const stages = stageKs.map(k => ({ n: STN[k], c: cnt(k), w: cnt(k) / smax * 100 + '%', dot: dotOf(k), go: () => this.goReq(k) }));
+
+    // Sales chart
+    const met = s.cMet, per = s.cPer, cmp = s.cCmp;
+    const catOf = {}; products.forEach(p => { catOf[p.k] = p.c; });
+    const inDir = (q, dir) => dir === 'all' || q.items.some(i => (catOf[i.k] || []).includes(dir));
+    const curB = buckets(per, 0), prevB = buckets(per, 1), n = curB.length;
+    const lo = curB[0].a, hi = curB[n - 1].b;
+    const pool = live.filter(q => (s.cSrc === 'all' || q.src === s.cSrc) && inDir(q, s.cDir));
+    const agg = bks => { const o = bks.map(() => ({ c: 0, r: 0, pc: 0 })), a0 = bks[0].a, a1 = bks[bks.length - 1].b;
+      pool.forEach(q => { if (q.at < a0 || q.at >= a1) return; const i = bks.findIndex(b => q.at >= b.a && q.at < b.b); if (i < 0) return; const t = reqTotal(q).t; o[i].c++; o[i].r += t; if (t > 0) o[i].pc++; }); return o; };
+    const mv = x => met === 'rev' ? x.r : met === 'cnt' ? x.c : (x.pc ? x.r / x.pc : 0);
+    const sumA = a => a.reduce((t, x) => ({ c: t.c + x.c, r: t.r + x.r, pc: t.pc + x.pc }), { c: 0, r: 0, pc: 0 });
+    const curA = agg(curB), prevA = agg(prevB), cT = sumA(curA), pT = sumA(prevA);
+    const cV = curA.map(mv), pV = prevA.map(mv), curTot = mv(cT), prevTot = mv(pT);
+    const top = Math.max(0, ...cV, ...(cmp ? pV : [0]));
+    const yMax = met === 'cnt' && top <= 10 ? Math.max(2, Math.ceil(top / 2) * 2) : niceMax(top, met === 'cnt');
+    const hpct = v => v > 0 ? Math.max(1.5, Math.min(100, v / yMax * 100)) + '%' : '0%';
+    const hov = s.cHover != null && s.cHover < n ? s.cHover : null;
+    const bars = curB.map((b, i) => ({ h: hpct(cV[i]), ph: hpct(pV[i]), c: hov === i ? 'var(--accent)' : 'var(--ink)', hover: () => { if (this.state.cHover !== i) this.setState({ cHover: i }); } }));
+    const xl = curB.map((b, i) => ({ l: per === '12m' && tier === 0 && (n - 1 - i) % 2 ? '' : b.lab }));
+    const fmtV = v => met === 'cnt' ? plural(Math.round(v), ORD) : fmtP(Math.round(v));
+    const fmtY = v => met === 'cnt' ? num(v) : fmtS(v);
+    const dT = dl(curTot, prevTot);
+    const tip = hov != null ? { t: curB[hov].tip, v: fmtV(cV[hov]), hasN: met !== 'cnt', n: plural(curA[hov].c, ORD), p: 'Прошлый период: ' + fmtV(pV[hov]) } : { t: '', v: '', hasN: false, n: '', p: '' };
+    const right = hov != null && hov < n * .6;
+    const metOpts = [['rev', 'Выручка'], ['cnt', 'Заказы'], ['avg', 'Средний чек']].map(([k, nm]) => ({ n: nm, bg: met === k ? 'var(--ink)' : 'transparent', fg: met === k ? 'var(--paper)' : 'var(--ink-2)', pick: () => this.setState({ cMet: k }) }));
+    const perOpts = [['30d', '30 дней'], ['90d', '3 месяца'], ['12m', '12 месяцев']].map(([k, nm]) => ({ n: nm, bg: per === k ? 'var(--ink)' : 'transparent', fg: per === k ? 'var(--paper)' : 'var(--ink-2)', pick: () => this.setState({ cPer: k, cHover: null }) }));
+
+    const inPer = q => q.at >= lo && q.at < hi;
+    const srcPool = live.filter(q => inPer(q) && inDir(q, s.cDir)), srcTot = srcPool.length;
+    const srcRows = SRC.map(k => { const l = srcPool.filter(q => q.src === k); return { k, c: l.length, r: rv(l) }; }).sort((a, b) => b.c - a.c)
+      .map(x => { const sh = srcTot ? Math.round(x.c / srcTot * 100) : 0; return { n: x.k, pct: sh + '%', w: sh + '%', sub: plural(x.c, ORD) + ' · ' + fmtM(x.r) + ' сум' }; });
+    const dirAcc = {}; CATS.forEach(c => { dirAcc[c.k] = { r: 0, q: 0 }; });
+    live.filter(q => inPer(q) && (s.cSrc === 'all' || q.src === s.cSrc)).forEach(q => q.items.forEach(it => {
+      const cs = (catOf[it.k] || []).filter(c => dirAcc[c]); if (!cs.length) return;
+      const v = (it.p || 0) * (it.q || 1) / cs.length, qq = (it.q || 1) / cs.length; cs.forEach(c => { dirAcc[c].r += v; dirAcc[c].q += qq; });
+    }));
+    const dirTot = CATS.reduce((a, c) => a + dirAcc[c.k].r, 0);
+    const dirRows = CATS.map(c => ({ c, ...dirAcc[c.k] })).sort((a, b) => b.r - a.r)
+      .map(x => { const sh = dirTot ? Math.round(x.r / dirTot * 100) : 0; return { n: x.c.n, pct: sh + '%', w: sh + '%', sub: plural(Math.round(x.q), PIC) + ' · ' + fmtM(x.r) + ' сум' }; });
+    const popAcc = {};
+    pool.filter(inPer).forEach(q => q.items.forEach(it => { if (!it.k) return; const a = popAcc[it.k] || (popAcc[it.k] = { k: it.k, t: it.t, img: it.img, q: 0, r: 0 }); a.q += it.q || 1; a.r += (it.p || 0) * (it.q || 1); }));
+    const popRows = Object.values(popAcc).sort((a, b) => b.q - a.q || b.r - a.r).slice(0, 5)
+      .map((x, i) => { const p = products.find(y => y.k === x.k); return { i: String(i + 1).padStart(2, '0'), k: x.k, t: p ? p.t : x.t, img: src(p ? p.img : x.img), q: '× ' + x.q, r: fmtM(x.r) + ' сум', open: () => this.openProd(x.k) }; });
+
+    // Requests
+    const rq = s.rq.trim().toLowerCase(), rqd = digits(rq);
+    const rBase = !rq ? requests : requests.filter(r => (r.name + ' ' + r.company + ' ' + r.no + ' ' + r.items.map(i => i.t).join(' ')).toLowerCase().includes(rq) || (rqd.length >= 3 && digits(r.phone).includes(rqd)));
+    const rList = rBase.filter(r => s.rf === 'all' || r.status === s.rf);
+    const sumOf = r => { const t = reqTotal(r); return t.t ? fmtP(t.t) : 'по запросу'; };
+    const reqView = s.reqView || CONFIG.requestsView;
+    const reqRows = rList.slice(0, s.rLimit).map(r => ({ no: '№ ' + r.no, name: r.name || 'Без имени', sub: r.company ? r.company + ' · ' + r.phone : r.phone, what: what(r), sum: sumOf(r), src: r.src, st: STN[r.status], dot: dotOf(r.status), ago: ago(r.at), fw: r.status === 'new' ? 600 : 500, open: () => this.openReq(r.id) }));
+    const reqChips = [{ label: 'Все', count: rBase.length, k: 'all' }, ...ST.map(x => ({ label: x.n, count: rBase.filter(r => r.status === x.k).length, k: x.k }))].map(c => ({ ...c, active: s.rf === c.k, pick: () => this.setState({ rf: c.k, rLimit: 50 }) }));
+    const board = ST.map((x, i) => {
+      const nx = x.k === 'done' || x.k === 'cancel' ? null : ST[i + 1];
+      const all = rBase.filter(r => r.status === x.k), cap8 = x.k === 'done' || x.k === 'cancel' ? 8 : 1e9;
+      const cards = all.slice(0, cap8).map(r => ({ op: s.dragId === r.id ? .4 : 1, drag: ev => this.dragStart(ev, r.id), no: '№ ' + r.no, name: r.name || 'Без имени', what: what(r), sum: sumOf(r), ago: ago(r.at), open: () => this.openReq(r.id), hasNext: !!nx, next: nx ? nx.n + ' →' : '', advance: ev => { ev.stopPropagation(); this.setStatus(r.id, nx.k); } }));
+      const ov = s.dragOver === x.k;
+      return { n: x.n, c: all.length, cards, empty: !all.length, dot: dotOf(x.k), bg: ov ? 'var(--paper-3)' : 'var(--paper-2)', ring: ov ? 'var(--ink)' : 'transparent',
+        over: ev => { if (!this._dragId) return; ev.preventDefault(); if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move'; if (this.state.dragOver !== x.k) this.setState({ dragOver: x.k }); },
+        leave: ev => { if (ev.currentTarget.contains(ev.relatedTarget)) return; this.setState(st => st.dragOver === x.k ? { dragOver: null } : null); },
+        drop: ev => { ev.preventDefault(); this.dropTo(x.k); }, hasMore: all.length > cap8, moreL: 'Ещё ' + (all.length - cards.length) + ' — открыть списком →', more: () => this.goReq(x.k) };
+    });
+    const viewOpts = [['list', 'Список'], ['board', 'Доска']].map(([k, nm]) => ({ n: nm, bg: reqView === k ? 'var(--ink)' : 'transparent', fg: reqView === k ? 'var(--paper)' : 'var(--ink-2)', pick: () => this.setState({ reqView: k }) }));
+
+    // Catalog
+    const cq = s.cq.trim().toLowerCase();
+    const cBase = products.filter(p => !cq || (p.t + ' ' + p.k + ' ' + p.d).toLowerCase().includes(cq));
+    let cList = cBase.filter(p => s.cf === 'all' || (s.cf === 'hidden' ? p.h : p.c.includes(s.cf)));
+    if (s.sort === 'title') cList = [...cList].sort((a, b) => a.t.localeCompare(b.t, 'ru'));
+    if (s.sort === 'price') cList = [...cList].sort((a, b) => (minP(a) ?? 1e12) - (minP(b) ?? 1e12));
+    if (s.sort === 'code') cList = [...cList].sort((a, b) => a.k.localeCompare(b.k));
+    const selKeys = Object.keys(s.sel).filter(k => s.sel[k]);
+    const allSel = cList.length > 0 && cList.every(p => s.sel[p.k]);
+    const catChips = [{ label: 'Все', k: 'all', count: cBase.length }, ...CATS.map(c => ({ label: c.n, k: c.k, count: cBase.filter(p => p.c.includes(c.k)).length })), { label: 'Скрытые', k: 'hidden', count: cBase.filter(p => p.h).length }]
+      .map(c => ({ ...c, active: s.cf === c.k, pick: () => this.setState({ cf: c.k, limit: 40 }) }));
+    const catRows = cList.slice(0, s.limit).map(p => {
+      const on = !p.h, sel = !!s.sel[p.k], ss = [...p.s].sort((a, b) => a.w * a.h - b.w * b.h), mp = minP(p), L = ss[ss.length - 1];
+      return { k: p.k, t: p.t || 'Без названия', d: p.d || '—', img: src(p.img), imgO: on ? 1 : .4, ...on3(on),
+        dirs: CATS.filter(c => p.c.includes(c.k)).map(c => c.s).join(' · ') || '—',
+        szN: ss.length ? plural(ss.length, ['размер', 'размера', 'размеров']) : 'по запросу',
+        szR: (ss.length ? ss[0].w + '×' + ss[0].h + (ss.length > 1 ? ' — ' + L.w + '×' + L.h : '') : '') + (p.x.length ? (ss.length ? ' · ' : '') + '+' + p.x.length + ' по запросу' : ''),
+        price: mp != null ? 'от ' + num(mp) : 'по запросу',
+        chkBg: sel ? 'var(--ink)' : 'transparent', chk: sel ? '✓' : '', rowBg: sel ? 'var(--paper-selected)' : 'transparent',
+        open: () => this.openProd(p.k),
+        toggle: ev => { ev.stopPropagation(); this.setProds(this.state.products.map(x => x.k === p.k ? { ...x, h: !x.h } : x)); },
+        toggleSel: ev => { ev.stopPropagation(); this.setState(st => ({ sel: { ...st.sel, [p.k]: !st.sel[p.k] } })); } };
+    });
+    const catCols = (thumbs ? '18px 56px ' : '18px ') + (tier === 2 ? '64px minmax(0,2fr) minmax(0,1fr) minmax(0,1.2fr) 112px 38px' : tier === 1 ? 'minmax(0,1fr) 130px 104px 38px' : 'minmax(0,1fr) 38px');
+
+    // Price
+    const sm = {};
+    products.forEach(p => p.s.forEach(z => { if (z.p == null) return; const key = z.w + '×' + z.h; const m = sm[key] || (sm[key] = { w: z.w, h: z.h, n: 0, pr: {} }); m.n++; m.pr[z.p] = (m.pr[z.p] || 0) + 1; }));
+    const sizeList = Object.entries(sm).map(([key, m]) => { const pr = Object.entries(m.pr).sort((a, b) => b[1] - a[1]); return { key, ...m, mode: +pr[0][0], others: pr.length - 1 }; }).sort((a, b) => a.w * a.h - b.w * b.h);
+    const sizes = sizeList.map(z => ({ label: z.w + ' × ' + z.h + ' см', n: plural(z.n, PIC),
+      others: z.others ? 'ещё ' + z.others + ' ' + (z.others === 1 ? 'другая цена' : 'другие цены') : '',
+      val: s.priceDraft[z.key] != null ? (s.priceDraft[z.key] ? num(+s.priceDraft[z.key]) : '') : num(z.mode),
+      setV: ev => { const v = ev.target.value.replace(/\D/g, ''); this.setState(st => ({ priceDraft: { ...st.priceDraft, [z.key]: v } })); },
+      commit: () => this.commitSize(z.key, z.mode), onKey: ev => { if (ev.key === 'Enter') ev.target.blur(); } }));
+    const pctChips = [-10, 5, 10, 15, 20].map(v => ({ label: (v > 0 ? '+' : '') + v + '%', active: +s.pct === v, pick: () => this.setState({ pct: String(v) }) }));
+    const roundChips = [1000, 5000, 10000].map(v => ({ label: num(v), active: s.round === v, pick: () => this.setState({ round: v }) }));
+    const preview = [...sizeList].sort((a, b) => b.n - a.n).slice(0, 4).sort((a, b) => a.w * a.h - b.w * b.h).map(z => ({ label: z.w + ' × ' + z.h + ' см', from: num(z.mode), to: num(this.bump(z.mode)) }));
+
+    // Reviews
+    const updRev = (i, patch) => this.setRevs(this.state.reviews.map((r, j) => j === i ? { ...r, ...patch } : r));
+    const moveRev = (i, d) => { const a = [...this.state.reviews], j = i + d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; this.setRevs(a); };
+    const revRows = reviews.map((r, i) => ({ i: String(i + 1).padStart(2, '0'), n: r.n, q: r.q, ...on3(!r.h), rowO: r.h ? .5 : 1,
+      setN: ev => updRev(i, { n: ev.target.value }), setQ: ev => updRev(i, { q: ev.target.value }), toggle: () => updRev(i, { h: !r.h }),
+      up: () => moveRev(i, -1), down: () => moveRev(i, 1), upO: i === 0 ? .3 : 1, downO: i === reviews.length - 1 ? .3 : 1,
+      rm: () => { const prev = this.state.reviews; this.setRevs(prev.filter((_, j) => j !== i)); this.toast('Отзыв удалён', () => this.setRevs(prev)); } }));
+
+    // Request drawer
+    const r = requests.find(x => x.id === s.openId);
+    let d = {};
+    if (r) {
+      const upd = patch => this.updReq(r.id, patch);
+      const updItem = (i, patch) => upd(x => ({ items: x.items.map((it, j) => j === i ? { ...it, ...patch } : it) }));
+      const cur = ST.findIndex(y => y.k === r.status), tt = reqTotal(r), ph = digits(r.phone), pq = s.pq.trim().toLowerCase();
+      d = { head: 'Заявка № ' + r.no + ' · ' + dstr(r.at) + ', ' + hm(r.at), title: r.name || 'Без имени',
+        name: r.name, company: r.company, phone: r.phone, src: r.src, comment: r.comment, due: r.due,
+        setName: ev => upd({ name: ev.target.value }), setCompany: ev => upd({ company: ev.target.value }), setPhone: ev => upd({ phone: ev.target.value }),
+        setSrc: ev => upd({ src: ev.target.value }), setComment: ev => upd({ comment: ev.target.value }), setDue: ev => upd({ due: ev.target.value }),
+        tel: 'tel:+' + ph, tg: 'https://t.me/+' + ph, wa: 'https://wa.me/' + ph,
+        steps: ST.filter(x => x.k !== 'cancel').map((x, i) => { const onS = x.k === r.status, past = r.status !== 'cancel' && i < cur;
+          return { n: x.n, bg: onS ? 'var(--ink)' : past ? 'var(--paper-3)' : 'var(--paper-2)', fg: onS ? 'var(--paper)' : past ? 'var(--ink)' : 'var(--ink-3)', pick: () => this.setStatus(r.id, x.k) }; }),
+        cancelL: r.status === 'cancel' ? 'Заявка отменена — вернуть в работу' : 'Отменить заявку',
+        toggleCancel: () => this.setStatus(r.id, r.status === 'cancel' ? 'contact' : 'cancel'),
+        itemsN: r.items.length ? plural(r.items.reduce((a, i) => a + (i.q || 1), 0), PIC) : '',
+        items: r.items.map((it, i) => {
+          const prod = products.find(p => p.k === it.k), v = it.w ? it.w + 'x' + it.h : '';
+          const opts = (prod ? prod.s : []).map(z => ({ v: z.w + 'x' + z.h, l: z.w + ' × ' + z.h + ' см · ' + fmtP(z.p) }));
+          if (!opts.some(o => o.v === v)) opts.unshift({ v, l: v ? it.w + ' × ' + it.h + ' см' : 'Размер по запросу' });
+          return { t: it.t, k: it.k || '—', img: src(it.img), size: v, sizeOpts: opts, frame: FR.includes(it.frame) ? it.frame : FR[0], q: it.q || 1,
+            line: it.p == null ? 'по запросу' : fmtP(it.p * (it.q || 1)),
+            setSize: ev => { const z = prod && prod.s.find(z => z.w + 'x' + z.h === ev.target.value); if (z) updItem(i, { w: z.w, h: z.h, p: z.p }); },
+            setFrame: ev => updItem(i, { frame: ev.target.value }),
+            inc: () => updItem(i, { q: (it.q || 1) + 1 }), dec: () => updItem(i, { q: Math.max(1, (it.q || 1) - 1) }),
+            rm: () => upd(x => ({ items: x.items.filter((_, j) => j !== i) })) };
+        }),
+        total: tt.t ? fmtP(tt.t) : 'по запросу', totalNote: tt.q ? 'Часть позиций — цена по запросу' : 'Доставка и оформление — отдельно',
+        picking: s.pick, pq: s.pq, pickL: s.pick ? 'Скрыть поиск' : '+ Добавить картину',
+        togglePick: () => this.setState(st => ({ pick: !st.pick, pq: '' })), setPq: v => this.setState({ pq: typeof v === 'string' ? v : v.target.value }),
+        results: products.filter(p => !pq || (p.t + ' ' + p.k).toLowerCase().includes(pq)).slice(0, 6).map(p => ({ t: p.t, k: p.k, img: src(p.img), price: minP(p) != null ? 'от ' + fmtP(minP(p)) : 'по запросу',
+          add: () => { const z = p.s[0]; upd(x => ({ items: [...x.items, { k: p.k, t: p.t, img: p.img, w: z ? z.w : null, h: z ? z.h : null, p: z ? z.p : null, frame: FR[0], q: 1 }] })); this.setState({ pick: false, pq: '' }); } })),
+        notesN: r.notes.length || '', notes: [...r.notes].reverse().map(nt => ({ when: dstr(nt.at) + ', ' + hm(nt.at), t: nt.t })),
+        del: () => { const prev = this.state.requests; this.setReqs(prev.filter(x => x.id !== r.id)); this.setState({ drawer: null }); this.toast('Заявка № ' + r.no + ' удалена', () => this.setReqs(prev)); } };
+    }
+
+    // Product drawer
+    const e = s.edit;
+    let ed = {};
+    if (e) {
+      const setSz = (i, patch) => this.setEdit(x => ({ s: x.s.map((z, j) => j === i ? { ...z, ...patch } : z) }));
+      ed = { head: e.k + ' · ' + (s.editNew ? 'Новая картина' : 'Редактирование'), t: e.t, d: e.d, img: e.img, prev: src(e.img), hasImg: !!e.img, noImg: !e.img, xs: e.xs, ...on3(!e.h), canDel: !s.editNew,
+        setT: ev => this.setEdit({ t: ev.target.value }), setD: ev => this.setEdit({ d: ev.target.value }), setImg: ev => this.setEdit({ img: ev.target.value }), setXs: ev => this.setEdit({ xs: ev.target.value }),
+        toggleH: () => this.setEdit(x => ({ h: !x.h })),
+        cats: CATS.map(c => ({ label: c.n, active: e.c.includes(c.k), pick: () => this.setEdit(x => ({ c: x.c.includes(c.k) ? x.c.filter(y => y !== c.k) : [...x.c, c.k] })) })),
+        sizes: e.s.map((z, i) => ({ w: z.w ?? '', h: z.h ?? '', p: z.p == null || z.p === '' ? '' : num(+z.p),
+          setW: ev => setSz(i, { w: ev.target.value.replace(/\D/g, '') }), setH: ev => setSz(i, { h: ev.target.value.replace(/\D/g, '') }),
+          setP: ev => setSz(i, { p: ev.target.value.replace(/\D/g, '') }), rm: () => this.setEdit(x => ({ s: x.s.filter((_, j) => j !== i) })) })),
+        addSize: () => this.setEdit(x => ({ s: [...x.s, { w: '', h: '', p: '' }] })),
+        del: () => this.delProds([e.k]),
+        dup: () => { this.setState({ editNew: true }); this.setEdit(x => ({ k: this.nextCode(), t: x.t + ' (копия)' })); this.toast('Это копия — проверьте и сохраните'); } };
+    }
+
+    const open = !!s.drawer, tst = s.toast;
+    return {
+      isSide: mode === 'side', isRail: mode === 'rail', isBar: mode === 'bar', wd: tier >= 1 ? 'block' : 'none',
+      chipWrap: tier === 0 ? 'nowrap' : 'wrap', chipFlex: tier === 0 ? '1 1 100%' : '0 1 auto', chipM: tier === 0 ? '0 calc(-1 * clamp(16px,3vw,40px))' : '0', chipP: tier === 0 ? '0 clamp(16px,3vw,40px)' : '0',
+      mainPt: mode === 'bar' ? '20px' : '32px', mainPb: mode === 'bar' ? 'calc(140px + env(safe-area-inset-bottom))' : '120px', toastB: mode === 'bar' ? 'calc(88px + env(safe-area-inset-bottom))' : '24px', selTop: mode === 'bar' ? '66px' : '12px',
+      kpiFs: mw < 420 ? '30px' : 'clamp(34px,3.2vw,52px)', kpiUnitD: mw < 420 ? 'none' : 'inline', kpiMinH: mw < 420 ? '136px' : '156px', chMr: tier === 0 ? '44px' : '56px',
+      boardCol: mode === 'bar' ? 'calc(100% - 52px)' : 'minmax(248px,1fr)', boardSnap: mode === 'side' ? 'none' : 'x mandatory', dnd: mode !== 'bar', dragEnd: this.dragEnd,
+      szCols: tier === 0 ? 'minmax(0,1fr) 124px' : 'minmax(0,1fr) minmax(0,1fr) 150px', szCntD: tier === 0 ? 'none' : 'block', szSubD: tier === 0 ? 'block' : 'none', pctPos: mw >= 892 ? 'sticky' : 'static',
+      revCols: tier === 0 ? '24px minmax(0,1fr)' : '36px minmax(0,1fr) auto', revActCol: tier === 0 ? '1 / -1' : 'auto', wdFull: tier === 2 ? 'block' : 'none', thumbs, isDark: s.theme === 'dark', toggleTheme: this.toggleTheme,
+      nav, tabName: TABS[ti][1], tabSub, tabTitle: TABS[ti][2],
+      isDash: s.tab === 'dash', isReq: s.tab === 'req', isCat: s.tab === 'cat', isPrice: s.tab === 'price', isRev: s.tab === 'rev',
+      kpis, kpiCols, triCols, span3,
+      waiting, waitN: newL.length || '', waitEmpty: s.ready && !waiting.length, goNew: () => this.goReq('new'),
+      dues, dueN: dueAll.length || '', dueEmpty: s.ready && !dues.length, stages, stagesL: plural(act.length + newL.length, ['заявка', 'заявки', 'заявок']),
+      metOpts, perOpts, perName: PER[per],
+      cSrc: s.cSrc, setCSrc: ev => this.setState({ cSrc: ev.target.value }), srcSel: [{ v: 'all', l: 'Все источники' }, ...SRC.map(x => ({ v: x, l: x }))],
+      cDir: s.cDir, setCDir: ev => this.setState({ cDir: ev.target.value }), dirSel: [{ v: 'all', l: 'Все направления' }, ...CATS.map(c => ({ v: c.k, l: c.n }))],
+      cmp: on3(cmp), cmpOn: cmp, cmpO: cmp ? .45 : 0, toggleCmp: () => this.setState(st => ({ cCmp: !st.cCmp })),
+      chTotal: met === 'cnt' ? num(cT.c) : fmtM(Math.round(curTot)), chUnit: met === 'cnt' ? word(cT.c, ORD) : 'сум',
+      chArrow: dT == null ? '' : dT >= 0 ? '↑' : '↓', chArrowC: dT == null || dT < 0 ? 'var(--ink-3)' : 'var(--accent)',
+      chDelta: dT == null ? 'Нет данных за прошлый период' : Math.abs(dT) + '% к прошлому периоду',
+      chPrevL: 'Прошлый период — ' + (met === 'cnt' ? plural(pT.c, ORD) : fmtM(Math.round(prevTot)) + ' сум'),
+      bars, xl, chGap: per === '30d' ? (tier === 0 ? '2px' : '4px') : per === '90d' ? '8px' : (tier === 0 ? '6px' : '12px'), barIn: cmp ? '20%' : '8%',
+      yTop: fmtY(yMax), yMid: fmtY(yMax / 2), chLeave: () => this.setState({ cHover: null }),
+      tipOn: hov != null, tip, tipL: hov == null ? '0%' : ((right ? hov + 1 : hov) / n * 100) + '%', tipX: right ? 'translateX(8px)' : 'translateX(calc(-100% - 8px))',
+      srcRows, dirRows, popRows, popEmpty: s.ready && !popRows.length,
+      viewOpts, isList: reqView === 'list', isBoard: reqView === 'board', newReq: this.newReq,
+      rq: s.rq, setRq: v => this.setState({ rq: typeof v === 'string' ? v : v.target.value, rLimit: 50 }), reqChips, reqRows, reqEmpty: s.ready && !rList.length, board,
+      rCountL: 'Показано ' + Math.min(s.rLimit, rList.length) + ' из ' + rList.length, rMore: rList.length > s.rLimit, moreReq: () => this.setState(st => ({ rLimit: st.rLimit + 50 })),
+      reqCols: tier === 2 ? '72px minmax(0,1.2fr) minmax(0,1.4fr) 120px 92px 150px 96px' : tier === 1 ? '64px minmax(0,1fr) 120px 150px' : '56px minmax(0,1fr) auto',
+      newProd: this.newProd, cq: s.cq, setCq: v => this.setState({ cq: typeof v === 'string' ? v : v.target.value, limit: 40 }),
+      sort: s.sort, setSort: ev => this.setState({ sort: ev.target.value }), catChips, catRows, catCols, catEmpty: s.ready && !cList.length,
+      catCountL: 'Показано ' + Math.min(s.limit, cList.length) + ' из ' + cList.length, hasMore: cList.length > s.limit, more: () => this.setState(st => ({ limit: st.limit + 40 })),
+      hasSel: selKeys.length > 0, selL: 'Выбрано: ' + selKeys.length, allBg: allSel ? 'var(--ink)' : 'transparent', allChk: allSel ? '✓' : '',
+      selAll: () => this.setState({ sel: allSel ? {} : Object.fromEntries(cList.map(p => [p.k, true])) }),
+      clearSel: () => this.setState({ sel: {} }), hideSel: () => this.setHidden(selKeys, true), showSel: () => this.setHidden(selKeys, false), delSel: () => this.delProds(selKeys),
+      sizes, sizesN: sizeList.length || '', pct: s.pct, setPct: ev => this.setState({ pct: ev.target.value.replace(/[^\d-]/g, '').replace(/(?!^)-/g, '').slice(0, 4) }), pctChips, roundChips, preview, applyPct: this.applyPct,
+      revRows, addRev: () => this.setRevs([{ n: '', q: '', h: false }, ...this.state.reviews]),
+      scrimO: open ? 1 : 0, scrimPE: open ? 'auto' : 'none', drawerX: open ? 'none' : 'translateX(100%)', closeDrawer: this.closeDrawer,
+      isReqD: s.dKind === 'req' && !!r, isProdD: s.dKind === 'prod' && !!e, d, e: ed, srcOpts: SRC, frames: FR,
+      noteDraft: s.noteDraft, setNote: ev => this.setState({ noteDraft: ev.target.value }), addNote: this.addNote, saveProd: this.saveProd,
+      toastT: tst ? tst.t : '', hasUndo: !!(tst && tst.undo), toastO: s.toastOn ? 1 : 0, toastPE: s.toastOn ? 'auto' : 'none', toastY: s.toastOn ? 'translateX(-50%)' : 'translate(-50%,16px)',
+      needAuth: !s.auth, lgName: s.lgName, lgPass: s.lgPass, lgErr: !!s.lgErr, lgErrT: s.lgErr, lgSw: on3(s.lgRem), login: this.login,
+      setLgName: ev => this.setState({ lgName: ev.target.value, lgErr: '' }), setLgPass: ev => this.setState({ lgPass: ev.target.value, lgErr: '' }), lgKey: ev => { if (ev.key === 'Enter') this.login(); },
+      toggleRem: () => this.setState(st => ({ lgRem: !st.lgRem })), demoPass: CONFIG.demoPassword,
+      who: s.auth ? s.auth.name : '', who1: s.auth ? (s.auth.name.trim()[0] || '·').toUpperCase() : '', logout: this.logout,
+      acctOpen: s.acct, toggleAcct: () => this.setState(st => ({ acct: !st.acct })), closeAcct: () => this.setState({ acct: false }),
+      undo: () => { if (tst && tst.undo) tst.undo(); clearTimeout(this._tt); this.setState({ toastOn: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

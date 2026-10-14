@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=Piazzolla:ital,opsz,wght@1,8..30,300;1,8..30,400&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:var(--kz-paper,#F2EFE9);color:var(--kz-ink,#151515);font-family:Onest,sans-serif;-webkit-font-smoothing:antialiased}a{color:var(--kz-ink,#151515)}a:hover{color:var(--kz-accent,#E0502E)}*{box-sizing:border-box}button{font-family:inherit}input,textarea{font-family:inherit;color:inherit}input::placeholder,textarea::placeholder{color:var(--kz-ink3,#5E5A53)}::selection{background:var(--kz-accent,#E0502E);color:var(--kz-on-accent,#151515)}img::selection{background:transparent}::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}@media (hover:none){[data-cursor] img[src]:hover,[data-cursor]:hover img[src]{transform:none!important}}</style>
+</helmet>
+<div style="min-height:100vh; background:var(--kz-paper,#F2EFE9); color:var(--kz-ink,#151515); font-family:Onest, sans-serif">
+
+<header style="position:sticky; top:0; z-index:30; background:var(--kz-glass,rgba(242,239,233,.94)); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:1px solid var(--kz-line2,rgba(21,21,21,.12))">
+<sc-if value="{{ navClassic }}" hint-placeholder-val="{{ true }}">
+  <div style="display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:clamp(16px,2.5vw,40px); padding:{{ hdrPad }} clamp(16px,3vw,40px); transition:padding .35s cubic-bezier(.2,.7,.2,1)">
+    <div onClick="{{ goHome }}" style="cursor:pointer; display:flex; align-items:center"><img src="assets/logo.png" alt="Kuznetsovs Gallery" style="mix-blend-mode:var(--kz-logo-blend,multiply); filter:var(--kz-logo-filter,none); height:{{ logoH }}; display:block; transition:height .35s cubic-bezier(.2,.7,.2,1)"></div>
+    <nav style="display:flex; justify-content:center; gap:2px; flex-wrap:wrap">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6"><span onClick="{{ n.go }}" style="cursor:pointer; display:flex; gap:4px; align-items:flex-start; padding:8px 14px; border-radius:99px; background:{{ n.bg }}; color:{{ n.fg }}; font-size:14px; font-weight:500; transition:background .25s, color .25s, opacity .25s" style-hover="opacity:.7">{{ n.n }}<span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10px; opacity:.55; line-height:1.2">{{ n.count }}</span></span></sc-for>
+    </nav>
+    <div style="display:flex; gap:18px; align-items:center; font-size:13px">
+      <dc-import name="ThemeToggle" variant="{{ toggleStyle }}" dark="{{ isDark }}" on-toggle="{{ toggleTheme }}" hint-size="56px,30px"></dc-import>
+      <a href="tel:+998903165913" style="text-decoration:none; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; white-space:nowrap; display:flex; gap:8px; align-items:center; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"></path></svg>+998 90 316 59 13</a>
+      <button onClick="{{ openDrawer }}" style="border:0; background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515); padding:10px 18px; border-radius:99px; font-size:13px; font-weight:600; cursor:pointer; display:flex; gap:8px; align-items:center; transition:background .25s, color .25s" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M6 8h12l-1 12H7L6 8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg>Заявка <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums;">{{ orderCount }}</span></button>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ navMobile }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px clamp(16px,3vw,40px)">
+    <div onClick="{{ goHome }}" style="cursor:pointer; display:flex; align-items:center; flex:none"><img src="assets/logo.png" alt="Kuznetsovs Gallery" style="mix-blend-mode:var(--kz-logo-blend,multiply); filter:var(--kz-logo-filter,none); height:{{ mLogoH }}; display:block"></div>
+    <div style="display:flex; align-items:center; justify-content:flex-end; gap:{{ mGap }}; min-width:0">
+      <dc-import name="ThemeToggle" variant="{{ toggleStyle }}" dark="{{ isDark }}" on-toggle="{{ toggleTheme }}" hint-size="56px,30px"></dc-import>
+      <button onClick="{{ openDrawer }}" aria-label="Заявка" style="border:0; background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); height:38px; padding:0 14px; border-radius:99px; font-size:13px; font-weight:500; cursor:pointer; display:flex; gap:8px; align-items:center; flex:none; transition:background .3s, color .3s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M6 8h12l-1 12H7L6 8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg><sc-if value="{{ mBagLabel }}" hint-placeholder-val="{{ false }}"><span>Заявка</span></sc-if><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums;">{{ orderCount }}</span></button>
+      <button onClick="{{ toggleMenu }}" aria-label="{{ menuAria }}" aria-expanded="{{ smOnS }}" style="flex:none; display:flex; align-items:center; gap:10px; height:44px; padding:0 2px 0 6px; border:0; background:transparent; color:var(--kz-ink,#151515); font-size:14px; font-weight:500; cursor:pointer">
+        <sc-if value="{{ mMenuLabel }}" hint-placeholder-val="{{ true }}"><span style="display:block; height:1em; overflow:hidden; line-height:1"><span style="display:flex; flex-direction:column; align-items:flex-end; transform:translateY({{ smTxtY }}); transition:transform {{ smTxtT }}"><span style="display:block; height:1em; line-height:1">Меню</span><span style="display:block; height:1em; line-height:1">Закрыть</span></span></span></sc-if>
+        <span style="position:relative; display:block; width:24px; height:24px; flex:none">
+          <span style="position:absolute; left:2px; right:2px; top:50%; height:1.5px; margin-top:-.75px; border-radius:2px; background:currentColor; transform:{{ smL1 }}; transition:transform {{ smIcT }}"></span>
+          <span style="position:absolute; left:2px; right:2px; top:50%; height:1.5px; margin-top:-.75px; border-radius:2px; background:currentColor; transform:{{ smL2 }}; transition:transform {{ smIcT }}"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</sc-if>
+</header>
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <div data-sm="" style="position:fixed; inset:0; z-index:29; overflow:hidden">
+    <div data-sm-layer="" style="position:absolute; inset:0; background:var(--kz-ink,#151515)"></div>
+    <div data-sm-layer="" style="position:absolute; inset:0; background:var(--kz-accent,#E0502E)"></div>
+    <div data-sm-panel="" style="position:absolute; inset:0; background:var(--kz-paper,#F2EFE9); color:var(--kz-ink,#151515); display:flex; flex-direction:column; padding:calc(63px + clamp(28px,7vh,72px)) clamp(16px,3vw,40px) 28px; overflow-y:auto">
+      <nav style="display:flex; flex-direction:column; gap:2px">
+        <sc-for list="{{ menuNav }}" as="n" hint-placeholder-count="4">
+          <div style="overflow:hidden; padding-bottom:.06em; font-size:clamp(46px,12.5vw,104px); line-height:1.02">
+            <div onClick="{{ n.go }}" style="display:inline-flex; align-items:flex-start; gap:14px; cursor:pointer; font-weight:600; letter-spacing:-.065em; color:{{ n.fg }}; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">
+              <span data-sm-label="" style="display:inline-block; transform-origin:50% 100%">{{ n.n }}</span>
+              <span data-sm-num="" style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; font-weight:400; letter-spacing:0; line-height:1; margin-top:.55em; color:var(--kz-accent,#E0502E)">{{ n.i }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </nav>
+      <div style="margin-top:auto; padding-top:48px; display:flex; flex-direction:column; gap:14px">
+        <span data-sm-st="" style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--kz-accent,#E0502E); font-weight:500">Связаться</span>
+        <div style="display:flex; flex-wrap:wrap; gap:12px 28px; font-size:16px; font-weight:500">
+          <a data-sm-link="" href="tel:+998903165913" style="color:var(--kz-ink,#151515); text-decoration:none; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">+998 90 316 59 13 · Алексей</a>
+          <a data-sm-link="" href="tel:+998935043719" style="color:var(--kz-ink,#151515); text-decoration:none; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">+998 93 504 37 19 · Ольга</a>
+          <a data-sm-link="" href="https://www.instagram.com/kuznetsovsgallery/" style="color:var(--kz-ink,#151515); text-decoration:none; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main data-screen-label="01 Главная">
+  <section data-reveal="" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr)); gap:clamp(28px,3vw,56px); padding:clamp(20px,3vw,40px); align-items:stretch">
+    <div style="display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+      <div style="display:flex; flex-direction:column; justify-content:space-between; gap:40px; height:100%; padding-top:12px">
+        <div style="display:flex; flex-direction:column; gap:22px; max-width:640px">
+        <div style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:500">Kuznetsovs Gallery — Ташкент</div>
+        <p style="margin:0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(29.44px,3.13vw,51.52px); line-height:1.08; text-wrap:pretty">Принт-картины, объединяющие традиционное и современное. В наличии и на заказ.</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:28px">
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button onClick="{{ goCatalogAll }}" style="border:0; background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); padding:14px 24px; border-radius:99px; font-size:14px; font-weight:500; cursor:pointer; transition:background .3s, color .3s, transform .3s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><span style="display:flex; gap:10px; align-items:center">Смотреть коллекцию<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></button>
+          <button onClick="{{ openCustom }}" style="border:1px solid var(--kz-ink,#151515); background:transparent; color:var(--kz-ink,#151515); padding:14px 24px; border-radius:99px; font-size:14px; font-weight:500; cursor:pointer; transition:background .3s, color .3s, transform .3s" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9)"><span style="display:flex; gap:10px; align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M14 4l6 6L9 21H3v-6L14 4z"></path></svg>Сделать на заказ</span></button>
+        </div>
+          <div style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:24px; border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15))"><div style="display:flex; flex-direction:column; gap:4px; padding:14px 0; border-top:1px solid var(--kz-line,rgba(21,21,21,.15))"><span style="font-size:clamp(22px,2vw,30px); font-weight:600; letter-spacing:-.04em">от 90 000 сум</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--kz-ink3,#5E5A53); text-transform:uppercase; letter-spacing:.1em; font-weight:500">за картину</span></div><div style="display:flex; flex-direction:column; gap:4px; padding:14px 0; border-top:1px solid var(--kz-line,rgba(21,21,21,.15))"><span style="font-size:clamp(22px,2vw,30px); font-weight:600; letter-spacing:-.04em">3–7 дней</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--kz-ink3,#5E5A53); text-transform:uppercase; letter-spacing:.1em; font-weight:500">изготовление</span></div><div style="display:flex; flex-direction:column; gap:4px; padding:14px 0; border-top:1px solid var(--kz-line,rgba(21,21,21,.15))"><span style="font-size:clamp(22px,2vw,30px); font-weight:600; letter-spacing:-.04em">{{ totalCount }} {{ totalWord }}</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--kz-ink3,#5E5A53); text-transform:uppercase; letter-spacing:.1em; font-weight:500">в коллекции</span></div><div style="display:flex; flex-direction:column; gap:4px; padding:14px 0; border-top:1px solid var(--kz-line,rgba(21,21,21,.15))"><span style="font-size:clamp(22px,2vw,30px); font-weight:600; letter-spacing:-.04em">Узбекистан</span><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--kz-ink3,#5E5A53); text-transform:uppercase; letter-spacing:.1em; font-weight:500">доставка по стране</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; align-self:end">
+      <sc-for list="{{ heroThumbs }}" as="p" hint-placeholder-count="9">
+        <div data-cursor="Смотреть" onClick="{{ p.open }}" style="position:relative; aspect-ratio:1; overflow:hidden; background:var(--kz-paper3,#E4E0D8); cursor:pointer">
+          <img src="{{ p.src }}" alt="{{ p.t }}" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform .7s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.07)">
+          <sc-if value="{{ thumbChips }}" hint-placeholder-val="{{ true }}"><div style="position:absolute; left:8px; bottom:8px; max-width:calc(100% - 16px); background:var(--kz-glass,rgba(242,239,233,.94)); padding:5px 10px; border-radius:99px; font-size:12px; display:flex; gap:6px; align-items:center; pointer-events:none"><span style="width:6px; height:6px; flex:none; border-radius:50%; background:var(--kz-accent,#E0502E)"></span><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ p.t }}</span></div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <div style="padding:0 clamp(16px,3vw,40px); overflow:hidden">
+    <h1 data-rise="" style="margin:0; padding:.06em 0 .08em; font-weight:600; font-size:clamp(60px,16.5vw,330px); line-height:.86; letter-spacing:-.075em; white-space:nowrap; display:flex; align-items:flex-end">картины</h1>
+  </div>
+
+    <sc-if value="{{ showMarquee }}" hint-placeholder-val="{{ true }}">
+  <div data-curve="" data-text="{{ loopOne }}" title="Потяните, чтобы изменить направление" style="overflow:hidden; cursor:grab; user-select:none; touch-action:pan-y; padding:clamp(8px,2vw,28px) 0 0; min-height:40px"></div>
+  </sc-if>
+
+  <section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0">
+    <h2 style="margin:0 0 28px; font-size:clamp(36px,5vw,80px); font-weight:500; letter-spacing:-.05em; line-height:.95; text-wrap:balance">Выберите направление</h2>
+    <div style="border-top:1px solid var(--kz-ink,#151515)">
+      <sc-for list="{{ catRows }}" as="c" hint-placeholder-count="4">
+        <div data-cursor="Открыть" data-preview="{{ c.img }}" onClick="{{ c.open }}" style="display:grid; grid-template-columns:{{ catCols }}; gap:clamp(12px,2vw,32px); align-items:center; padding:18px 0; border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15)); cursor:pointer; transition:padding .3s" style-hover="padding-left:16px; background:var(--kz-hover,#EAE6DE)">
+          <div style="display:flex; flex-direction:column; gap:6px; min-width:0">
+            <span style="font-size:clamp(32px,4.6vw,72px); font-weight:500; letter-spacing:-.05em; line-height:.95">{{ c.n }}</span>
+            <span style="font-size:15px; color:var(--kz-ink3,#5E5A53)">{{ c.d }}</span>
+          </div>
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; white-space:nowrap; display:flex; gap:10px; align-items:center">{{ c.count }} {{ c.word }} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span>
+          <sc-if value="{{ catThumbs }}" hint-placeholder-val="{{ false }}"><div style="width:120px; aspect-ratio:1; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="{{ c.img }}" alt="" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0">
+    <div style="position:relative; overflow:hidden; background:var(--kz-paper3,#E4E0D8)">
+      <img src="assets/room-tashkent.jpg" alt="Картина в интерьере" style="filter:var(--kz-img,none); width:100%; display:block; aspect-ratio:{{ roomAR }}; object-fit:cover; transition:transform 1.4s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.04)">
+      <div style="position:absolute; left:clamp(12px,2vw,28px); bottom:clamp(12px,2vw,28px); background:var(--kz-paper,#F2EFE9); padding:16px 20px; display:flex; flex-direction:column; gap:4px; max-width:340px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; color:var(--kz-ink3,#5E5A53); letter-spacing:.1em; font-weight:500">В интерьере</span>
+        <span style="font-size:18px; font-weight:600; letter-spacing:-.02em">Тошкент</span>
+        <span style="font-size:13px; color:var(--kz-ink3,#5E5A53)">Холст на подрамнике, печать с высокой точностью цветопередачи</span>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr)); gap:32px; padding:clamp(40px,5vw,72px) 0 0; align-items:end">
+      <p style="margin:0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(36.8px,4.6vw,77.28px); line-height:1.08; ">«Картина круче, чем на фото!»</p>
+      <div style="display:flex; flex-direction:column; gap:10px; max-width:420px; justify-self:end">
+        <span style="font-size:15px; line-height:1.55; color:var(--kz-ink2,#3A3732)">Не жалею, что заказал именно у вас.</span>
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">— Max Nam, клиент галереи</span>
+      </div>
+    </div>
+  </section>
+
+  <section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px 32px; flex-wrap:wrap; margin-bottom:40px; border-top:1px solid var(--kz-ink,#151515); padding-top:20px">
+      <h2 style="margin:0; font-size:clamp(36px,5vw,80px); font-weight:500; letter-spacing:-.05em; line-height:.95; max-width:1100px; text-wrap:balance">Багет превращает принт в настоящую картину</h2>
+      <span onClick="{{ goInfo }}" style="font-size:14px; white-space:nowrap; margin-bottom:.35em; cursor:pointer; border-bottom:1px solid var(--kz-ink,#151515); transition:color .25s, border-color .25s" style-hover="color:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E)">Подробнее об оформлении →</span>
+    </div>
+    <div style="display:grid; grid-template-columns:{{ frameCols }}; gap:32px clamp(12px,1.5vw,24px)">
+      <sc-for list="{{ frames }}" as="f" hint-placeholder-count="3">
+        <div style="display:flex; flex-direction:column; gap:14px">
+          <div style="aspect-ratio:4/3; overflow:hidden; background:#fff"><img src="{{ f.img }}" alt="{{ f.n }}" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+          <span style="font-size:20px; font-weight:600; letter-spacing:-.02em">{{ f.n }}</span>
+          <span style="font-size:14px; line-height:1.5; color:var(--kz-ink3,#5E5A53); max-width:360px">{{ f.d }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:clamp(24px,3vw,48px)">
+    <div style="display:flex; flex-direction:column; gap:20px">
+      <div style="aspect-ratio:4/3; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="assets/gift.jpg" alt="Подарочная упаковка" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+      <h3 style="margin:0; font-size:clamp(28px,3vw,44px); font-weight:500; letter-spacing:-.04em; line-height:1">Подарите картину близким и коллегам</h3>
+      <p style="margin:0; font-size:15px; line-height:1.6; color:var(--kz-ink2,#3A3732); max-width:520px">Печать на холсте — оригинальный сувенир деловому партнёру или подарок близкому человеку. Обрамлённая в багет, изготовленный нашими мастерами, она примет вид настоящей картины.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px">
+      <div style="aspect-ratio:4/3; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="assets/office-cafe.jpg" alt="Картина в кафе" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+      <h3 style="margin:0; font-size:clamp(28px,3vw,44px); font-weight:500; letter-spacing:-.04em; line-height:1">Украсьте кафе, магазин или офис</h3>
+      <p style="margin:0; font-size:15px; line-height:1.6; color:var(--kz-ink2,#3A3732); max-width:520px">Магазины, кафе, рестораны, офисы, спортивные залы — любые пространства, где нужно создать атмосферу и придать интерьеру неповторимую индивидуальность.</p>
+    </div>
+  </section>
+
+  <section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0">
+    <h2 style="margin:0 0 28px; border-top:1px solid var(--kz-ink,#151515); padding-top:20px; font-size:clamp(36px,5vw,80px); font-weight:500; letter-spacing:-.05em; line-height:.95; text-wrap:balance">Нам доверяют {{ clientCount }} {{ clientWord }}</h2>
+    <div style="display:grid; grid-template-columns:{{ clientCols }}; column-gap:24px">
+      <sc-for list="{{ clients }}" as="cl" hint-placeholder-count="12">
+        <div onMouseEnter="{{ cl.enter }}" onMouseLeave="{{ cl.leave }}" style="display:flex; gap:12px; align-items:center; min-width:0; padding:11px 0; border-bottom:1px solid var(--kz-line2,rgba(21,21,21,.12)); transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)"><span style="min-width:0; font-size:16px; font-weight:500; letter-spacing:-.01em; transition:transform .35s cubic-bezier(.2,.7,.2,1)">{{ cl.n }}</span><sc-if value="{{ cl.hasLogo }}" hint-placeholder-val="{{ false }}"><img src="{{ cl.logo }}" alt="" loading="lazy" style="margin-left:auto; flex:none; width:72px; height:24px; object-fit:contain; mix-blend-mode:{{ clBlend }}; filter:{{ clFilter }}; opacity:0; transform:translateX(8px); transition:opacity .35s, transform .5s cubic-bezier(.2,.7,.2,1); pointer-events:none"></sc-if></div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section data-reveal="" ref="{{ revSecRef }}" onPointerEnter="{{ revPE }}" onPointerLeave="{{ revPL }}" style="padding:clamp(48px,6vw,96px) 0 0">
+    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px 32px; flex-wrap:wrap; margin:0 clamp(16px,3vw,40px) 20px; border-top:1px solid var(--kz-ink,#151515); padding-top:20px">
+      <h2 style="margin:0; font-size:clamp(36px,5vw,80px); font-weight:500; letter-spacing:-.05em; line-height:.95">Что пишут клиенты</h2>
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; min-width:60px; text-align:center"><span style="color:var(--kz-accent,#E0502E)">{{ revPos }}</span> / {{ revTotal }}</span>
+        <button type="button" onClick="{{ revQPrev }}" aria-label="Предыдущий отзыв" style="width:44px; height:44px; flex:none; padding:0; border-radius:50%; border:1px solid var(--kz-line3,rgba(21,21,21,.25)); background:transparent; color:var(--kz-ink,#151515); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .3s, color .3s, border-color .3s, opacity .3s; -webkit-tap-highlight-color:transparent" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); border-color:var(--kz-ink,#151515)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg></button>
+        <button type="button" onClick="{{ revQNext }}" aria-label="Следующий отзыв" style="width:44px; height:44px; flex:none; padding:0; border-radius:50%; border:1px solid var(--kz-line3,rgba(21,21,21,.25)); background:transparent; color:var(--kz-ink,#151515); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .3s, color .3s, border-color .3s, opacity .3s; -webkit-tap-highlight-color:transparent" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); border-color:var(--kz-ink,#151515)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+      </div>
+    </div>
+    <div onTouchStart="{{ revTS }}" onTouchEnd="{{ revTE }}" style="display:grid; margin:0 clamp(16px,3vw,40px); padding-top:clamp(8px,2vw,24px)">
+      <sc-for list="{{ reviewsQ }}" as="r" hint-placeholder-count="1">
+        <figure aria-hidden="{{ r.hidden }}" style="grid-area:1/1; margin:0; display:flex; flex-direction:column; gap:28px; opacity:{{ r.op }}; transform:translateY({{ r.ty }}); pointer-events:{{ r.pe }}; transition:opacity .6s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1)">
+          <blockquote style="margin:0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(27.6px,3.31vw,55.2px); line-height:1.08; max-width:1100px; text-wrap:pretty">«{{ r.q }}»</blockquote>
+          <figcaption style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">— {{ r.n }}</figcaption>
+        </figure>
+      </sc-for>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+<sc-if value="{{ isCatalog }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="02 Коллекция" style="padding:0 clamp(16px,3vw,40px)">
+  <section data-reveal="" style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; padding:clamp(32px,4vw,56px) 0 28px">
+    <h1 style="margin:0; font-weight:600; font-size:clamp(52px,8vw,136px); line-height:.86; letter-spacing:-.065em; max-width:11ch; text-wrap:balance">{{ catalogTitle }}</h1>
+    <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start; max-width:380px; padding-bottom:6px">
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px">{{ shownCount }} {{ shownWord }}</span>
+      <span style="font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:19.32px; line-height:1.15">Выбирайте сочетания по цвету, стилю и смыслу. Другое соотношение сторон — на заказ.</span>
+    </div>
+  </section>
+  <section style="position:{{ filterPos }}; top:0; z-index:2; background:var(--kz-paper,#F2EFE9); border-top:1px solid var(--kz-ink,#151515); border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15)); padding:12px 0; display:flex; flex-wrap:wrap; gap:12px 28px; align-items:center; justify-content:space-between">
+    <div style="display:flex; gap:6px; flex-wrap:wrap">
+      <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.pick }}" style="border:1px solid var(--kz-ink,#151515); background:{{ c.bg }}; color:{{ c.fg }}; padding:7px 14px; border-radius:99px; font-size:13px; cursor:pointer; display:flex; gap:6px; transition:background .3s, color .3s, transform .3s">{{ c.n }}<span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; opacity:.6">{{ c.count }}</span></button></sc-for>
+    </div>
+    <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center; font-size:13px">
+      <div style="display:flex; gap:12px">
+        <sc-for list="{{ fmtChips }}" as="f" hint-placeholder-count="4"><span onClick="{{ f.pick }}" style="cursor:pointer; opacity:{{ f.op }}; border-bottom:1px solid {{ f.line }}; transition:opacity .25s, border-color .25s" style-hover="opacity:1">{{ f.n }}</span></sc-for>
+      </div>
+      <span style="width:1px; height:16px; background:var(--kz-line3,rgba(21,21,21,.25))"></span>
+      <span onClick="{{ cycleSort }}" style="cursor:pointer; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; display:flex; gap:6px; align-items:center; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"></path></svg>Цена: {{ sortLabel }}</span>
+      <div style="display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--kz-ink,#151515)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input value="{{ q }}" onInput="{{ setQ }}" placeholder="Поиск по названию" style="border:0; background:transparent; padding:6px 0; font-size:13px; width:160px; outline:none"></div>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}"><div style="display:flex; gap:10px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px">
+        <span onClick="{{ viewGrid }}" style="cursor:pointer; opacity:{{ gridOp }}; display:flex; gap:6px; align-items:center; transition:opacity .25s" style-hover="opacity:1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><rect x="4" y="4" width="6.5" height="6.5"></rect><rect x="13.5" y="4" width="6.5" height="6.5"></rect><rect x="4" y="13.5" width="6.5" height="6.5"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5"></rect></svg>Сетка</span><span onClick="{{ viewList }}" style="cursor:pointer; opacity:{{ listOp }}; display:flex; gap:6px; align-items:center; transition:opacity .25s" style-hover="opacity:1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>Список</span>
+      </div></sc-if>
+    </div>
+  </section>
+
+  <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ true }}">
+    <section style="display:grid; grid-template-columns:{{ gridCols }}; gap:{{ gridGap }}; padding-top:28px; align-items:start">
+      <sc-for list="{{ visible }}" as="p" hint-placeholder-count="8">
+        <div data-reveal="" data-cursor="Смотреть" onClick="{{ p.open }}" style="cursor:pointer; display:flex; flex-direction:column; gap:10px; min-width:0">
+          <div style="aspect-ratio:{{ cardAR }}; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="{{ p.src }}" alt="{{ p.t }}" loading="lazy" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform .7s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.04)"></div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 12px; align-items:baseline">
+            <span style="font-size:16px; font-weight:600; letter-spacing:-.02em; line-height:1.2">{{ p.t }}</span>
+            <sc-if value="{{ showCodes }}" hint-placeholder-val="{{ true }}"><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--kz-ink3,#5E5A53); white-space:nowrap">{{ p.no }}</span></sc-if>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 12px; font-size:13px; color:var(--kz-ink3,#5E5A53)"><span>{{ p.range }}</span><sc-if value="{{ showPrices }}" hint-placeholder-val="{{ true }}"><span style="color:var(--kz-ink,#151515)">{{ p.from }}</span></sc-if></div>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+    <section style="padding-top:8px">
+      <sc-for list="{{ visible }}" as="p" hint-placeholder-count="6">
+        <div data-reveal="" data-preview="{{ p.src }}" onClick="{{ p.open }}" style="display:grid; grid-template-columns:64px 88px minmax(0,1.1fr) minmax(0,1.6fr) minmax(0,.9fr) 150px; gap:20px; align-items:center; padding:14px 0; border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15)); cursor:pointer" style-hover="background:var(--kz-hover,#EAE6DE)">
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px">{{ p.no }}</span>
+          <div style="width:88px; aspect-ratio:1; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="{{ p.src }}" alt="" loading="lazy" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+          <span style="font-size:20px; font-weight:600; letter-spacing:-.03em">{{ p.t }}</span>
+          <span style="font-size:14px; color:var(--kz-ink3,#5E5A53); line-height:1.45">{{ p.d }}</span>
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--kz-ink2,#3A3732)">{{ p.sizesText }}</span>
+          <span style="font-size:14px; white-space:nowrap; text-align:right">{{ p.from }}</span>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:80px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:29.44px">Ничего не нашлось. Можно сделать картину на заказ — <span onClick="{{ openCustom }}" style="cursor:pointer; color:var(--kz-accent,#E0502E); border-bottom:1px solid var(--kz-accent,#E0502E); transition:color .25s, border-color .25s" style-hover="color:var(--kz-ink,#151515); border-color:var(--kz-ink,#151515)">оставить заявку</span>.</div>
+  </sc-if>
+  <sc-if value="{{ hasMore }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex; justify-content:center; padding:24px 0 0"><button onClick="{{ showMore }}" style="border:1px solid var(--kz-ink,#151515); background:transparent; padding:14px 28px; border-radius:99px; font-size:14px; cursor:pointer; transition:background .3s, color .3s, transform .3s" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9)">Показать ещё · {{ restCount }}</button></div>
+  </sc-if>
+</main>
+</sc-if>
+
+<sc-if value="{{ isWork }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="03 Работа">
+  <div style="display:flex; justify-content:space-between; gap:16px; padding:16px clamp(16px,3vw,40px); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">
+    <span onClick="{{ goCatalogBack }}" style="cursor:pointer; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">← Коллекция / {{ w.cat }}</span>
+    <span>{{ w.no }}</span>
+  </div>
+  <section data-reveal="" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr)); gap:clamp(24px,4vw,64px); padding:0 clamp(16px,3vw,40px); align-items:start">
+    <div style="position:{{ workImgPos }}; top:{{ stickyTopA }}; background:var(--kz-paper3,#E4E0D8); aspect-ratio:1; max-height:{{ workImgMax }}; width:100%; overflow:hidden">
+      <img src="{{ w.src }}" alt="{{ w.t }}" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:contain; display:block">
+    </div>
+    <div style="display:flex; flex-direction:column; gap:28px; padding-bottom:40px">
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--kz-ink3,#5E5A53)">{{ w.no }} · Kuznetsovs Gallery · {{ w.fmtName }}</span>
+        <h1 style="margin:0; font-size:clamp(48px,6vw,104px); font-weight:600; letter-spacing:-.06em; line-height:.88">{{ w.t }}</h1>
+        <p style="margin:0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(20.24px,1.84vw,25.76px); line-height:1.2; max-width:560px; text-wrap:pretty">{{ w.d }}</p>
+      </div>
+      <div style="display:flex; flex-direction:column; border-top:1px solid var(--kz-ink,#151515)">
+        <div style="display:flex; justify-content:space-between; padding:12px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500"><span>Размер</span><span>Цена</span></div>
+        <sc-for list="{{ wSizes }}" as="s" hint-placeholder-count="3">
+          <div onClick="{{ s.pick }}" style="display:flex; justify-content:space-between; align-items:center; gap:16px; padding:14px 14px; margin:0 -14px; border-top:1px solid var(--kz-line,rgba(21,21,21,.15)); cursor:pointer; background:{{ s.bg }}; transition:background .25s" style-hover="background:var(--kz-sel,#E6E1D7)">
+            <span style="display:flex; gap:12px; align-items:center; font-size:18px; font-weight:500"><span style="width:12px; height:12px; border-radius:50%; border:1px solid var(--kz-ink,#151515); background:{{ s.dot }}"></span>{{ s.label }}</span>
+            <span style="font-size:16px">{{ s.price }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">Оформление</span>
+        <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px">
+          <sc-for list="{{ wFrames }}" as="f" hint-placeholder-count="3">
+            <div onClick="{{ f.pick }}" style="cursor:pointer; display:flex; flex-direction:column; gap:8px; padding:8px; border:1px solid {{ f.line }}; background:var(--kz-raised,#F7F5F1); transition:border-color .3s, transform .35s cubic-bezier(.2,.7,.2,1)" style-hover="border-color:var(--kz-ink,#151515); transform:translateY(-3px)">
+              <div style="aspect-ratio:4/3; overflow:hidden"><img src="{{ f.img }}" alt="" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+              <span style="font-size:13px; font-weight:500; line-height:1.25">{{ f.n }}</span>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:10px; color:var(--kz-ink3,#5E5A53); text-transform:uppercase; letter-spacing:.1em; font-weight:500">{{ f.note }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+        <button onClick="{{ addToOrder }}" style="border:0; background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); padding:18px 30px; border-radius:99px; font-size:15px; font-weight:500; cursor:pointer; transition:background .3s, color .3s, transform .3s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><span style="display:flex; gap:10px; align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M12 5v14M5 12h14"></path></svg>Добавить в заявку · {{ w.selPrice }}</span></button>
+        <a href="tel:+998903165913" style="border:1px solid var(--kz-ink,#151515); padding:17px 26px; border-radius:99px; font-size:15px; text-decoration:none; transition:background .3s, color .3s" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9)"><span style="display:flex; gap:10px; align-items:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"></path></svg>Позвонить</span></a>
+      </div>
+      <div style="display:flex; flex-direction:column; border-top:1px solid var(--kz-ink,#151515); font-size:14px">
+        <sc-for list="{{ specs }}" as="sp" hint-placeholder-count="5">
+          <div style="display:grid; grid-template-columns:{{ specCols }}; gap:16px; padding:12px 0; border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15))"><span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink3,#5E5A53); letter-spacing:.1em; font-weight:500">{{ sp.k }}</span><span style="line-height:1.5">{{ sp.v }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+  <section data-cursor="Далее" onClick="{{ next.open }}" style="margin:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0; position:relative; overflow:hidden; cursor:pointer; background:var(--kz-inv,#151515); min-height:clamp(280px,40vw,520px); display:flex; align-items:center; justify-content:center">
+    <img src="{{ next.src }}" alt="" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.45; transition:transform 1s, opacity .6s" style-hover="opacity:.6; transform:scale(1.03)">
+    <div style="position:relative; color:var(--kz-invfg,#F2EFE9); text-align:center; display:flex; flex-direction:column; gap:10px; pointer-events:none">
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">Следующая работа · {{ next.no }}</span>
+      <span style="font-size:clamp(44px,7vw,120px); font-weight:600; letter-spacing:-.06em; line-height:.9">{{ next.t }}</span>
+    </div>
+  </section>
+  <section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0">
+    <div style="display:flex; gap:14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; border-top:1px solid var(--kz-ink,#151515); padding-top:14px; margin-bottom:24px; letter-spacing:.1em; font-weight:500"><span>Ещё</span><span>{{ w.cat }}</span></div>
+    <div style="display:grid; grid-template-columns:{{ relCols }}; gap:28px clamp(12px,1.6vw,24px)">
+      <sc-for list="{{ related }}" as="p" hint-placeholder-count="4">
+        <div data-cursor="Смотреть" onClick="{{ p.open }}" style="cursor:pointer; display:flex; flex-direction:column; gap:10px">
+          <div style="aspect-ratio:{{ cardAR }}; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="{{ p.src }}" alt="{{ p.t }}" loading="lazy" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:2px 10px"><span style="font-size:15px; font-weight:600">{{ p.t }}</span><span style="font-size:13px; color:var(--kz-ink3,#5E5A53)">{{ p.from }}</span></div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+<sc-if value="{{ isInfo }}" hint-placeholder-val="{{ false }}">
+<main data-screen-label="04 Покупателям" style="padding:0 clamp(16px,3vw,40px)">
+  <section data-reveal="" style="padding:clamp(32px,4vw,56px) 0 clamp(40px,5vw,72px); display:flex; flex-direction:column; gap:24px">
+    <h1 style="margin:0; font-weight:600; font-size:clamp(48px,11vw,184px); line-height:.82; letter-spacing:-.07em">покупателям</h1>
+    <p style="margin:0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(22.08px,2.21vw,31.28px); line-height:1.15; max-width:760px">Цены, оформление, сроки и доставка. Остались вопросы — звоните, подберём картину под ваш интерьер.</p>
+  </section>
+  <section data-reveal="" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:clamp(32px,4vw,64px); border-top:1px solid var(--kz-ink,#151515); padding-top:14px">
+    <div style="display:flex; flex-direction:column; gap:20px; position:{{ workImgPos }}; top:{{ stickyTopB }}; align-self:start">
+      <h2 style="margin:0; font-size:clamp(28px,3vw,44px); font-weight:500; letter-spacing:-.04em; line-height:1">Цена зависит от размера</h2>
+      <p style="margin:0; font-size:15px; line-height:1.6; color:var(--kz-ink2,#3A3732); max-width:520px">Для работ на заказ к цене добавляется работа дизайнера. Чем больше размер, тем выгоднее: 100/100 см в 4 раза больше по площади, чем 50/50 см, а дороже лишь в 2,7 раза.</p>
+      <span style="font-size:clamp(44px,5vw,84px); font-weight:600; letter-spacing:-.06em; line-height:.9">от {{ priceLo }} сум</span>
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink3,#5E5A53); margin-top:-8px; letter-spacing:.1em; font-weight:500">Максимум в прайсе — {{ priceHi }}</span>
+      <div style="position:relative; overflow:hidden; background:var(--kz-paper3,#E4E0D8); max-width:620px"><img src="assets/cafe-portrait.jpg" alt="Принт-картина в интерьере кафе" style="filter:var(--kz-img,none); width:100%; display:block; aspect-ratio:4/3; object-fit:cover; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.04)"><span style="position:absolute; left:12px; bottom:12px; background:var(--kz-paper,#F2EFE9); padding:6px 12px; border-radius:99px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">В интерьере</span></div>
+    </div>
+    <div style="display:flex; flex-direction:column">
+      <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:16px; padding:10px 0; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; color:var(--kz-ink3,#5E5A53); border-bottom:1px solid var(--kz-ink,#151515); letter-spacing:.1em; font-weight:500"><span>Размер, см</span><span>Формат</span><span>Холст на подрамнике</span></div>
+      <sc-for list="{{ priceTable }}" as="r" hint-placeholder-count="10">
+        <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:16px; padding:11px 0; border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15)); font-size:15px"><span style="font-weight:500">{{ r.size }}</span><span style="color:var(--kz-ink3,#5E5A53)">{{ r.fmt }}</span><span>{{ r.price }}</span></div>
+      </sc-for>
+    </div>
+  </section>
+  <section data-reveal="" style="padding-top:clamp(48px,6vw,96px)">
+    <h2 style="margin:0 0 28px; border-top:1px solid var(--kz-ink,#151515); padding-top:20px; font-size:clamp(28px,3vw,44px); font-weight:500; letter-spacing:-.04em; line-height:1">Пять шагов от идеи до стены</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:28px 24px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="5">
+        <div style="display:flex; flex-direction:column; gap:14px; padding-top:16px; border-top:1px solid var(--kz-line,rgba(21,21,21,.15))">
+          <span style="font-size:clamp(48px,5vw,80px); font-weight:600; letter-spacing:-.06em; line-height:.9; color:var(--kz-accent,#E0502E)">{{ s.n }}</span>
+          <span style="font-size:18px; font-weight:600; letter-spacing:-.02em">{{ s.t }}</span>
+          <span style="font-size:14px; line-height:1.5; color:var(--kz-ink3,#5E5A53)">{{ s.d }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <section data-reveal="" style="padding-top:clamp(48px,6vw,96px)">
+    <h2 style="margin:0 0 28px; border-top:1px solid var(--kz-ink,#151515); padding-top:20px; font-size:clamp(28px,3vw,44px); font-weight:500; letter-spacing:-.04em; line-height:1">Холст, багет или стекло</h2>
+    <div style="display:grid; grid-template-columns:{{ frameCols }}; gap:32px clamp(12px,1.6vw,24px)">
+      <sc-for list="{{ frames }}" as="f" hint-placeholder-count="3">
+        <div style="display:flex; flex-direction:column; gap:14px">
+          <div style="aspect-ratio:1; overflow:hidden; background:#fff"><img src="{{ f.img }}" alt="{{ f.n }}" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block; transition:transform 1.1s cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.05)"></div>
+          <span style="font-size:22px; font-weight:600; letter-spacing:-.03em">{{ f.n }}</span>
+          <span style="font-size:14px; line-height:1.55; color:var(--kz-ink2,#3A3732)">{{ f.long }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:40px; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:16px; align-items:center; background:var(--kz-paper2,#E9E5DD)">
+      <img src="assets/wayhome.jpg" alt="Картина в интерьере" style="filter:var(--kz-img,none); width:100%; display:block; aspect-ratio:4/3; object-fit:cover">
+      <div style="padding:clamp(24px,3vw,48px); display:flex; flex-direction:column; gap:14px">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500">Нестандартный размер</span>
+        <span style="font-size:clamp(26px,2.6vw,40px); font-weight:500; letter-spacing:-.04em; line-height:1.05">Некоторые работы можно сделать с другим соотношением сторон — на заказ</span>
+        <button onClick="{{ openCustom }}" style="align-self:flex-start; border:0; background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); padding:14px 24px; border-radius:99px; font-size:14px; cursor:pointer; transition:background .3s, color .3s, transform .3s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><span style="display:flex; gap:10px; align-items:center">Обсудить размер<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></button>
+      </div>
+    </div>
+  </section>
+</main>
+</sc-if>
+
+<sc-if value="{{ showFaq }}" hint-placeholder-val="{{ true }}">
+<section data-reveal="" style="padding:clamp(48px,6vw,96px) clamp(16px,3vw,40px) 0; display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr)); gap:clamp(24px,4vw,64px)">
+  <div style="display:flex; flex-direction:column; gap:18px; border-top:1px solid var(--kz-ink,#151515); padding-top:14px">
+    <div style="display:flex; gap:14px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; font-weight:500"><span>(?)</span><span>Частые вопросы</span></div>
+    <h2 style="margin:0; font-size:clamp(40px,5vw,80px); font-weight:500; letter-spacing:-.05em; line-height:.92">Вопросы, которые задают чаще всего</h2>
+  </div>
+  <div style="border-top:1px solid var(--kz-ink,#151515)">
+    <sc-for list="{{ faq }}" as="f" hint-placeholder-count="6">
+      <div style="border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15))">
+        <div onClick="{{ f.toggle }}" style="display:flex; justify-content:space-between; gap:20px; padding:20px 0; cursor:pointer; font-size:clamp(18px,1.6vw,22px); font-weight:500; letter-spacing:-.02em"><span>{{ f.q }}</span><span style="display:flex; transform:rotate({{ f.rot }}); transition:transform .35s cubic-bezier(.2,.7,.2,1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M12 5v14M5 12h14"></path></svg></span></div>
+        <div style="display:grid; grid-template-rows:{{ f.rows }}; opacity:{{ f.op }}; transition:grid-template-rows .55s cubic-bezier(.2,.7,.2,1), opacity .4s"><div style="overflow:hidden; min-height:0"><p style="margin:0; padding:0 0 22px; font-size:15px; line-height:1.6; color:var(--kz-ink2,#3A3732); max-width:620px">{{ f.a }}</p></div></div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+</sc-if>
+
+<footer data-screen-label="Контакты" style="margin-top:clamp(48px,6vw,96px); background:var(--kz-inv,#151515); color:var(--kz-invfg,#F2EFE9); padding:clamp(40px,5vw,72px) clamp(16px,3vw,40px) 24px; display:flex; flex-direction:column; gap:clamp(40px,5vw,72px)">
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:32px">
+    <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:16px; min-width:0">
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500">Остались вопросы? Звоните</span>
+      <div style="display:flex; flex-wrap:wrap; gap:20px clamp(32px,5vw,80px); align-items:flex-start"><div style="display:flex; flex-direction:column; gap:6px"><a href="tel:+998903165913" style="color:var(--kz-invfg,#F2EFE9); text-decoration:none; font-size:clamp(26px,2.6vw,40px); font-weight:500; letter-spacing:-.03em; line-height:1.1; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">+998 90 316 59 13</a><span style="font-size:14px; color:var(--kz-ink4,#A8A399)">Алексей</span></div><div style="display:flex; flex-direction:column; gap:6px"><a href="tel:+998935043719" style="color:var(--kz-invfg,#F2EFE9); text-decoration:none; font-size:clamp(26px,2.6vw,40px); font-weight:500; letter-spacing:-.03em; line-height:1.1; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">+998 93 504 37 19</a><span style="font-size:14px; color:var(--kz-ink4,#A8A399)">Ольга</span></div></div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; font-size:15px">
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500">Галерея</span>
+      <sc-for list="{{ footNav }}" as="n" hint-placeholder-count="6"><span onClick="{{ n.go }}" style="cursor:pointer; transition:color .25s, padding .3s cubic-bezier(.2,.7,.2,1)" style-hover="color:var(--kz-accent,#E0502E); padding-left:6px">{{ n.n }}</span></sc-for>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; font-size:15px">
+      <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500">Соцсети</span>
+      <a href="https://www.instagram.com/kuznetsovsgallery/" style="color:var(--kz-invfg,#F2EFE9); display:flex; gap:10px; align-items:center; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)"><img src="assets/instagram-light.svg" alt="" style="width:20px; height:20px; display:block">@kuznetsovsgallery</a>
+      <span style="color:var(--kz-ink4,#A8A399); line-height:1.5">Доставка по всему Узбекистану, оплачивается отдельно</span>
+    </div>
+  </div>
+  <div style="font-weight:600; font-size:clamp(40px,15.5vw,300px); letter-spacing:-.075em; line-height:.78; margin-left:-.04em">kuznetsovs<span style="font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-weight:400; color:var(--kz-accent,#E0502E); font-size:.3em; ">gallery</span></div>
+  <div style="display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; color:var(--kz-ink4,#A8A399); text-transform:uppercase; border-top:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); padding-top:16px; letter-spacing:.1em; font-weight:500"><span>© Kuznetsovs Gallery, Ташкент</span><span>Принт-картины в наличии и на заказ</span><a href="Admin.dc.html" style="color:var(--kz-ink4,#A8A399); text-decoration:none; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">Вход для сотрудников</a></div>
+</footer>
+
+<sc-if value="{{ adminOn }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed; left:clamp(12px,2vw,24px); bottom:clamp(12px,2vw,24px); z-index:28; display:flex; align-items:center; gap:2px; padding:4px; border-radius:99px; background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); font-size:13px; font-weight:500; max-width:calc(100vw - 24px)">
+    <a href="Admin.dc.html" style="display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:99px; color:var(--kz-paper,#F2EFE9); text-decoration:none; white-space:nowrap; transition:background .25s, color .25s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><span>Админка</span><sc-if value="{{ adminHasNew }}" hint-placeholder-val="{{ false }}"><span style="display:flex; align-items:center; gap:6px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px"><span style="width:6px; height:6px; border-radius:50%; background:var(--kz-accent,#E0502E)"></span>{{ adminNew }}</span></sc-if></a>
+    <sc-if value="{{ adminEdit }}" hint-placeholder-val="{{ false }}"><a href="{{ adminEditHref }}" style="display:flex; align-items:center; gap:8px; padding:9px 14px; border-radius:99px; color:var(--kz-paper,#F2EFE9); text-decoration:none; white-space:nowrap; transition:background .25s, color .25s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)">Редактировать<span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; opacity:.7">{{ adminEditK }}</span></a></sc-if>
+  </div>
+</sc-if>
+<sc-if value="{{ drawer }}" hint-placeholder-val="{{ false }}">
+  <div data-fade="" onClick="{{ closeDrawer }}" style="position:fixed; inset:0; background:rgba(21,21,21,.45); z-index:50"></div>
+  <aside data-slide="" style="position:fixed; top:0; right:0; bottom:0; width:min(500px,100%); background:var(--kz-paper,#F2EFE9); z-index:51; display:flex; flex-direction:column; overflow:auto">
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; border-bottom:1px solid var(--kz-ink,#151515)">
+      <span style="font-size:28px; font-weight:600; letter-spacing:-.04em">Заявка</span>
+      <span onClick="{{ closeDrawer }}" style="cursor:pointer; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; transition:color .25s; letter-spacing:.1em; font-weight:500" style-hover="color:var(--kz-accent,#E0502E)">Закрыть ✕</span>
+    </div>
+    <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:40px 24px; display:flex; flex-direction:column; gap:16px">
+        <span style="font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:36.8px; line-height:1.08">Спасибо, {{ name }}!</span>
+        <span style="font-size:15px; line-height:1.6; color:var(--kz-ink2,#3A3732)">Мы перезвоним по номеру {{ phone }}, уточним детали и подготовим макет. Изготовление — от 3 до 7 дней после утверждения.</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:8px 24px; display:flex; flex-direction:column">
+        <sc-for list="{{ orderItems }}" as="o" hint-placeholder-count="1">
+          <div style="display:grid; grid-template-columns:72px minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 0; border-bottom:1px solid var(--kz-line,rgba(21,21,21,.15))">
+            <div style="width:72px; aspect-ratio:1; overflow:hidden; background:var(--kz-paper3,#E4E0D8)"><img src="{{ o.src }}" alt="" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block"></div>
+            <div style="display:flex; flex-direction:column; gap:4px; min-width:0"><span style="font-weight:600">{{ o.t }}</span><span style="font-size:13px; color:var(--kz-ink3,#5E5A53)">{{ o.size }} · {{ o.frame }}</span><span style="font-size:13px">{{ o.price }}</span></div>
+            <span onClick="{{ o.remove }}" title="Убрать" style="cursor:pointer; display:flex; padding:9px; border-radius:50%; border:1px solid var(--kz-line3,rgba(21,21,21,.25)); transition:background .25s, color .25s" style-hover="background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ orderEmpty }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:16px 0; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:22.08px; line-height:1.2">Заявка пуста. Выберите работу в коллекции или опишите свою идею — дизайнер подготовит макет.</p>
+        </sc-if>
+        <sc-if value="{{ orderNotEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; flex-direction:column; gap:4px; padding:16px 0"><div style="display:flex; justify-content:space-between; gap:16px; font-size:15px"><span>Итого</span><span style="font-weight:600">{{ orderTotal }}</span></div><span style="font-size:12px; line-height:1.4; color:var(--kz-ink3,#5E5A53)">{{ orderNote }}</span></div>
+        </sc-if>
+      </div>
+      <div style="padding:16px 24px 32px; display:flex; flex-direction:column; gap:14px; margin-top:auto">
+        <input value="{{ name }}" onInput="{{ setName }}" placeholder="Ваше имя" autocomplete="name" style="transition:border-color .25s; border:0; border-bottom:1px solid {{ nameLine }}; background:transparent; padding:12px 0; font-size:16px; outline:none">
+        <input value="{{ phone }}" onInput="{{ setPhone }}" placeholder="+998 __ ___ __ __" type="tel" inputmode="tel" autocomplete="tel" style="transition:border-color .25s; border:0; border-bottom:1px solid {{ phoneLine }}; background:transparent; padding:12px 0; font-size:16px; outline:none">
+        <textarea value="{{ comment }}" onInput="{{ setComment }}" placeholder="Комментарий: идея, размер, интерьер" rows="3" style="border:0; border-bottom:1px solid var(--kz-ink,#151515); background:transparent; padding:12px 0; font-size:16px; outline:none; resize:vertical"></textarea>
+        <sc-if value="{{ err }}" hint-placeholder-val="{{ false }}"><span style="display:flex; gap:8px; align-items:center; font-size:13px; color:var(--kz-ink2,#3A3732)"><span style="width:7px; height:7px; flex:none; border-radius:50%; background:var(--kz-accent,#E0502E)"></span>{{ errText }}</span></sc-if>
+        <button onClick="{{ submit }}" style="border:0; background:var(--kz-ink,#151515); color:var(--kz-paper,#F2EFE9); padding:18px; border-radius:99px; font-size:15px; font-weight:500; cursor:pointer; margin-top:8px; transition:background .3s, color .3s, transform .3s" style-hover="background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><span style="display:flex; gap:10px; align-items:center; justify-content:center">Отправить заявку<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></button>
+        <span style="font-size:12px; color:var(--kz-ink3,#5E5A53); text-align:center">или позвоните: +998 90 316 59 13 · +998 93 504 37 19</span>
+      </div>
+    </sc-if>
+  </aside>
+</sc-if>
+
+<div ref="{{ previewRef }}" style="position:fixed; left:0; top:0; width:min(280px,22vw); aspect-ratio:1; pointer-events:none; z-index:55; opacity:0; scale:.7; transition:opacity .35s, scale .5s cubic-bezier(.2,.7,.2,1); overflow:hidden; background:var(--kz-paper3,#E4E0D8); box-shadow:0 40px 80px -30px rgba(21,21,21,.45)"><img alt="" style="filter:var(--kz-img,none); width:100%; height:100%; object-fit:cover; display:block"></div>
+<div ref="{{ cursorRef }}" style="position:fixed; left:0; top:0; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515); pointer-events:none; z-index:60; display:flex; align-items:center; justify-content:center; font-size:0; font-weight:600; letter-spacing:.01em; opacity:0; transition:width .4s cubic-bezier(.2,.7,.2,1), height .4s cubic-bezier(.2,.7,.2,1), margin .4s cubic-bezier(.2,.7,.2,1), font-size .25s, opacity .3s"><span></span></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const BASE = 'https://kuznets.uz/wp-content/uploads/';
+const CATS = [
+  { k: 'home', n: 'Для дома', short: 'Для дома', d: 'Оригинальные решения для домашнего интерьера' },
+  { k: 'kids', n: 'Для детской', short: 'Детская', d: 'Оригинальные решения для детской комнаты' },
+  { k: 'office', n: 'Для офиса', short: 'Офис', d: 'Оригинальные решения для офисного интерьера' },
+  { k: 'public', n: 'Для общественных мест', short: 'Общественные места', d: 'Магазины, кафе, рестораны, спортивные залы' }
+];
+const FMT = { sq: 'Квадрат', v: 'Вертикаль', h: 'Горизонталь' };
+const FRAMES = [
+  { n: 'Холст на подрамнике', img: 'assets/holst.jpg', note: 'Входит в цену', d: 'Холст со специальным покрытием, натянутый на деревянный подрамник.', long: 'В большинстве случаев мы используем холст со специальным покрытием. Печать на принтере с высоким разрешением и точностью цветопередачи, затем холст натягивается на деревянный подрамник нужного размера.' },
+  { n: 'Холст с подрамником + багет', img: 'assets/baget.jpg', note: 'Расчёт отдельно', d: 'Багетная рамка, изготовленная нашими мастерами, превращает принт в настоящую картину.', long: 'Обрамлённая в багет, изготовленный нашими мастерами, печать на холсте примет вид настоящей картины. Цвет и профиль багета подбираем под интерьер.' },
+  { n: 'Бумага в рамке под стеклом', img: 'assets/steklo.jpg', note: 'Расчёт отдельно', d: 'Печать на бумаге в рамке со стеклом — лёгкий вариант для небольших форматов.', long: 'Печать на бумаге, оформленная в рамку под стекло. Подходит для небольших форматов, графики и детских комнат.' }
+];
+const CLIENTS = ['Pepsi','Red Bull','Kapitalbank','NBU','Anorbank','Sanoat Qurilish Bank','Click','Humo Arena','Iteca Exhibitions','United Cement Group','Uzcopper','ADM Global','Safia','Beanberry','Community Coffee Bar','Мята Lounge','Apexpizza','Sherin','The Wax Bar','Befit One','Hair Boss','Space Coworking','Ground Zero','Tenet','Shavi','Prestige Travel','Comfort Plaza','Atom Stroy','Betomax','Carbon','Agrover','Alimkhanov Pharm Group','Asia Pharm Consulting','Bavaria Reha','De Factum Laboratories','Referans','Онкологический центр РУз','Школа Al-Xorazmiy','Webnow','Восток','Мой Бухгалтер','Западня'];
+const REVIEWS = [
+  { n: 'Arina Zemskova', q: 'Реальное спасибо за реально крутые и креативные картины! Работаете чётко и качественно, подобрали к нашему интерьеру именно то, что мы хотели видеть.' },
+  { n: 'Evgeniya Lyashko', q: 'Настоящие профессионалы! Подобрали к нашему стилю лучше, чем мы себе это представляли. Качественно, быстро, ещё и с доставкой!' },
+  { n: 'Дилшод Алимханов', q: 'Индивидуальный подход и высокое качество работы! Респект! Буду ещё заказывать!' },
+  { n: 'Sergey Shevchenko', q: 'Спасибо за крутую картину в офис!' },
+  { n: 'Дилафруз Бегимкулова', q: 'Молодцы! Индивидуальный подход и отличный сервис. Удачи вам.' },
+  { n: 'Nataliya Bahramova', q: 'Спасибо большое за работу! Всё очень супер! Ребята, вы молодцы!' },
+  { n: 'Максим и Алеся', q: 'Спасибо вам за такую красоту!' },
+  { n: 'Max Nam', q: 'Картина круче, чем на фото! Не жалею, что заказал именно у вас.' },
+  { n: 'Alla Muxaramova', q: 'Это здорово!' }
+];
+const FAQ = [
+  { q: 'Сколько это стоит?', a: 'Цена зависит от размера и объёма работы дизайнера, если картина делается на заказ. Например, 50/50 см — от 310 000 сум, 100/100 см — от 825 000 сум. Чем больше размер, тем выгоднее цена.' },
+  { q: 'Из чего это делается?', a: 'В большинстве случаев — холст со специальным покрытием. Картины печатаются на принтере с высоким разрешением и точностью цветопередачи, затем холст натягивается на деревянный подрамник нужного размера.' },
+  { q: 'Срок изготовления?', a: 'От 3 до 7 дней после того, как вы утвердили макет. Также можно выбрать из того, что есть в наличии, и забрать сразу.' },
+  { q: 'Есть ли доставка?', a: 'Доставка есть по всему Узбекистану, оплачивается отдельно.' },
+  { q: 'Можно другой размер?', a: 'Некоторые варианты можно сделать с другим соотношением сторон — на заказ.' },
+  { q: 'Можно сделать картину по своей идее?', a: 'Да. Дизайнер подготовит макет, стоимость зависит от размера и объёма работы.' }
+];
+const STEPS = [
+  { n: '1', t: 'Выбор', d: 'Выбираете работу из коллекции или присылаете свою идею.' },
+  { n: '2', t: 'Макет', d: 'Дизайнер готовит макет под размер и интерьер.' },
+  { n: '3', t: 'Утверждение', d: 'Согласовываем макет, размер и оформление.' },
+  { n: '4', t: 'Печать', d: 'Печать на холсте и натяжка на подрамник — 3–7 дней.' },
+  { n: '5', t: 'Доставка', d: 'Самовывоз или доставка по всему Узбекистану.' }
+];
+const fmtP = n => n == null ? 'по запросу' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' сум';
+// Site settings (fixed former tweaks) — change values here.
+const CONFIG = {
+  theme: 'light',
+  accent: '#E0502E',
+  toggleStyle: 'scene',
+  clientLogos: 'color',
+  animations: true,
+  cursorEffects: true,
+  marquee: true,
+  loopShape: 'wave',
+  loopRibbon: true,
+  loopUppercase: true,
+  loopDirection: 'forward',
+  loopPause: false,
+  loopSpeed: 60,
+  loopCurve: 40,
+  loopRibbonWidth: 60,
+  loopFontSize: 34,
+  defaultView: 'grid',
+  cardRatio: 'portrait',
+  density: 'comfortable',
+  showPrices: true,
+  showCodes: true,
+  pageSize: 24
+};
+const plural = (n, a, b, c) => { const x = n % 10, y = n % 100; return x === 1 && y !== 11 ? a : x >= 2 && x <= 4 && (y < 12 || y > 14) ? b : c; };
+const LOGOS = {"Pepsi":"pepsi","Red Bull":"redbull","Kapitalbank":"kapitalbank","NBU":"nbu","Anorbank":"anorbank","Sanoat Qurilish Bank":"sqb","Click":"click","Humo Arena":"humo-arena","Iteca Exhibitions":"iteca","United Cement Group":"ucg","Uzcopper":"uzcopper","Safia":"safia","Beanberry":"beanberry","Community Coffee Bar":"community","Мята Lounge":"myata","Apexpizza":"apexpizza","Sherin":"sherin","The Wax Bar":"wax-bar","Befit One":"befit","Hair Boss":"hairboss","Space Coworking":"cspace","Ground Zero":"ground-zero","Tenet":"tenet","Shavi":"shavi","Prestige Travel":"prestige-travel","Comfort Plaza":"comfort-plaza","Atom Stroy":"atom-stroy","Betomax":"betomax","Carbon":"carbon","Agrover":"agrover","Alimkhanov Pharm Group":"alimkhanov","Asia Pharm Consulting":"asia-pharm","Bavaria Reha":"bavaria-reha","De Factum Laboratories":"defactum","Referans":"referans","Онкологический центр РУз":"onkologiya","Школа Al-Xorazmiy":"al-xorazmiy","Webnow":"webnow","Восток":"vostok","Мой Бухгалтер":"mybuh","ADM Global":"adm-global","Западня":"zapadnya"};
+const fmtOf = s => !s ? 'sq' : s.w === s.h ? 'sq' : s.w > s.h ? 'h' : 'v';
+const vbw = el => Math.round(Math.max(600, Math.min(1440, el.clientWidth || 1440)));
+const onAccent = hex => { const m = /^#?([\da-f]{6})$/i.exec(hex || ''); if (!m) return '#151515'; const c = [0, 2, 4].map(i => { const v = parseInt(m[1].slice(i, i + 2), 16) / 255; return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); const L = .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; return (L + .05) / .0575 >= .96 / (L + .05) ? '#151515' : '#F7F5F1'; };
+
+class Component extends DCLogic {
+  cursorRef = React.createRef();
+  previewRef = React.createRef();
+  state = { vw: typeof window !== 'undefined' ? innerWidth : 1280, scrolled: false, menuOpen: false, smOn: false, page: 'home', items: [], cat: 'all', fmt: 'all', sort: 0, q: '', view: null, limit: null, workId: null, size: 0, frame: 0, order: [], drawer: false, sent: false, faq: 0, name: '', phone: '', comment: '', err: false, revQ: 0 };
+
+  componentDidMount() {
+    let th0 = null; try { th0 = localStorage.getItem('kz_theme'); } catch (e) {}
+    if (th0) this.setState({ theme: th0 });
+    this.applyTheme(th0 || undefined);
+    this.initLoops();
+    this.initReveal();
+    if (matchMedia('(any-pointer:fine)').matches) this.initCursor();
+    this._kd = e => { if (e.key === 'Escape' && this.state.menuOpen) this.closeMenu(); }; addEventListener('keydown', this._kd);
+    this._onRs = () => { const vw = innerWidth, sc = scrollY > 40; if (vw !== this.state.vw || sc !== this.state.scrolled) this.setState({ vw, scrolled: sc }); };
+    addEventListener('resize', this._onRs); addEventListener('scroll', this._onRs, { passive: true });
+    try { const r = JSON.parse(localStorage.getItem('kz_route') || 'null'); if (r) this.setState(r); } catch (e) {}
+    this._ls = e => { if (e.key === 'kz_catalog') this.loadCatalog(); if (e.key === 'kz_reviews') this.setState({ revQ: 0 }); if (e.key === 'kz_admin_auth' || e.key === 'kz_requests') this.readAdmin(); };
+    this.readAdmin();
+    addEventListener('storage', this._ls);
+    this.loadCatalog();
+  }
+  readAdmin() {
+    let on = false, n = 0;
+    try { on = !!(localStorage.getItem('kz_admin_auth') || sessionStorage.getItem('kz_admin_auth')); if (on) n = (JSON.parse(localStorage.getItem('kz_requests') || '[]') || []).filter(r => r.status === 'new').length; } catch (e) {}
+    this.setState({ adminOn: on, adminNew: n });
+  }
+  loadCatalog() {
+    let cat = null; try { cat = JSON.parse(localStorage.getItem('kz_catalog') || 'null'); } catch (e) {}
+    const go = raw => {
+      const items = raw.map((p, i) => {
+        if (p.h) return null;
+        const x = p.x || [], c = p.c || [];
+        const sz = [...(p.s || []), ...x.map(l => { const m = l.match(/(\d+)\s*\/\s*(\d+)/); return m ? { w: +m[1], h: +m[2], p: null } : null; }).filter(Boolean)];
+        const prices = sz.map(s => s.p).filter(Boolean);
+        const cats = c.filter(k => k !== 'all');
+        return { id: i, t: p.t, d: p.d || '', img: p.img, src: /^(https?:|data:|assets\/)/.test(p.img || '') ? p.img : BASE + p.img, sz, c, cats, min: prices.length ? Math.min(...prices) : null, fmt: fmtOf(sz[0]), no: p.k || 'KZ-' + String(i + 1).padStart(3, '0') };
+      }).filter(Boolean);
+      this.setState({ items });
+    };
+    if (cat && cat.length) go(cat); else fetch('data/products.json').then(r => r.json()).then(go);
+  }
+  revList() {
+    let r = null; try { r = JSON.parse(localStorage.getItem('kz_reviews') || 'null'); } catch (e) {}
+    const v = r ? r.filter(x => !x.h && x.q && x.q.trim()) : [];
+    return v.length ? v : REVIEWS;
+  }
+  saveRequest(order) {
+    const s = this.state; let list = [];
+    try { list = JSON.parse(localStorage.getItem('kz_requests') || '[]') || []; } catch (e) {}
+    const no = Math.max(1048, ...list.map(r => r.no || 0)) + 1;
+    list.unshift({ id: 'r' + Date.now(), no, at: Date.now(), name: s.name.trim(), phone: s.phone.trim(), company: '', src: 'Сайт', status: 'new', comment: (s.comment || '').trim(), notes: [], due: '',
+      items: order.map(o => ({ k: o.k || '', t: o.t, img: o.img || o.src, w: o.w ?? null, h: o.h ?? null, p: o.p ?? null, frame: o.frame || 'Холст', q: 1 })) });
+    try { localStorage.setItem('kz_requests', JSON.stringify(list)); } catch (e) {}
+    this.readAdmin();
+  }
+  initReveal() {
+    if (!window.IntersectionObserver) return;
+    const off = () => CONFIG.animations === false || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let q = 0, t = null;
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target; io.unobserve(el); if (off()) return;
+      const d = Math.min(q++, 10) * 60; clearTimeout(t); t = setTimeout(() => { q = 0; }, 150);
+      el.style.opacity = '';
+      el.animate([{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' }], { duration: 800, delay: d, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' });
+    }), { threshold: 0.06 });
+    const scan = () => {
+      if (document.hidden || off()) return;
+      document.querySelectorAll('[data-rise]:not([data-rv])').forEach(el => { el.setAttribute('data-rv', ''); el.animate([{ transform: 'translateY(105%)' }, { transform: 'none' }], { duration: 1300, easing: 'cubic-bezier(.16,.84,.24,1)', fill: 'backwards', delay: 150 }); });
+      document.querySelectorAll('[data-slide]:not([data-rv])').forEach(el => { el.setAttribute('data-rv', ''); el.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 600, easing: 'cubic-bezier(.2,.7,.2,1)' }); });
+      document.querySelectorAll('[data-fade]:not([data-rv])').forEach(el => { el.setAttribute('data-rv', ''); el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400 }); });
+      document.querySelectorAll('[data-reveal]:not([data-rv])').forEach(el => {
+        el.setAttribute('data-rv', '');
+        const r = el.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0) {
+          const d = Math.min(q++, 10) * 60; clearTimeout(t); t = setTimeout(() => { q = 0; }, 150);
+          el.animate([{ opacity: 0, transform: 'translateY(24px)' }, { opacity: 1, transform: 'none' }], { duration: 800, delay: d, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'backwards' });
+        } else io.observe(el);
+      });
+    };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) scan(); });
+    let raf = 0;
+    this._mo = new MutationObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(scan); });
+    this._mo.observe(document.body, { childList: true, subtree: true });
+    this._io = io; scan();
+  }
+  initCursor() {
+    const c = this.cursorRef.current, pv = this.previewRef.current; if (!c || !pv) return;
+    const lab = c.firstChild, pimg = pv.firstChild;
+    let x = -100, y = -100, cx = x, cy = y, px = x, py = y, label = null, src = null, live = false, rq = 0;
+    const apply = t => {
+      const el = live && CONFIG.cursorEffects !== false && t && t.closest ? t : null;
+      const ct = el ? el.closest('[data-cursor]') : null, l = ct ? ct.getAttribute('data-cursor') : '';
+      if (l !== label) { label = l; lab.textContent = l; const big = !!l; c.style.width = c.style.height = big ? '96px' : '14px'; c.style.margin = big ? '-48px 0 0 -48px' : '-7px 0 0 -7px'; c.style.fontSize = big ? '12px' : '0px'; c.style.opacity = big ? '1' : '0'; }
+      const p = el ? el.closest('[data-preview]') : null, sr = p ? p.getAttribute('data-preview') : '';
+      if (sr !== src) { src = sr; if (sr) { pimg.src = sr; px = x; py = y; } pv.style.opacity = sr ? '1' : '0'; pv.style.scale = sr ? '1' : '.7'; }
+    };
+    const off = () => { if (!live && !label && !src) return; live = false; apply(null); };
+    this._probe = () => { if (rq || !live) return; rq = requestAnimationFrame(() => { rq = 0; if (live) apply(document.elementFromPoint(x, y)); }); };
+    this._pm = e => { if (e.pointerType && e.pointerType !== 'mouse') { off(); return; } live = true; x = e.clientX; y = e.clientY; apply(e.target); };
+    this._pd = e => { if (e.pointerType !== 'mouse') off(); };
+    this._ml = e => { if (!e.relatedTarget) off(); };
+    this._bl = off;
+    addEventListener('pointermove', this._pm, { passive: true });
+    addEventListener('pointerdown', this._pd, { passive: true });
+    addEventListener('scroll', this._probe, { passive: true, capture: true });
+    document.addEventListener('mouseout', this._ml);
+    addEventListener('blur', this._bl);
+    const loop = () => {
+      cx += (x - cx) * .2; cy += (y - cy) * .2; px += (x - px) * .09; py += (y - py) * .09;
+      c.style.transform = 'translate(' + cx + 'px,' + cy + 'px)';
+      const r = Math.max(-10, Math.min(10, (x - px) * .06));
+      pv.style.transform = 'translate(' + (px + 40) + 'px,' + py + 'px) translate(0,-50%) rotate(' + r + 'deg)';
+      this._raf = requestAnimationFrame(loop);
+    };
+    loop();
+  }
+  animOut(sel, kf, done) {
+    const els = [...document.querySelectorAll(sel)];
+    if (!els.length || CONFIG.animations === false) { done(); return; }
+    let n = els.length;
+    els.forEach(el => { const a = el.animate(kf(el), { duration: 450, easing: 'cubic-bezier(.6,0,.3,1)', fill: 'forwards' }); a.onfinish = () => { if (--n === 0) done(); }; });
+  }
+  initLoops() {
+    const anim = CONFIG.animations !== false && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const shape = CONFIG.loopShape, ribbon = CONFIG.loopRibbon, upper = CONFIG.loopUppercase;
+    const speed = CONFIG.loopSpeed, curve = CONFIG.loopCurve, rw = CONFIG.loopRibbonWidth, fs = CONFIG.loopFontSize;
+    const dirS = (CONFIG.loopDirection) === 'forward' ? -1 : 1, pauseH = CONFIG.loopPause;
+    document.querySelectorAll('[data-curve]:not([data-cv])').forEach(el => {
+      const raw = el.getAttribute('data-text'); if (!raw) return;
+      el.setAttribute('data-cv', ''); const gen = el._gen = (el._gen || 0) + 1;
+      const sep = '\u2002\u2726\u2002';
+      const one = raw.split('|').map(t => upper ? t.toUpperCase() : t).join(sep) + sep;
+      const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      const VB = el._vbw = vbw(el), A = shape === 'wave' ? curve * 1.1 : curve * 2.2, pad = (ribbon ? rw / 2 : fs * .7) + 12;
+      const H = Math.round(shape === 'wave' ? 2 * (A + pad) : A + 2 * pad), cy = shape === 'wave' ? H / 2 : pad;
+      const x0 = -Math.round(VB * .22), x1 = Math.round(VB * 1.22); let d = '';
+      if (shape === 'wave') { const per = (x1 - x0) / 2.6; for (let x = x0; x <= x1; x += 8) d += (x === x0 ? 'M' : 'L') + x + ',' + (cy + Math.sin((x - x0) / per * Math.PI * 2) * A).toFixed(1); }
+      else d = 'M' + x0 + ',' + cy + ' Q' + Math.round(VB / 2) + ',' + (cy + A * 2) + ' ' + x1 + ',' + cy;
+      const id = 'kzc' + Math.random().toString(36).slice(2, 8);
+      const font = 'font:700 ' + fs + 'px Onest, sans-serif; letter-spacing:2px';
+      const fill = ribbon ? 'var(--kz-on-accent,#151515)' : 'var(--kz-ink,#151515)';
+      el.innerHTML = '<svg viewBox="0 0 ' + VB + ' ' + H + '" style="width:100%; display:block; overflow:visible"><defs><path id="' + id + '" d="' + d + '"/></defs>' +
+        (ribbon ? '<path d="' + d + '" fill="none" stroke-linejoin="round" style="stroke:var(--kz-accent,#E0502E); stroke-width:' + rw + 'px"/>' : '') +
+        '<text x="0" y="-999" style="visibility:hidden; ' + font + '">' + esc(one) + '</text><text dominant-baseline="central" style="' + font + '; fill:' + fill + '"><textPath href="#' + id + '" startOffset="0">' + esc(one.repeat(4)) + '</textPath></text></svg>';
+      const tp = el.querySelector('textPath'), ms = el.querySelectorAll('text')[0], pth = el.querySelector('defs path');
+      let off = 0, sp = 0, vel = dirS * speed / 55, drag = false, lx = 0, hov = false;
+      const measure = () => { try { sp = ms.getComputedTextLength(); const pl = pth.getTotalLength(); if (sp) tp.textContent = one.repeat(Math.ceil((pl + sp) / sp) + 1); } catch (e) {} };
+      measure(); document.fonts && document.fonts.ready.then(measure);
+      if (!anim) return;
+      const tick = () => {
+        if (!el.isConnected || el._gen !== gen) return;
+        if (!sp) measure();
+        if (sp) { if (!drag && !(pauseH && hov)) off += vel; while (off <= -sp) off += sp; while (off > 0) off -= sp; tp.setAttribute('startOffset', off + 'px'); }
+        requestAnimationFrame(tick);
+      };
+      el.onpointerenter = () => { hov = true; }; el.onpointerleave = () => { hov = false; drag = false; el.style.cursor = 'grab'; };
+      el.onpointerdown = e => { drag = true; lx = e.clientX; el.setPointerCapture(e.pointerId); el.style.cursor = 'grabbing'; };
+      el.onpointermove = e => { if (!drag) return; const dx = (e.clientX - lx) * (VB / el.clientWidth); lx = e.clientX; off += dx; if (dx) vel = Math.sign(dx) * Math.abs(vel); };
+      el.onpointerup = el.onpointercancel = () => { drag = false; el.style.cursor = 'grab'; };
+      tick();
+    });
+  }
+  curTheme() { return this.state.theme || CONFIG.theme; }
+  applyTheme(t) {
+    const r = document.documentElement.style, dark = (t || this.curTheme()) === 'dark';
+    const V = dark ? { paper: '#141413', paper2: '#1E1D1B', paper3: '#272522', hover: '#1C1B19', sel: '#2B2926', raised: '#1A1917', ink: '#EFEAE2', ink2: '#CFC9BF', ink3: '#A39D93', ink4: '#958F85', line: 'rgba(239,234,226,.16)', line2: 'rgba(239,234,226,.12)', line3: 'rgba(239,234,226,.25)', glass: 'rgba(20,20,19,.92)', lineinv: 'rgba(239,234,226,.16)', lineinv2: 'rgba(239,234,226,.12)', inv: '#0B0B0A', invfg: '#EFEAE2', img: 'brightness(.88) contrast(1.04)', 'logo-blend': 'screen', 'logo-filter': 'invert(1) hue-rotate(180deg)' } : {};
+    ['paper','paper2','paper3','hover','sel','raised','ink','ink2','ink3','ink4','line','line2','line3','glass','lineinv','lineinv2','inv','invfg','img','logo-blend','logo-filter'].forEach(k => V[k] ? r.setProperty('--kz-' + k, V[k]) : r.removeProperty('--kz-' + k));
+    const ac = CONFIG.accent; ac && ac !== '#E0502E' ? r.setProperty('--kz-accent', ac) : r.removeProperty('--kz-accent');
+    r.setProperty('--kz-on-accent', onAccent(ac || '#E0502E'));
+  }
+  componentDidUpdate(pp, ps) {
+    if (ps && !ps.menuOpen && this.state.menuOpen) this.smOpen();
+    if (ps && this.state.menuOpen && this.state.vw >= 960) { this._smBusy = false; document.documentElement.style.overflow = ''; this.setState({ menuOpen: false, smOn: false }); }
+    if (ps && (ps.page !== this.state.page || ps.workId !== this.state.workId || ps.menuOpen !== this.state.menuOpen)) this._probe && this._probe();
+    const vwCh = !!ps && ps.vw !== this.state.vw;
+    if (vwCh) document.querySelectorAll('[data-curve]').forEach(el => { if (Math.abs(vbw(el) - (el._vbw || 0)) < 40) return; el.removeAttribute('data-cv'); el._gen = (el._gen || 0) + 1; el.innerHTML = ''; });
+    this.initLoops(); }
+  motionOK() { return CONFIG.animations !== false && !matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  revSecRef = el => {
+    if (this._revIO) { this._revIO.disconnect(); this._revIO = null; }
+    this._revVis = !!el && !window.IntersectionObserver; this.revArm();
+    if (el && window.IntersectionObserver) { this._revIO = new IntersectionObserver(es => { const e = es[es.length - 1]; this._revVis = e.isIntersecting && e.intersectionRatio >= .4; this.revArm(); }, { threshold: [0, .4] }); this._revIO.observe(el); }
+  };
+  revArm() { clearTimeout(this._revT); if (this._revVis && !this._revHold) this._revT = setTimeout(() => this.revQBy(1), 5000); }
+  revQBy(d) { const n = this.revList().length; this.setState(s => ({ revQ: (s.revQ + d + n) % n })); this.revArm(); }
+  revPE = e => { if (e.pointerType !== 'mouse') return; this._revHold = true; this.revArm(); };
+  revPL = e => { if (e.pointerType !== 'mouse') return; this._revHold = false; this.revArm(); };
+  revTS = e => { this._tx = e.touches && e.touches[0] ? e.touches[0].clientX : null; };
+  revTE = e => { if (this._tx == null || !e.changedTouches || !e.changedTouches[0]) return; const dx = e.changedTouches[0].clientX - this._tx; this._tx = null; if (Math.abs(dx) > 40) this.revQBy(dx < 0 ? 1 : -1); };
+  hoverClient(e, on) {
+    const row = e.currentTarget, nm = row && row.firstElementChild, img = row && row.querySelector('img');
+    if (nm) nm.style.transform = on ? 'translateX(10px)' : '';
+    if (img) { img.style.opacity = on ? '1' : '0'; img.style.transform = on ? 'none' : 'translateX(8px)'; }
+  }
+  clEnter = e => this.hoverClient(e, true);
+  clLeave = e => this.hoverClient(e, false);
+  toggleTheme = e => {
+    const next = this.curTheme() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('kz_theme', next); } catch (er) {}
+    const x = e && e.clientX ? e.clientX : innerWidth - 60, y = e && e.clientY ? e.clientY : 40;
+    let ran = false;
+    const commit = () => { if (ran) return Promise.resolve(); ran = true; return new Promise(res => { this.applyTheme(next); this.setState({ theme: next }, res); setTimeout(res, 60); }); };
+    if (!document.startViewTransition || document.hidden || CONFIG.animations === false || matchMedia('(prefers-reduced-motion: reduce)').matches) { commit(); return; }
+    const vt = document.startViewTransition(commit);
+    setTimeout(() => { if (!ran) { try { vt.skipTransition(); } catch (er) {} commit(); } }, 400);
+    vt.ready.then(() => { const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)); document.documentElement.animate({ clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] }, { duration: 750, easing: 'cubic-bezier(.6,0,.3,1)', pseudoElement: '::view-transition-new(root)' }); }).catch(() => {});
+  };
+  componentWillUnmount() { cancelAnimationFrame(this._raf); clearTimeout(this._revT); this._revIO && this._revIO.disconnect(); removeEventListener('storage', this._ls); if (this._pm) { removeEventListener('pointermove', this._pm); removeEventListener('pointerdown', this._pd); removeEventListener('scroll', this._probe, true); document.removeEventListener('mouseout', this._ml); removeEventListener('blur', this._bl); } this._kd && removeEventListener('keydown', this._kd); document.documentElement.style.overflow = ''; removeEventListener('resize', this._onRs); removeEventListener('scroll', this._onRs); this._mo && this._mo.disconnect(); this._io && this._io.disconnect(); }
+  save() { try { localStorage.setItem('kz_route', JSON.stringify({ page: this.state.page, workId: this.state.workId, cat: this.state.cat })); } catch (e) {} }
+  go = (page, extra = {}) => { this.setState({ page, ...extra }, () => this.save()); window.scrollTo(0, 0); if (this.state.menuOpen) this.closeMenu(); };
+  toggleMenu = () => this.state.smOn ? this.closeMenu() : this.openMenu();
+  openMenu() { if (this.state.menuOpen) return; document.documentElement.style.overflow = 'hidden'; this.setState({ menuOpen: true, smOn: true }); }
+  closeMenu() {
+    if (!this.state.menuOpen || this._smBusy) return;
+    this._smBusy = true; this.setState({ smOn: false });
+    this.smClose(() => { this._smBusy = false; document.documentElement.style.overflow = ''; this.setState({ menuOpen: false }); });
+  }
+  smOpen() {
+    const root = document.querySelector('[data-sm]'); if (!root || !this.motionOK()) return;
+    const O4 = 'cubic-bezier(.22,1,.36,1)', O2 = 'cubic-bezier(.33,1,.68,1)', O3 = 'cubic-bezier(.25,1,.5,1)';
+    const layers = [...root.querySelectorAll('[data-sm-layer]')], panel = root.querySelector('[data-sm-panel]');
+    layers.forEach((el, i) => el.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 500, delay: i * 70, easing: O4, fill: 'backwards' }));
+    const pD = Math.max(0, layers.length - 1) * 70 + 80, iS = pD + 650 * .15, sS = pD + 650 * .4;
+    panel.animate([{ transform: 'translateX(100%)' }, { transform: 'none' }], { duration: 650, delay: pD, easing: O4, fill: 'backwards' });
+    root.querySelectorAll('[data-sm-label]').forEach((el, i) => el.animate([{ transform: 'translateY(140%) rotate(10deg)' }, { transform: 'none' }], { duration: 1000, delay: iS + i * 100, easing: O4, fill: 'backwards' }));
+    root.querySelectorAll('[data-sm-num]').forEach((el, i) => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: iS + 100 + i * 80, easing: O2, fill: 'backwards' }));
+    root.querySelectorAll('[data-sm-st]').forEach(el => el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: sS, easing: O2, fill: 'backwards' }));
+    root.querySelectorAll('[data-sm-link]').forEach((el, i) => el.animate([{ opacity: 0, transform: 'translateY(25px)' }, { opacity: 1, transform: 'none' }], { duration: 550, delay: sS + 40 + i * 80, easing: O3, fill: 'backwards' }));
+  }
+  smClose(done) {
+    const root = document.querySelector('[data-sm]'); if (!root || !this.motionOK()) { done(); return; }
+    root.getAnimations({ subtree: true }).forEach(a => a.cancel());
+    root.style.pointerEvents = 'none';
+    const els = [...root.querySelectorAll('[data-sm-layer],[data-sm-panel]')]; let n = els.length;
+    els.forEach(el => { el.animate([{ transform: 'none' }, { transform: 'translateX(100%)' }], { duration: 320, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = () => { if (--n === 0) done(); }; });
+  }
+  openWork = id => this.go('work', { workId: id, size: 0, frame: 0 });
+  card = p => ({
+    t: p.t, d: p.d, no: p.no, src: p.src,
+    from: p.min ? 'от ' + fmtP(p.min) : 'Цена по запросу',
+    range: p.sz.length ? (p.sz.length > 1 ? p.sz[0].w + '×' + p.sz[0].h + ' — ' + p.sz[p.sz.length - 1].w + '×' + p.sz[p.sz.length - 1].h + ' см' : p.sz[0].w + '×' + p.sz[0].h + ' см') : 'Размер на заказ',
+    sizesText: p.sz.map(s => s.w + '/' + s.h).join(' · ') + (p.sz.length ? ' см' : ''),
+    open: () => this.openWork(p.id)
+  });
+
+  renderVals() {
+    const s = this.state, items = s.items;
+    const mobile = s.vw < 900;
+    const mob = s.vw < 960;
+    const compact = s.vw < 600;
+    const view = mobile ? 'grid' : (s.view ?? CONFIG.defaultView);
+    const pageSize = CONFIG.pageSize;
+    const limit = s.limit ?? pageSize;
+    const catName = k => (CATS.find(c => c.k === k) || {}).n || 'Коллекция';
+    const usedCov = [];
+    const catThumbs = s.vw >= 960 && (CONFIG.cursorEffects === false || !matchMedia('(pointer:fine)').matches);
+    const lgMode = CONFIG.clientLogos, lgDark = this.curTheme() === 'dark', logosOn = lgMode !== 'off' && s.vw >= 600 && matchMedia('(pointer:fine)').matches;
+
+    let list = s.cat === 'all' ? items : items.filter(p => p.c.includes(s.cat));
+    if (s.fmt !== 'all') list = list.filter(p => p.fmt === s.fmt);
+    if (s.q.trim()) { const q = s.q.trim().toLowerCase(); list = list.filter(p => (p.t + ' ' + p.d).toLowerCase().includes(q)); }
+    if (s.sort) list = [...list].sort((a, b) => ((a.min ?? 1e12) - (b.min ?? 1e12)) * (s.sort === 1 ? 1 : -1));
+
+    const nav = [{ k: 'catalog', n: 'Коллекция', cat: 'all' }, { k: 'info', n: 'Покупателям' }, { k: 'contacts', n: 'Контакты' }].map(n => {
+      const on = s.page === n.k;
+      if (n.k === 'contacts') return { n: n.n, count: '', bg: 'transparent', fg: 'var(--kz-ink,#151515)', op: 0.62, line: 'transparent', go: () => { this.closeMenu(); setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 60); } };
+      const cnt = n.k === 'catalog' ? (n.cat === 'all' ? items.length : items.filter(p => p.c.includes(n.cat)).length) : '';
+      return { n: n.n, count: items.length ? cnt : '', bg: on ? 'var(--kz-ink,#151515)' : 'transparent', fg: on ? 'var(--kz-paper,#F2EFE9)' : 'var(--kz-ink,#151515)', op: on ? 1 : 0.62, line: on ? 'var(--kz-ink,#151515)' : 'transparent', go: () => this.go(n.k, n.cat ? { cat: n.cat, limit: null } : {}) };
+    });
+
+    const w = items.find(p => p.id === s.workId);
+    let wv = {}, wSizes = [], wFrames = [], next = {}, related = [];
+    if (w) {
+      const sel = w.sz[s.size] || w.sz[0];
+      wv = { ...this.card(w), cat: w.cats.length ? catName(w.cats[0]) : 'Все варианты', fmtName: FMT[w.fmt], selPrice: sel ? fmtP(sel.p) : 'по запросу' };
+      wSizes = w.sz.map((z, i) => ({ label: z.w + ' × ' + z.h + ' см', price: fmtP(z.p), bg: i === s.size ? 'var(--kz-sel,#E6E1D7)' : 'transparent', dot: i === s.size ? 'var(--kz-ink,#151515)' : 'transparent', pick: () => this.setState({ size: i }) }));
+      if (!wSizes.length) wSizes = [{ label: 'Размер на заказ', price: 'по запросу', bg: 'var(--kz-sel,#E6E1D7)', dot: 'var(--kz-ink,#151515)', pick: () => {} }];
+      wFrames = FRAMES.map((f, i) => ({ ...f, line: i === s.frame ? 'var(--kz-ink,#151515)' : 'var(--kz-line,rgba(21,21,21,.15))', pick: () => this.setState({ frame: i }) }));
+      const idx = items.indexOf(w), nx = items[(idx + 1) % items.length];
+      next = { t: nx.t, no: nx.no, src: nx.src, open: () => this.openWork(nx.id) };
+      const rk = w.cats[0] || 'all';
+      related = items.filter(p => p.id !== w.id && p.c.includes(rk)).slice(0, 4).map(this.card);
+    }
+
+    const priceMap = new Map();
+    items.forEach(p => p.sz.forEach(z => { if (!z.p) return; const k = z.w + '/' + z.h; if (!priceMap.has(k) || priceMap.get(k).p > z.p) priceMap.set(k, z); }));
+    const priceTable = [...priceMap.values()].sort((a, b) => a.p - b.p || a.w - b.w).map(z => ({ size: z.w + ' / ' + z.h, fmt: FMT[fmtOf(z)], price: 'от ' + fmtP(z.p) }));
+
+    const order = s.order;
+    const total = order.reduce((a, o) => a + (o.p || 0), 0);
+    const hasFrame = order.some(o => o.fi > 0), hasReq = order.some(o => o.p == null);
+    const RV = this.revList();
+    const okN = !!s.name.trim(), okP = s.phone.replace(/\D/g, '').length >= 9;
+
+    return {
+            menuNav: [['home', 'главная'], ['catalog', 'коллекция'], ['info', 'покупателям'], ['contacts', 'контакты']].map(([k, n], i) => ({ n, i: '0' + (i + 1), fg: s.page === k || (k === 'catalog' && s.page === 'work') ? 'var(--kz-accent,#E0502E)' : 'var(--kz-ink,#151515)', go: k === 'home' ? () => this.go('home') : nav[i - 1].go })),
+      navClassic: !mob, navMobile: mob, wide: !mobile, catThumbs: catThumbs, catCols: mobile ? 'minmax(0,1fr) auto' : catThumbs ? 'minmax(0,1fr) auto 120px' : 'minmax(0,1fr) auto', filterPos: 'relative', workImgPos: s.vw < 960 ? 'relative' : 'sticky', stickyTopA: s.vw < 960 ? '0px' : '84px', stickyTopB: s.vw < 960 ? '0px' : '100px', workImgMax: s.vw < 960 ? '70vh' : 'calc(100vh - 110px)', hdrPad: s.scrolled ? '8px' : '16px', logoH: s.scrolled ? '30px' : '40px',
+      menuOpen: s.menuOpen, toggleMenu: this.toggleMenu, smOnS: s.smOn ? 'true' : 'false', menuAria: s.smOn ? 'Закрыть меню' : 'Открыть меню', smTxtY: s.smOn ? '-50%' : '0%', smTxtT: s.smOn ? '.6s cubic-bezier(.22,1,.36,1)' : '.45s cubic-bezier(.76,0,.24,1)', smL1: s.smOn ? 'translateY(0px) rotate(45deg)' : 'translateY(-4px) rotate(0deg)', smL2: s.smOn ? 'translateY(0px) rotate(-45deg)' : 'translateY(4px) rotate(0deg)', smIcT: s.smOn ? '.5s cubic-bezier(.22,1,.36,1)' : '.35s cubic-bezier(.76,0,.24,1)',
+      cursorRef: this.cursorRef, previewRef: this.previewRef,
+      gridCols: compact ? 'repeat(2,minmax(0,1fr))' : (CONFIG.density) === 'dense' ? 'repeat(auto-fill,minmax(min(100%,180px),1fr))' : 'repeat(auto-fill,minmax(min(100%,240px),1fr))',
+      cardAR: ({ square: '1', portrait: '4/5', natural: 'auto' })[CONFIG.cardRatio] || '1',
+      showCodes: (CONFIG.showCodes) && !compact, showMarquee: CONFIG.marquee,
+      isDark: this.curTheme() === 'dark', toggleTheme: this.toggleTheme, toggleStyle: CONFIG.toggleStyle,
+      mLogoH: compact ? '28px' : '34px', mGap: compact ? '6px' : '12px', mBagLabel: !compact, mMenuLabel: s.vw >= 380, thumbChips: s.vw >= 600,
+      roomAR: compact ? '4/3' : '16/8', clientCols: compact ? 'repeat(2,minmax(0,1fr))' : logosOn ? 'repeat(auto-fill,minmax(280px,1fr))' : 'repeat(auto-fill,minmax(220px,1fr))', frameCols: s.vw >= 700 ? 'repeat(3,minmax(0,1fr))' : 'minmax(0,1fr)', relCols: compact ? 'repeat(2,minmax(0,1fr))' : 'repeat(auto-fill,minmax(220px,1fr))', specCols: compact ? '96px minmax(0,1fr)' : '150px minmax(0,1fr)', gridGap: compact ? '28px 12px' : '40px clamp(12px,1.6vw,24px)',
+      loopOne: (() => { const u = []; items.forEach(p => { if (!u.includes(p.t) && u.length < 14) u.push(p.t); }); return u.join('|'); })(),
+      nav, isHome: s.page === 'home', isCatalog: s.page === 'catalog', isWork: s.page === 'work' && !!w, isInfo: s.page === 'info',
+      showFaq: s.page === 'home' || s.page === 'info',
+      goHome: () => this.go('home'), goInfo: () => this.go('info'),
+      goCatalogAll: () => this.go('catalog', { cat: 'all', limit: null }),
+      goCatalogBack: () => this.go('catalog'),
+      footNav: [{ n: 'Главная', go: () => this.go('home') }, { n: 'Вся коллекция', go: () => this.go('catalog', { cat: 'all' }) }, ...CATS.map(c => ({ n: c.n, go: () => this.go('catalog', { cat: c.k }) })), { n: 'Покупателям', go: () => this.go('info') }],
+      totalCount: items.length || 173, totalWord: plural(items.length || 173, 'работа', 'работы', 'работ'),
+      heroThumbs: items.filter(p => p.c.includes('home')).slice(0, 9).map(this.card),
+      catRows: CATS.map((c, i) => { const f = items.find(p => p.c.includes(c.k) && !usedCov.includes(p.src)) || items.find(p => p.c.includes(c.k)); if (f) usedCov.push(f.src); const cnt = items.filter(p => p.c.includes(c.k)).length; return { n: c.n, d: c.d, count: cnt, word: plural(cnt, 'работа', 'работы', 'работ'), img: f ? f.src : 'assets/holst.jpg', open: () => this.go('catalog', { cat: c.k, limit: null }) }; }),
+      frames: FRAMES,
+      clients: CLIENTS.map(n => ({ n, logo: LOGOS[n] ? 'assets/clients/' + LOGOS[n] + '.jpg' : '', hasLogo: logosOn && !!LOGOS[n], enter: this.clEnter, leave: this.clLeave })), clientCount: CLIENTS.length, clientWord: plural(CLIENTS.length, 'компания', 'компании', 'компаний'),
+      clBlend: lgDark ? 'screen' : 'multiply', clFilter: lgDark ? (lgMode === 'mono' ? 'grayscale(1) invert(1)' : 'invert(1) hue-rotate(180deg)') : (lgMode === 'mono' ? 'grayscale(1)' : 'none'),
+      revSecRef: this.revSecRef, revPE: this.revPE, revPL: this.revPL,
+      reviewsQ: RV.map((r, i) => ({ ...r, op: i === s.revQ ? 1 : 0, ty: i === s.revQ ? '0px' : i < s.revQ ? '-14px' : '14px', pe: i === s.revQ ? 'auto' : 'none', hidden: i === s.revQ ? 'false' : 'true' })),
+      revPos: s.revQ + 1, revTotal: RV.length, revQPrev: () => this.revQBy(-1), revQNext: () => this.revQBy(1), revTS: this.revTS, revTE: this.revTE,
+      faq: FAQ.map((f, i) => ({ ...f, rot: s.faq === i ? '45deg' : '0deg', rows: s.faq === i ? '1fr' : '0fr', op: s.faq === i ? 1 : 0, toggle: () => this.setState({ faq: s.faq === i ? -1 : i }) })),
+      catalogTitle: s.cat === 'all' ? 'коллекция' : ({ home: 'для дома', kids: 'для детской', office: 'для офиса', public: 'общественные места' })[s.cat],
+      shownCount: list.length, shownWord: plural(list.length, 'работа', 'работы', 'работ'),
+      catChips: [{ k: 'all', n: 'Все' }, ...CATS].map(c => ({ n: c.short || c.n, count: c.k === 'all' ? items.length : items.filter(p => p.c.includes(c.k)).length, bg: s.cat === c.k ? 'var(--kz-ink,#151515)' : 'transparent', fg: s.cat === c.k ? 'var(--kz-paper,#F2EFE9)' : 'var(--kz-ink,#151515)', pick: () => this.setState({ cat: c.k, limit: null }, () => this.save()) })),
+      fmtChips: [['all', 'Все форматы'], ['sq', 'Квадрат'], ['v', 'Вертикаль'], ['h', 'Горизонталь']].map(([k, n]) => ({ n, op: s.fmt === k ? 1 : 0.55, line: s.fmt === k ? 'var(--kz-ink,#151515)' : 'transparent', pick: () => this.setState({ fmt: k, limit: null }) })),
+      sortLabel: ['по умолчанию', 'по возрастанию', 'по убыванию'][s.sort],
+      cycleSort: () => this.setState({ sort: (s.sort + 1) % 3 }),
+      q: s.q, setQ: e => this.setState({ q: e.target.value, limit: null }),
+      isGrid: view === 'grid', isList: view === 'list', gridOp: view === 'grid' ? 1 : 0.45, listOp: view === 'list' ? 1 : 0.45,
+      viewGrid: () => this.setState({ view: 'grid' }), viewList: () => this.setState({ view: 'list' }),
+      showPrices: CONFIG.showPrices,
+      visible: list.slice(0, limit).map(this.card),
+      isEmpty: items.length > 0 && list.length === 0,
+      hasMore: list.length > limit, restCount: Math.max(0, list.length - limit),
+      showMore: () => this.setState({ limit: limit + pageSize }),
+      w: wv, wSizes, wFrames, next, related,
+      adminOn: !!s.adminOn, adminHasNew: (s.adminNew || 0) > 0, adminNew: s.adminNew || 0, adminEdit: !!s.adminOn && s.page === 'work' && !!w, adminEditK: w ? w.no : '', adminEditHref: w ? 'Admin.dc.html#edit=' + encodeURIComponent(w.no) : 'Admin.dc.html',
+      specs: [
+        { k: 'Материал', v: 'Холст со специальным покрытием, деревянный подрамник' },
+        { k: 'Печать', v: 'Высокое разрешение и точная цветопередача' },
+        { k: 'Срок', v: 'В наличии — забрать сразу; на заказ — 3–7 дней после утверждения макета' },
+        { k: 'Доставка', v: 'По всему Узбекистану, оплачивается отдельно' },
+        { k: 'Формат', v: 'Другое соотношение сторон — на заказ' }
+      ],
+      addToOrder: () => { if (!w) return; const z = w.sz[s.size]; this.setState({ order: [...order, { key: Date.now(), k: w.no, img: w.img, w: z ? z.w : null, h: z ? z.h : null, t: w.t, src: w.src, size: z ? z.w + '×' + z.h + ' см' : 'на заказ', p: z ? z.p : null, frame: FRAMES[s.frame].n, fi: s.frame }], drawer: true, sent: false }); },
+      priceTable, steps: STEPS, priceLo: priceMap.size ? String(Math.min(...[...priceMap.values()].map(z => z.p))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '90 000', priceHi: priceMap.size ? fmtP(Math.max(...[...priceMap.values()].map(z => z.p))) : '',
+      openCustom: () => this.setState({ drawer: true, sent: false }),
+      orderCount: order.length,
+      drawer: s.drawer, openDrawer: () => this.setState({ drawer: true }), closeDrawer: () => this.animOut('[data-slide],[data-fade]', el => el.hasAttribute('data-slide') ? [{ transform: 'none' }, { transform: 'translateX(100%)' }] : [{ opacity: 1 }, { opacity: 0 }], () => this.setState(st => ({ drawer: false, err: false, ...(st.sent ? { sent: false, comment: '' } : {}) }))),
+      sent: s.sent, notSent: !s.sent,
+      orderItems: order.map(o => ({ ...o, price: fmtP(o.p), remove: () => this.setState({ order: order.filter(x => x.key !== o.key) }) })),
+      orderEmpty: order.length === 0, orderNotEmpty: order.length > 0, orderTotal: total ? fmtP(total) : 'по запросу',
+      orderNote: (hasFrame ? 'Доставка и оформление рассчитываются отдельно' : 'Доставка оплачивается отдельно') + (hasReq ? ' · часть позиций — цена по запросу' : ''),
+      err: !!s.err && !(okN && okP), errText: !okN && !okP ? 'Укажите имя и телефон' : !okN ? 'Укажите имя' : 'Проверьте номер телефона',
+      nameLine: s.err && !okN ? 'var(--kz-accent,#E0502E)' : 'var(--kz-ink,#151515)', phoneLine: s.err && !okP ? 'var(--kz-accent,#E0502E)' : 'var(--kz-ink,#151515)',
+      name: s.name, phone: s.phone, comment: s.comment,
+      setName: e => this.setState({ name: e.target.value }), setPhone: e => this.setState({ phone: e.target.value }), setComment: e => this.setState({ comment: e.target.value }),
+      submit: () => { if (okN && okP) { this.saveRequest(order); this.setState({ sent: true, order: [], err: false }); } else this.setState({ err: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+:root{
+  --space-1:4px; --space-2:6px; --space-3:8px; --space-4:10px; --space-5:12px; --space-6:14px; --space-7:16px; --space-8:20px;
+  --space-9:24px; --space-10:28px; --space-11:40px; --space-12:48px;
+  --gutter:clamp(16px,3vw,40px); /* @kind spacing */
+  --section-gap:clamp(48px,6vw,96px); /* @kind spacing */
+  --grid-gap:clamp(12px,1.6vw,24px); /* @kind spacing */
+  --radius-none:0; --radius-pill:99px; --radius-dot:50%;
+  --header-h:62px; /* @kind spacing */
+  --drawer-w:min(500px,100%); /* @kind spacing */
+  --shadow-float:0 40px 80px -30px rgba(21,21,21,.45);
+}

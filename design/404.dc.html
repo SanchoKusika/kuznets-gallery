@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Piazzolla:ital,opsz,wght@1,8..30,300;1,8..30,400&amp;display=swap">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/motion.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/tokens/base.css">
+  <link rel="stylesheet" href="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/styles.css">
+  <script src="_ds/kuznetsovs-gallery-design-system-bb76a886-afbb-46fe-9a28-fcb10893ed63/_ds_bundle.js"></script>
+  <style>
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:'Onest',sans-serif;-webkit-font-smoothing:antialiased}
+    *{box-sizing:border-box}
+    a{color:var(--ink)} a:hover{color:var(--accent)}
+    ::selection{background:var(--accent);color:var(--on-accent)}
+    button{font:inherit;color:inherit}
+    [data-theme="dark"]{color-scheme:dark}
+  </style>
+</helmet>
+<div data-screen-label="404" style="min-height:100vh; display:flex; flex-direction:column; background:var(--paper); color:var(--ink); font-family:'Onest',sans-serif; overflow-x:clip">
+
+  <header style="display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px clamp(16px,3vw,40px)">
+    <a href="Kuznetsovs%20Gallery.dc.html" aria-label="Kuznetsovs Gallery" style="display:flex; align-items:center"><img src="assets/logo.png" alt="Kuznetsovs Gallery" style="height:clamp(28px,3vw,40px); display:block; mix-blend-mode:{{ logoBlend }}; filter:{{ logoFilter }}"></a>
+    <a href="tel:+998903165913" style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; text-decoration:none; white-space:nowrap">+998 90 316 59 13</a>
+  </header>
+
+  <main style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:clamp(28px,4vw,56px); padding:clamp(24px,4vw,56px) clamp(16px,3vw,40px)">
+
+    <div onPointerMove="{{ nudge }}" style="display:flex; justify-content:center; align-items:center; gap:.02em; font-weight:600; font-size:clamp(132px,30vw,420px); line-height:.76; letter-spacing:-.07em; user-select:none; padding-top:.22em">
+      <span aria-hidden="true">4</span>
+      <div ref="{{ slotRef }}" style="position:relative; flex:none; width:.58em; height:.72em; margin:0 .09em 0 .08em">
+        <span style="position:absolute; inset:0; background:var(--paper-2)"></span>
+        <div ref="{{ frameRef }}" onPointerDown="{{ grab }}" role="img" aria-label="{{ frameAria }}" style="position:absolute; inset:0; transform-origin:50% -.2em; transform:rotate(6deg); cursor:grab; touch-action:none; z-index:1">
+          <svg viewBox="0 0 100 20" preserveAspectRatio="none" style="position:absolute; left:0; bottom:100%; width:100%; height:.2em; overflow:visible; display:block"><polyline points="12,20 50,0 88,20" fill="none" vector-effect="non-scaling-stroke" style="stroke:var(--ink-3); stroke-width:1.2"></polyline></svg>
+          <div style="position:absolute; inset:0; border:.03em solid var(--ink); background:var(--paper); padding:.03em">
+            <div style="width:100%; height:100%; background:var(--paper-3); overflow:hidden; display:grid; place-items:center">
+              <sc-if value="{{ hasArt }}" hint-placeholder-val="{{ false }}"><img src="{{ art.src }}" alt="{{ art.t }}" draggable="false" style="width:100%; height:100%; object-fit:cover; display:block; pointer-events:none"></sc-if>
+              <sc-if value="{{ noArt }}" hint-placeholder-val="{{ true }}"><span style="padding:6px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:clamp(9px,.03em,13px); font-weight:400; letter-spacing:.1em; line-height:1.35; text-transform:uppercase; text-align:center; color:var(--ink-3)">здесь была страница</span></sc-if>
+            </div>
+          </div>
+        </div>
+        <span style="position:absolute; left:50%; top:-.2em; width:.04em; height:.04em; min-width:6px; min-height:6px; transform:translate(-50%,-50%); border-radius:50%; background:var(--ink); z-index:2"></span>
+      </div>
+      <span aria-hidden="true">4</span>
+    </div>
+
+    <div style="display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center">
+      <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px">
+        <button onClick="{{ straighten }}" style="border:0; background:var(--paper-2); padding:9px 16px; border-radius:99px; cursor:pointer; font-size:13px; font-weight:500; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">Поправить раму</button>
+        <button onClick="{{ hang }}" style="border:0; background:var(--paper-2); padding:9px 16px; border-radius:99px; cursor:pointer; font-size:13px; font-weight:500; transition:background .25s, color .25s" style-hover="background:var(--ink); color:var(--paper)">{{ hangL }}</button>
+      </div>
+      <p style="margin:0; min-height:1.3em; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(18.4px,1.84vw,23.92px); line-height:1.3; color:var(--ink-2); text-wrap:balance">{{ msg }}</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr)); gap:clamp(24px,4vw,64px); align-items:end; max-width:1360px; width:100%; margin:0 auto">
+      <div style="display:flex; flex-direction:column; gap:20px; min-width:0">
+        <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">Ошибка 404 · экспонат не найден</span>
+        <h1 style="margin:0; font-weight:600; font-size:clamp(40px,5.6vw,88px); line-height:.9; letter-spacing:-.06em; text-wrap:balance">эту страницу уже кто‑то купил</h1>
+        <p style="margin:0; max-width:560px; font-family:Piazzolla, serif; font-style:italic; font-weight:300; font-variation-settings:'opsz' 30; letter-spacing:-.01em; font-size:clamp(20.24px,2.02vw,27.6px); line-height:1.25; text-wrap:pretty">Или её сняли на реставрацию. Или ссылка висела криво — как эта рама. В коллекции всё на месте, честно.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:8px">
+          <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="primary" size="lg" on-click="{{ goCatalog }}" hint-size="230px,52px">Смотреть коллекцию</x-import>
+          <x-import component-from-global-scope="KuznetsovsGalleryDesignSystem_bb76a8.Button" variant="secondary" size="lg" on-click="{{ goHome }}" hint-size="160px,52px">На главную</x-import>
+        </div>
+      </div>
+
+      <div style="justify-self:end; width:min(100%,360px); display:flex; flex-direction:column; gap:14px; padding:20px 22px; background:var(--paper-2)">
+        <div style="display:flex; justify-content:space-between; gap:12px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500"><span>{{ plate.k }}</span><span>{{ plate.y }}</span></div>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <span style="font-size:18px; font-weight:600; letter-spacing:-.02em; line-height:1.15">{{ plate.t }}</span>
+          <span style="font-size:14px; line-height:1.5; color:var(--ink-2)">{{ plate.m }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-size:14px">
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; color:var(--ink-3)">{{ plate.s }}</span>
+          <span style="font-weight:500">{{ plate.p }}</span>
+        </div>
+        <sc-if value="{{ hasArt }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ openArt }}" style="align-self:flex-start; border:0; background:transparent; padding:2px 0; cursor:pointer; font-size:14px; font-weight:500; border-bottom:1px solid var(--ink); transition:color .25s, border-color .25s" style-hover="color:var(--accent); border-bottom-color:var(--accent)">Открыть эту картину →</button>
+        </sc-if>
+      </div>
+    </div>
+  </main>
+
+  <footer style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; padding:16px clamp(16px,3vw,40px) 20px; font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-3); font-weight:500">
+    <span>© Kuznetsovs Gallery, Ташкент</span>
+    <span>Рамы поправлены: {{ fixes }}</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const BASE = 'https://kuznets.uz/wp-content/uploads/';
+const REST = 6;
+const LINES = [
+  'Рама висит криво. Можно поправить — или потянуть за неё.',
+  'Ровно! …было.',
+  'Наверное, гвоздь тоже кривой.',
+  'Вызвали мастера. Он тоже не нашёл эту страницу.',
+  'Хорошо. Это авторский замысел.'
+];
+const num = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u2009');
+const plural = (n, f) => { const a = n % 10, b = n % 100; return f[a === 1 && b !== 11 ? 0 : a >= 2 && a <= 4 && (b < 10 || b >= 20) ? 1 : 2]; };
+
+class Component extends DCLogic {
+  slotRef = React.createRef();
+  frameRef = React.createRef();
+  state = { fixes: 0, art: null, dark: false };
+  a = REST; v = 0; rest = REST; drag = false; lastA = REST;
+
+  componentDidMount() {
+    this.applyTheme();
+    this._st = e => { if (e.key === 'kz_theme') this.applyTheme(); }; addEventListener('storage', this._st);
+    this.calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this._mv = e => { if (!this.drag) return; const a = this.angleAt(e.clientX, e.clientY); this.v = a - this.a; this.a = a; if (this.calm) this.paint(); };
+    this._up = () => { if (!this.drag) return; this.drag = false; const f = this.frameRef.current; if (f) f.style.cursor = 'grab'; this.v = Math.max(-4, Math.min(4, this.v)); };
+    addEventListener('pointermove', this._mv); addEventListener('pointerup', this._up); addEventListener('pointercancel', this._up);
+    if (!this.calm) { const tick = () => { if (!this.drag) { this.v += (this.rest - this.a) * .018; this.v *= .968; this.a += this.v; } this.paint(); this._raf = requestAnimationFrame(tick); }; tick(); }
+    this.loadArt();
+  }
+  applyTheme() {
+    let th = null; try { th = localStorage.getItem('kz_theme'); } catch (e) {}
+    const dark = th === 'dark', de = document.documentElement;
+    de.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (dark) de.style.setProperty('--text-inverse', 'var(--paper)'); else de.style.removeProperty('--text-inverse');
+    this.setState({ dark });
+  }
+  componentWillUnmount() { removeEventListener('storage', this._st); cancelAnimationFrame(this._raf); clearTimeout(this._slip); removeEventListener('pointermove', this._mv); removeEventListener('pointerup', this._up); removeEventListener('pointercancel', this._up); }
+  paint() { const f = this.frameRef.current; if (f) f.style.transform = 'rotate(' + (this.calm ? this.rest : this.a).toFixed(2) + 'deg)'; }
+  angleAt(x, y) {
+    const s = this.slotRef.current; if (!s) return this.a;
+    const r = s.getBoundingClientRect(), fs = parseFloat(getComputedStyle(s).fontSize) || 200;
+    const nx = r.left + r.width / 2, ny = r.top - fs * .2;
+    return Math.max(-40, Math.min(40, -Math.atan2(x - nx, Math.max(8, y - ny)) * 180 / Math.PI));
+  }
+  loadArt() {
+    let cat = null; try { cat = JSON.parse(localStorage.getItem('kz_catalog') || 'null'); } catch (e) {}
+    const go = raw => { this.pool = raw.map((p, i) => ({ ...p, id: i })).filter(p => !p.h && p.img); };
+    if (cat && cat.length) go(cat); else fetch('data/products.json').then(r => r.json()).then(go).catch(() => { this.pool = []; });
+  }
+  route(r) { try { localStorage.setItem('kz_route', JSON.stringify(r)); } catch (e) {} location.href = 'Kuznetsovs%20Gallery.dc.html'; }
+  grab = e => { e.preventDefault(); this.drag = true; e.currentTarget.style.cursor = 'grabbing'; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (er) {} };
+  nudge = e => { if (this.drag || this.calm || e.pointerType !== 'mouse') return; const s = this.slotRef.current; if (!s) return; const r = s.getBoundingClientRect(); if (e.clientX < r.left - 40 || e.clientX > r.right + 40 || e.clientY < r.top - 60 || e.clientY > r.bottom + 20) return; this.v -= Math.max(-30, Math.min(30, e.movementX || 0)) * .012; };
+  straighten = () => {
+    clearTimeout(this._slip);
+    this.rest = 0; this.paint();
+    this.setState(s => ({ fixes: s.fixes + 1 }));
+    this._slip = setTimeout(() => { this.rest = (3 + Math.random() * 6) * (Math.random() < .2 ? -1 : 1); this.v += this.rest > 0 ? .5 : -.5; this.paint(); }, 2200);
+  };
+  hang = () => {
+    const pool = this.pool || []; if (!pool.length) return;
+    let p; do { p = pool[Math.floor(Math.random() * pool.length)]; } while (pool.length > 1 && this.state.art && p.id === this.state.art.id);
+    this.v += 2.2;
+    this.setState({ art: p });
+  };
+
+  renderVals() {
+    const s = this.state, p = s.art;
+    let msg = LINES[Math.min(s.fixes, LINES.length - 1)];
+    if (s.fixes > LINES.length - 1) msg = 'Вы поправили раму ' + s.fixes + ' ' + plural(s.fixes, ['раз', 'раза', 'раз']) + '. Это уже перформанс — приходите к нам работать.';
+    if (p && s.fixes === 0) msg = '«' + p.t + '» — тоже неплохо. Пока ищем страницу, пусть повисит.';
+    const sz = p && p.s && p.s.length ? p.s : [], prices = sz.map(z => z.p).filter(v => v != null);
+    const plate = p
+      ? { k: p.k || 'KZ-' + String(p.id + 1).padStart(3, '0'), y: 'Временно вместо 404', t: '«' + p.t + '»', m: 'Принт на холсте, деревянный подрамник. Повесили, чтобы стена не пустовала.', s: sz.length ? sz[0].w + '×' + sz[0].h + (sz.length > 1 ? ' — ' + sz[sz.length - 1].w + '×' + sz[sz.length - 1].h : '') + ' см' : 'Размер на заказ', p: prices.length ? 'от ' + num(Math.min(...prices)) + ' сум' : 'Цена по запросу' }
+      : { k: 'KZ-404', y: '2026', t: '«Страница, которой нет»', m: 'Пустота на холсте, немного кода. Из частной коллекции интернета.', s: '0 × 0 см', p: 'Не продаётся' };
+    return {
+      slotRef: this.slotRef, frameRef: this.frameRef, grab: this.grab, nudge: this.nudge,
+      hasArt: !!p, noArt: !p, art: p ? { t: p.t, src: /^(https?:|data:|assets\/)/.test(p.img) ? p.img : BASE + p.img } : { t: '', src: '' },
+      frameAria: p ? 'Картина «' + p.t + '» в раме' : 'Пустая рама',
+      hangL: p ? 'Повесить другую' : 'Повесить что‑нибудь', straighten: this.straighten, hang: this.hang,
+      msg, plate, fixes: s.fixes,
+      logoBlend: s.dark ? 'screen' : 'multiply', logoFilter: s.dark ? 'invert(1) hue-rotate(180deg)' : 'none',
+      goCatalog: () => this.route({ page: 'catalog', cat: 'all' }), goHome: () => this.route({ page: 'home' }),
+      openArt: () => p && this.route({ page: 'work', workId: p.id, cat: 'all' })
+    };
+  }
+}
+</script>
+</body>
+</html>

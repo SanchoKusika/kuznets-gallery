@@ -1,0 +1,62 @@
+// Shared mixins. Breakpoints mirror the prototype's `innerWidth` checks
+// (`vw < 960`, `vw < 600`, …), which match media-query widths (both include the scrollbar).
+
+@mixin from($px) {
+  @media (width >= #{$px}px) {
+    @content;
+  }
+}
+
+@mixin below($px) {
+  @media (width < #{$px}px) {
+    @content;
+  }
+}
+
+@mixin dark {
+  :root[data-theme="dark"] & {
+    @content;
+  }
+}
+
+// Onest with tabular figures — the prototype's "mono" (codes, prices, counters, phone).
+@mixin tabular {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+
+// Uppercase meta label: Onest 500, tracking .1em.
+@mixin label($size: 12px) {
+  @include tabular;
+  font-size: $size;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+// Piazzolla Italic 300, opsz 30 — ledes, quotes, reviews, descriptions.
+@mixin serif {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: "opsz" 30;
+  letter-spacing: -0.01em;
+}
+
+// Image that fills its media well.
+@mixin media-fill($fit: cover) {
+  filter: var(--img-filter);
+  width: 100%;
+  height: 100%;
+  object-fit: $fit;
+  display: block;
+}
+
+// Hover zoom used on imagery.
+@mixin zoom($duration: 1.1s, $scale: 1.05) {
+  transition: transform $duration var(--ease-out);
+
+  &:hover {
+    transform: scale($scale);
+  }
+}

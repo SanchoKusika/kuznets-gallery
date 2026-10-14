@@ -1,0 +1,86 @@
+// Design tokens as CSS custom properties.
+// Values mirror the prototype (`--kz-*` fallbacks in Kuznetsovs Gallery.dc.html) and
+// its dark palette from `applyTheme()`. Light is the default; dark is `<html data-theme="dark">`.
+
+:root {
+  // paper
+  --paper: #f2efe9;
+  --paper-2: #e9e5dd;
+  --paper-3: #e4e0d8;
+  --paper-hover: #eae6de;
+  --paper-raised: #f7f5f1;
+  --paper-selected: #e6e1d7;
+
+  // ink
+  --ink: #151515;
+  --ink-2: #3a3732;
+  --ink-3: #5e5a53;
+  --ink-4: #a8a399;
+
+  // accent (orange dot of the logo); text on accent is always dark
+  --accent: #e0502e;
+  --on-accent: #151515;
+
+  // lines & overlays
+  --line: rgba(21, 21, 21, 0.15);
+  --line-soft: rgba(21, 21, 21, 0.12);
+  --line-medium: rgba(21, 21, 21, 0.25);
+  --glass: rgba(242, 239, 233, 0.94);
+  --scrim: rgba(21, 21, 21, 0.45);
+
+  // inverse blocks (footer, next work) stay dark in both themes
+  --inverse: #151515;
+  --inverse-fg: #f2efe9;
+  --line-inverse: rgba(242, 239, 233, 0.2);
+
+  // imagery
+  --img-filter: none;
+  --logo-blend: multiply;
+  --logo-filter: none;
+  --shadow-float: 0 40px 80px -30px rgba(21, 21, 21, 0.45);
+
+  // type
+  --font-sans: var(--font-onest), sans-serif;
+  --font-accent: var(--font-piazzolla), serif;
+
+  // layout
+  --gutter: clamp(16px, 3vw, 40px);
+  --section-gap: clamp(48px, 6vw, 96px);
+  --grid-gap: clamp(12px, 1.6vw, 24px);
+
+  // motion
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-rise: cubic-bezier(0.16, 0.84, 0.24, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.3, 1);
+  --ease-menu-in: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-menu-out: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --paper: #141413;
+  --paper-2: #1e1d1b;
+  --paper-3: #272522;
+  --paper-hover: #1c1b19;
+  --paper-raised: #1a1917;
+  --paper-selected: #2b2926;
+
+  --ink: #efeae2;
+  --ink-2: #cfc9bf;
+  --ink-3: #a39d93;
+  --ink-4: #958f85;
+
+  --line: rgba(239, 234, 226, 0.16);
+  --line-soft: rgba(239, 234, 226, 0.12);
+  --line-medium: rgba(239, 234, 226, 0.25);
+  --glass: rgba(20, 20, 19, 0.92);
+
+  --inverse: #0b0b0a;
+  --inverse-fg: #efeae2;
+  --line-inverse: rgba(239, 234, 226, 0.16);
+
+  --img-filter: brightness(0.88) contrast(1.04);
+  --logo-blend: screen;
+  --logo-filter: invert(1) hue-rotate(180deg);
+}

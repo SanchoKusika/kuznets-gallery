@@ -1,0 +1,113 @@
+@use "mixins" as *;
+
+// Sits under the header (z 30) so the header stays on top of the menu.
+.staggered-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  overflow: hidden;
+
+  &--closing {
+    pointer-events: none;
+  }
+
+  &__layer {
+    position: absolute;
+    inset: 0;
+
+    &--ink {
+      background: var(--ink);
+    }
+
+    &--accent {
+      background: var(--accent);
+    }
+  }
+
+  &__panel {
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    padding: calc(63px + clamp(28px, 7vh, 72px)) var(--gutter) 28px;
+    overflow-y: auto;
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__item {
+    overflow: hidden;
+    padding-bottom: 0.06em;
+    font-size: clamp(46px, 12.5vw, 104px);
+    line-height: 1.02;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: -0.065em;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.25s;
+
+    &:hover,
+    &--current {
+      color: var(--accent);
+    }
+  }
+
+  &__label {
+    display: inline-block;
+    transform-origin: 50% 100%;
+  }
+
+  &__num {
+    @include tabular;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    margin-top: 0.55em;
+    color: var(--accent);
+  }
+
+  &__contact {
+    margin-top: auto;
+    padding-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  &__contact-title {
+    @include label(12px);
+    color: var(--accent);
+  }
+
+  &__contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  &__contact-link {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}

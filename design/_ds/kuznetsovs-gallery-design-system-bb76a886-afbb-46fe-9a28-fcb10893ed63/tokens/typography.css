@@ -1,0 +1,13 @@
+:root{
+  --font-sans:'Onest', sans-serif; --font-accent:'Piazzolla', serif;
+  /* display scale — fluid */
+  --type-hero:clamp(60px,16.5vw,330px); --type-display-xl:clamp(52px,8vw,136px); --type-display-l:clamp(36px,5vw,80px);
+  --type-display-m:clamp(28px,3vw,44px); --type-row:clamp(32px,4.6vw,72px); --type-work-title:clamp(48px,6vw,104px);
+  /* serif accent */
+  --type-serif-lead:clamp(32px,3.4vw,56px); --type-serif-quote:clamp(40px,5vw,84px); --type-serif-card:26px; --type-serif-aside:22px;
+  /* text */
+  --type-title:20px; --type-card-title:16px; --type-body:15px; --type-ui:14px; --type-small:13px; --type-label:12px; --type-micro:11px;
+  --weight-regular:400; --weight-medium:500; --weight-bold:600;
+  --tracking-hero:-.075em; --tracking-display:-.065em; --tracking-title:-.04em; --tracking-tight:-.02em; --tracking-label:.04em;
+  --leading-hero:.86; --leading-display:.9; --leading-tight:1.1; --leading-body:1.6;
+}

@@ -1,0 +1,144 @@
+@use "mixins" as *;
+
+.footer {
+  margin-top: var(--section-gap);
+  background: var(--inverse);
+  color: var(--inverse-fg);
+  padding: clamp(40px, 5vw, 72px) var(--gutter) 24px;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 5vw, 72px);
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 32px;
+  }
+
+  &__call {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  &__label {
+    @include label(12px);
+    color: var(--ink-4);
+  }
+
+  &__phones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px clamp(32px, 5vw, 80px);
+    align-items: flex-start;
+  }
+
+  &__phone {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__phone-link {
+    color: var(--inverse-fg);
+    text-decoration: none;
+    font-size: clamp(26px, 2.6vw, 40px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__phone-name {
+    font-size: 14px;
+    color: var(--ink-4);
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 15px;
+  }
+
+  &__nav-link {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      color 0.25s,
+      padding 0.3s var(--ease-out);
+
+    &:hover {
+      color: var(--accent);
+      padding-left: 6px;
+    }
+  }
+
+  // The prototype leaves this link underlined.
+  &__instagram {
+    color: var(--inverse-fg);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__instagram-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    fill: #f2efe9;
+  }
+
+  &__note {
+    color: var(--ink-4);
+    line-height: 1.5;
+  }
+
+  &__wordmark {
+    font-weight: 600;
+    font-size: clamp(40px, 15.5vw, 300px);
+    letter-spacing: -0.075em;
+    line-height: 0.78;
+    margin-left: -0.04em;
+  }
+
+  &__wordmark-accent {
+    @include serif;
+    font-weight: 400;
+    color: var(--accent);
+    font-size: 0.3em;
+  }
+
+  &__bottom {
+    @include label(11px);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    color: var(--ink-4);
+    border-top: 1px solid var(--line-inverse);
+    padding-top: 16px;
+  }
+
+  &__staff {
+    color: var(--ink-4);
+    text-decoration: none;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}

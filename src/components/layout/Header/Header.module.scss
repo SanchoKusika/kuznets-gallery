@@ -1,0 +1,288 @@
+@use "mixins" as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line-soft);
+
+  // —— ≥960px: classic grid header
+  &__classic {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(16px, 2.5vw, 40px);
+    padding: 16px var(--gutter);
+    transition: padding 0.35s var(--ease-out);
+
+    @include below(960) {
+      display: none;
+    }
+  }
+
+  &--scrolled &__classic {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+  }
+
+  &__logo-img {
+    height: 40px;
+    transition: height 0.35s var(--ease-out);
+
+    &--compact {
+      height: 34px;
+      transition: none;
+
+      @include below(600) {
+        height: 28px;
+      }
+    }
+  }
+
+  &--scrolled &__classic &__logo-img {
+    height: 30px;
+  }
+
+  &__nav {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+
+  &__nav-item {
+    cursor: pointer;
+    display: flex;
+    gap: 4px;
+    align-items: flex-start;
+    padding: 8px 14px;
+    border-radius: 99px;
+    background: transparent;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      background 0.25s,
+      color 0.25s,
+      opacity 0.25s;
+
+    &:hover {
+      color: var(--ink);
+      opacity: 0.7;
+    }
+
+    &--active,
+    &--active:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &__nav-count {
+    @include tabular;
+    font-size: 10px;
+    opacity: 0.55;
+    line-height: 1.2;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  &__phone {
+    @include tabular;
+    text-decoration: none;
+    white-space: nowrap;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__cta {
+    border: 0;
+    background: var(--accent);
+    color: var(--on-accent);
+    padding: 10px 18px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    transition:
+      background 0.25s,
+      color 0.25s;
+
+    &:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &__count {
+    @include tabular;
+  }
+
+  // —— <960px: compact header with the staggered menu
+  &__compact {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px var(--gutter);
+
+    @include below(960) {
+      display: flex;
+    }
+
+    .header__logo {
+      flex: none;
+    }
+  }
+
+  &__compact-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    min-width: 0;
+
+    @include below(600) {
+      gap: 6px;
+    }
+  }
+
+  &__bag {
+    border: 0;
+    background: var(--ink);
+    color: var(--paper);
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex: none;
+    transition:
+      background 0.3s,
+      color 0.3s;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--on-accent);
+    }
+  }
+
+  &__bag-label {
+    @include below(600) {
+      display: none;
+    }
+  }
+
+  &__menu-btn {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 44px;
+    padding: 0 2px 0 6px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  // "Меню" / "Закрыть" — two lines in a 1em window
+  &__menu-label {
+    display: block;
+    height: 1em;
+    overflow: hidden;
+    line-height: 1;
+
+    @include below(380) {
+      display: none;
+    }
+  }
+
+  &__menu-label-track {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    transform: translateY(0%);
+    transition: transform 0.45s var(--ease-menu-out);
+  }
+
+  &__menu-label-line {
+    display: block;
+    height: 1em;
+    line-height: 1;
+  }
+
+  &__burger {
+    position: relative;
+    display: block;
+    width: 24px;
+    height: 24px;
+    flex: none;
+  }
+
+  &__burger-line {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 50%;
+    height: 1.5px;
+    margin-top: -0.75px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.35s var(--ease-menu-out);
+
+    &--top {
+      transform: translateY(-4px) rotate(0deg);
+    }
+
+    &--bottom {
+      transform: translateY(4px) rotate(0deg);
+    }
+  }
+
+  &__menu-btn--open &__menu-label-track {
+    transform: translateY(-50%);
+    transition: transform 0.6s var(--ease-menu-in);
+  }
+
+  &__menu-btn--open &__burger-line {
+    transition: transform 0.5s var(--ease-menu-in);
+
+    &--top {
+      transform: translateY(0px) rotate(45deg);
+    }
+
+    &--bottom {
+      transform: translateY(0px) rotate(-45deg);
+    }
+  }
+}
