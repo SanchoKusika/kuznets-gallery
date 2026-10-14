@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import holst from "@/assets/images/holst.jpg";
 import { Categories } from "@/components/home/Categories/Categories";
 import { Clients } from "@/components/home/Clients/Clients";
@@ -12,6 +13,8 @@ import { Faq } from "@/components/sections/Faq/Faq";
 import { CATS, REVIEWS } from "@/content/site";
 import { getCatalog, inCategory, toCard } from "@/lib/catalog";
 import { routes } from "@/lib/routes";
+
+export const metadata: Metadata = { alternates: { canonical: routes.home } };
 
 export default function HomePage() {
   const items = getCatalog();

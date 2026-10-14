@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect } from "react";
 import { ArtworkCard } from "@/components/catalog/ArtworkCard/ArtworkCard";
 import { ArtworkRow } from "@/components/catalog/ArtworkRow/ArtworkRow";
 import { Button } from "@/components/ui/Button/Button";
 import { Icon } from "@/components/ui/Icon/Icon";
-import { useCollectionFilters, type CollectionFilters, type Sort } from "@/features/catalog/filters";
+import { FMT, type CategoryKey, type FormatKey } from "@/content/site";
+import { PAGE_SIZE, useCollectionFilters, type CollectionFilters, type Sort } from "@/features/catalog/filters";
+import { rememberCategory } from "@/features/catalog/last-category";
 import { order } from "@/features/order/store";
 import { bem } from "@/lib/bem";
 import type { ArtworkCard as Card } from "@/lib/catalog";
@@ -16,24 +18,21 @@ import s from "./Collection.module.scss";
 
 const b = bem(s, "collection");
 
-const PAGE_SIZE = 24;
 const FORMATS: [CollectionFilters["format"], string][] = [
   ["all", "Все форматы"],
-  ["sq", "Квадрат"],
-  ["v", "Вертикаль"],
-  ["h", "Горизонталь"],
+  ...(Object.entries(FMT) as [FormatKey, string][]),
 ];
 const SORT_LABELS = ["по умолчанию", "по возрастанию", "по убыванию"];
 
 export type CategoryChip = { key: string; label: string; count: number; href: string; active: boolean };
 
-type Props = { title: string; items: Card[]; chips: CategoryChip[] };
+type Props = { category: CategoryKey | "all"; title: string; items: Card[]; chips: CategoryChip[] };
 
 /** Collection page body (prototype "02 Коллекция"): filters, grid / list, "Показать ещё". */
-export function Collection({ title, items, chips }: Props) {
-  const [{ format, sort, query, view }, setFilters] = useCollectionFilters();
-  const [limit, setLimit] = useState(PAGE_SIZE);
+export function Collection({ category, title, items, chips }: Props) {
+  const [{ format, sort, query, view, limit }, setFilters] = useCollectionFilters();
   const wide = useMediaQuery("(width >= 900px)", true);
+  useEffect(() => rememberCategory(category), [category]);
   const asList = wide && view === "list";
 
   let list = format === "all" ? items : items.filter((p) => p.format === format);
@@ -42,11 +41,8 @@ export function Collection({ title, items, chips }: Props) {
   if (sort) list = [...list].sort((a, z) => ((a.minPrice ?? 1e12) - (z.minPrice ?? 1e12)) * (sort === 1 ? 1 : -1));
   const visible = list.slice(0, limit);
 
-  // Changing what is shown starts the list over (prototype: `limit: null`).
-  const filter = (patch: Partial<CollectionFilters>) => {
-    setFilters(patch);
-    setLimit(PAGE_SIZE);
-  };
+  // A new category, format or search starts the list over (prototype: `limit: null`).
+  const filter = (patch: Partial<CollectionFilters>) => setFilters({ ...patch, limit: PAGE_SIZE });
 
   return (
     <>
@@ -63,7 +59,7 @@ export function Collection({ title, items, chips }: Props) {
       <section className={b("filters")}>
         <div className={b("chips")}>
           {chips.map((c) => (
-            <Link key={c.key} href={c.href} scroll={false} className={b("chip", { active: c.active })}>
+            <Link key={c.key} href={c.href} scroll={false} className={b("chip", { active: c.active })} onClick={() => filter({})}>
               {c.label}
               <span className={b("chip-count")}>{c.count}</span>
             </Link>
@@ -135,7 +131,7 @@ export function Collection({ title, items, chips }: Props) {
 
       {list.length > limit && (
         <div className={b("more")}>
-          <Button variant="outline" regular className={b("more-button")} onClick={() => setLimit(limit + PAGE_SIZE)}>
+          <Button variant="outline" regular className={b("more-button")} onClick={() => setFilters({ limit: limit + PAGE_SIZE })}>
             Показать ещё · {list.length - limit}
           </Button>
         </div>

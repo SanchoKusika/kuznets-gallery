@@ -10,7 +10,6 @@ import s from "./Hero.module.scss";
 
 const b = bem(s, "hero");
 
-
 export function Hero({ thumbs, total }: { thumbs: ArtworkCard[]; total: number }) {
   const stats = [
     ["от 90 000 сум", "за картину"],

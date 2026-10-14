@@ -15,20 +15,27 @@ export function generateStaticParams() {
   return [{ category: [] }, ...CATS.map((c) => ({ category: [c.k] }))];
 }
 
-/** undefined → all works; a known key → that category; anything else → null (404). */
-async function resolveCategory(params: Params): Promise<CategoryKey | "all" | null> {
+type Category = (typeof CATS)[number];
+
+/** No segment → all works; a known key → that category; anything else → null (404). */
+async function resolveCategory(params: Params): Promise<{ key: CategoryKey | "all"; cat?: Category } | null> {
   const { category } = await params;
-  if (!category?.length) return "all";
+  if (!category?.length) return { key: "all" };
   const cat = CATS.find((c) => c.k === category[0]);
-  return category.length === 1 && cat ? cat.k : null;
+  return category.length === 1 && cat ? { key: cat.k, cat } : null;
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const key = await resolveCategory(params);
-  const cat = CATS.find((c) => c.k === key);
-  return cat
-    ? { title: `${cat.n} — принт-картины`, description: `${cat.d}. В наличии и на заказ, доставка по Узбекистану.` }
-    : { title: "Коллекция принт-картин", description: "Все работы галереи: принт-картины на холсте в наличии и на заказ." };
+  const resolved = await resolveCategory(params);
+  if (!resolved) return {};
+  const { key, cat } = resolved;
+  return {
+    title: cat ? `${cat.n} — принт-картины` : "Коллекция принт-картин",
+    description: cat
+      ? `${cat.d}. В наличии и на заказ, доставка по Узбекистану.`
+      : "Все работы галереи: принт-картины на холсте в наличии и на заказ.",
+    alternates: { canonical: routes.collection(key) },
+  };
 }
 
 // Params are read before rendering (not inside <Suspense>) so an unknown category gets a real
@@ -37,11 +44,11 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export const instant = false;
 
 export default async function CollectionPage({ params }: PageProps<"/collection/[[...category]]">) {
-  const key = await resolveCategory(params);
-  if (!key) notFound();
+  const resolved = await resolveCategory(params);
+  if (!resolved) notFound();
+  const { key, cat } = resolved;
 
   const items = getCatalog();
-  const cat = CATS.find((c) => c.k === key);
   const chips = [{ k: "all" as const, short: "Все" }, ...CATS].map((c) => ({
     key: c.k,
     label: c.short,
@@ -52,7 +59,7 @@ export default async function CollectionPage({ params }: PageProps<"/collection/
 
   return (
     <main className={b()}>
-      <Collection title={cat?.title ?? "коллекция"} items={inCategory(items, key).map(toCard)} chips={chips} />
+      <Collection category={key} title={cat?.title ?? "коллекция"} items={inCategory(items, key).map(toCard)} chips={chips} />
     </main>
   );
 }

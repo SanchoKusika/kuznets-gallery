@@ -50,8 +50,10 @@ src/
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
+  components/catalog/   Collection, ArtworkCard, ArtworkRow
+  components/work/      WorkDetails, NextWork, RelatedWorks
   components/sections/  общие секции: Faq, FrameCards
-  features/             theme, order (заявка), scroll, motion
+  features/             theme, order (заявка), catalog (фильтры коллекции), scroll, motion
   content/site.ts       тексты и справочники из прототипа
   lib/                  каталог, картинки, форматирование, маршруты, bem()
   styles/               _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)
@@ -65,4 +67,4 @@ scripts/visual/         сверка с прототипом
 - Один компонент — один BEM-блок и свой `.module.scss`; классы собираются через `bem(styles, "block")`.
 - Инлайн-стилей в разметке нет. Исключения — значения, меняющиеся каждый кадр (курсор, волна, маятник 404),
   и геометрия из данных (графики админки); они задаются через `ref.style` или CSS-переменные.
-- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (по умолчанию `https://kuznets.uz/wp-content/uploads/`).
+- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (по умолчанию `https://kuznets.uz/wp-content/uploads/`), адрес сайта для sitemap и canonical — `NEXT_PUBLIC_SITE_URL` (по умолчанию `https://kuznets.uz`).

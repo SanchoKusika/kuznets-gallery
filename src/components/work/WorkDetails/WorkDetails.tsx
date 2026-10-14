@@ -14,6 +14,8 @@ const b = bem(s, "work-details");
 
 type Props = {
   code: string;
+  /** Catalogue image path, saved with the request. */
+  image: string;
   title: string;
   description: string;
   src: string;
@@ -22,7 +24,7 @@ type Props = {
 };
 
 /** Artwork image + purchase panel: size, framing, "Добавить в заявку" (prototype "03 Работа"). */
-export function WorkDetails({ code, title, description, src, formatName, sizes }: Props) {
+export function WorkDetails({ code, image, title, description, src, formatName, sizes }: Props) {
   const [sizeIndex, setSizeIndex] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
   const size = sizes[sizeIndex] ?? sizes[0];
@@ -32,7 +34,7 @@ export function WorkDetails({ code, title, description, src, formatName, sizes }
       code,
       title,
       src,
-      img: src,
+      img: image,
       w: size?.w ?? null,
       h: size?.h ?? null,
       size: size ? `${size.w}×${size.h} см` : "на заказ",

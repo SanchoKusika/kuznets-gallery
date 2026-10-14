@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { NextWork } from "@/components/work/NextWork/NextWork";
+import { BackToCollection } from "@/components/work/BackToCollection/BackToCollection";
 import { RelatedWorks } from "@/components/work/RelatedWorks/RelatedWorks";
 import { WorkDetails } from "@/components/work/WorkDetails/WorkDetails";
 import { CATS, FMT } from "@/content/site";
@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: `${work.title} — принт-картина ${work.code}`,
     description: work.description || "Принт-картина на холсте. В наличии и на заказ, доставка по Узбекистану.",
     openGraph: { images: [work.src] },
+    alternates: { canonical: routes.work(work.slug) },
   };
 }
 
@@ -33,8 +34,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 export const instant = false;
 
 export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
-  const work = getArtwork((await params).code);
+  const { code } = await params;
+  const work = getArtwork(code);
   if (!work) notFound();
+  if (code !== work.slug) permanentRedirect(routes.work(work.slug)); // /work/KZ-001 → /work/kz-001
 
   const items = getCatalog();
   const next = items[(items.indexOf(work) + 1) % items.length];
@@ -50,13 +53,12 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
   return (
     <main>
       <div className={b("crumbs")}>
-        <Link href={routes.collection(category?.k)} className={b("back")}>
-          ← Коллекция / {categoryName}
-        </Link>
+        <BackToCollection label={categoryName} className={b("back")} />
         <span>{work.code}</span>
       </div>
       <WorkDetails
         code={work.code}
+        image={work.image}
         title={work.title}
         description={work.description}
         src={work.src}

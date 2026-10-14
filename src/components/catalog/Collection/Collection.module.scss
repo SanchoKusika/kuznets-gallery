@@ -209,6 +209,7 @@
 
   &__empty-link {
     @include button-reset;
+    display: inline;
     color: var(--accent);
     border-bottom: 1px solid var(--accent);
     transition:

@@ -29,6 +29,9 @@ export type Artwork = {
   slug: string;
   title: string;
   description: string;
+  /** Image path as stored in the catalogue (inside uploads); stored with requests. */
+  image: string;
+  /** Resolved image URL. */
   src: string;
   sizes: ArtworkSize[];
   /** Raw category list incl. "all" (used for filtering, as in the prototype). */
@@ -63,6 +66,7 @@ export function getCatalog(): Artwork[] {
         slug: code.toLowerCase(),
         title: p.t,
         description: p.d ?? "",
+        image: p.img,
         src: imageUrl(p.img),
         sizes,
         tags,
@@ -114,5 +118,6 @@ export function getArtwork(slug: string) {
   return getCatalog().find((p) => p.slug === slug.toLowerCase());
 }
 
+/** Works of a category; "all" means the whole catalogue (not the catalogue's `all` tag). */
 export const inCategory = (items: Artwork[], category: CategoryKey | "all") =>
   category === "all" ? items : items.filter((p) => p.tags.includes(category));
