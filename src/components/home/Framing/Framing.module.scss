@@ -1,0 +1,35 @@
+@use "mixins" as *;
+
+.framing {
+  @include section;
+
+  &__head {
+    @include section-head;
+    margin-bottom: 40px;
+  }
+
+  &__title {
+    @include section-title;
+    margin: 0;
+    max-width: 1100px;
+    text-wrap: balance;
+  }
+
+  &__link {
+    font-size: 14px;
+    white-space: nowrap;
+    margin-bottom: 0.35em;
+    cursor: pointer;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    transition:
+      color 0.25s,
+      border-color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+}

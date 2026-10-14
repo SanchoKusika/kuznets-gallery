@@ -8,7 +8,7 @@ export function groupThousands(n: number) {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-/** Russian plural: plural(5, "работа", "работы", "работ") → "работ". */
+/** Russian plural: plural(5, "компания", "компании", "компаний") → "компаний". */
 export function plural(n: number, one: string, few: string, many: string) {
   const x = n % 10;
   const y = n % 100;
@@ -16,3 +16,6 @@ export function plural(n: number, one: string, few: string, many: string) {
   if (x >= 2 && x <= 4 && (y < 12 || y > 14)) return few;
   return many;
 }
+
+/** "работа" / "работы" / "работ" — used for every catalogue count. */
+export const worksWord = (n: number) => plural(n, "работа", "работы", "работ");

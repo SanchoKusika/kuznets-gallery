@@ -43,6 +43,43 @@
   letter-spacing: -0.01em;
 }
 
+// Page section: section gap on top, gutters on the sides.
+@mixin section {
+  padding: var(--section-gap) var(--gutter) 0;
+}
+
+// Section heading (display L): "Выберите направление", "Нам доверяют…".
+@mixin section-title {
+  font-size: clamp(36px, 5vw, 80px);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
+}
+
+// Ink rule above a block heading ("Нам доверяют…", FAQ intro).
+@mixin rule-top($gap: 20px) {
+  border-top: 1px solid var(--ink);
+  padding-top: $gap;
+}
+
+// Section head: title on the left, link/controls on the right, ink rule above.
+@mixin section-head {
+  @include rule-top;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 32px;
+  flex-wrap: wrap;
+}
+
+// Display M: block headings ("Подарите картину…", "Цена зависит от размера").
+@mixin display-m {
+  font-size: clamp(28px, 3vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
 // Image that fills its media well.
 @mixin media-fill($fit: cover) {
   filter: var(--img-filter);

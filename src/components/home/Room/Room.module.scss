@@ -1,0 +1,82 @@
+@use "mixins" as *;
+
+.room {
+  @include section;
+
+  &__figure {
+    position: relative;
+  }
+
+  &__media {
+    aspect-ratio: 16 / 8;
+
+    @include below(600) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  &__img {
+    @include zoom(1.4s, 1.04);
+  }
+
+  &__plate {
+    position: absolute;
+    left: clamp(12px, 2vw, 28px);
+    bottom: clamp(12px, 2vw, 28px);
+    background: var(--paper);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 340px;
+  }
+
+  &__plate-label {
+    @include label(11px);
+    color: var(--ink-3);
+  }
+
+  &__plate-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  &__plate-text {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__quote {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 32px;
+    padding: clamp(40px, 5vw, 72px) 0 0;
+    align-items: end;
+  }
+
+  &__quote-text {
+    @include serif;
+    margin: 0;
+    font-size: clamp(36.8px, 4.6vw, 77.28px);
+    line-height: 1.08;
+  }
+
+  &__quote-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 420px;
+    justify-self: end;
+  }
+
+  &__quote-body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  &__quote-author {
+    @include label(12px);
+  }
+}

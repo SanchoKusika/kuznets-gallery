@@ -1,0 +1,47 @@
+@use "sass:math";
+
+// SVG height = 172 units (see geometry.ts); the viewBox is 600–1440 wide.
+$svg-h: 172;
+$pad: clamp(8px, 2vw, 28px);
+
+.wave-ribbon {
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-y;
+  padding: $pad 0 0;
+  min-height: 40px;
+
+  // Reserve the ribbon's height until it is measured on the client (no layout shift).
+  &:not(&--ready) {
+    min-height: calc(#{$pad} + max(min(#{math.div($svg-h * 100, 600)}vw, #{$svg-h}px), #{math.div($svg-h * 100, 1440)}vw));
+  }
+
+  &__svg {
+    width: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  // Band width and font size come from geometry.ts as SVG attributes.
+  &__band {
+    fill: none;
+    stroke-linejoin: round;
+    stroke: var(--accent);
+  }
+
+  &__measure,
+  &__text {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  &__measure {
+    visibility: hidden;
+  }
+
+  &__text {
+    fill: var(--on-accent);
+  }
+}
