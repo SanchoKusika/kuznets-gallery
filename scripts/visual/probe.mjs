@@ -1,26 +1,15 @@
-// Usage: node probe.mjs <width> <jsExpr returning JSON-able> [appPath] [protoRoute] [theme]
-import { chromium } from "playwright-core";
+// Evaluates a JS expression in the prototype and the app and prints both results.
+// Inside the expression `r(el)` returns [x, y, width, height] of an element.
+// Usage: node probe.mjs <width> "<expression>" [appPath] [protoRoute] [theme]
+import { launch, open, sides } from "./_lib.mjs";
 
 const [width, expr, appPath = "/", protoRoute = "", theme = "light"] = process.argv.slice(2);
-const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
-for (const [name, url] of [
-  ["proto", "http://localhost:4000/Kuznetsovs%20Gallery.dc.html"],
-  ["app", "http://localhost:3000" + appPath],
-]) {
-  const ctx = await browser.newContext({ viewport: { width: Number(width), height: 900 }, reducedMotion: "reduce" });
-  await ctx.addInitScript(
-    ([t, r]) => {
-      localStorage.setItem("kz_theme", t);
-      if (r) localStorage.setItem("kz_route", r);
-    },
-    [theme, name === "proto" ? protoRoute : ""],
+const browser = await launch();
+for (const [name, url, route] of sides(appPath, protoRoute)) {
+  const { ctx, page } = await open(browser, url, { width: Number(width), theme, route, settle: 800 });
+  const out = await page.evaluate(
+    `(() => { const r = el => { if (!el) return null; const b = el.getBoundingClientRect(); return [+b.x.toFixed(2), +b.y.toFixed(2), +b.width.toFixed(2), +b.height.toFixed(2)]; }; return ${expr}; })()`,
   );
-  const page = await ctx.newPage();
-  await page.goto(url, { waitUntil: "networkidle" });
-  await page.waitForSelector("header");
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(800);
-  const out = await page.evaluate(`(() => { const r = el => { if (!el) return null; const b = el.getBoundingClientRect(); return [+b.x.toFixed(2), +b.y.toFixed(2), +b.width.toFixed(2), +b.height.toFixed(2)]; }; return ${expr}; })()`);
   console.log(name, JSON.stringify(out));
   await ctx.close();
 }

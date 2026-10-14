@@ -1,12 +1,14 @@
-import { chromium } from "playwright-core";
-const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe" });
+// App-only behaviour checks: theme toggle + persistence, Контакты scroll, active nav, mobile menu
+// (Esc, resize, navigation) and console errors / failed requests. Usage: node behavior.mjs
+import { APP_URL, launch } from "./_lib.mjs";
+const browser = await launch();
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
 const page = await ctx.newPage();
 const logs = [];
 page.on("console", (m) => { if (["error", "warning"].includes(m.type())) logs.push(m.type() + ": " + m.text().slice(0, 300) + " @ " + (m.location().url || "")); });
 page.on("response", (res) => { if (res.status() >= 400) logs.push("HTTP " + res.status() + " " + res.url()); });
 page.on("pageerror", (e) => logs.push("pageerror: " + e.message));
-await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+await page.goto(APP_URL + "/", { waitUntil: "networkidle" });
 await page.waitForTimeout(600);
 const r = {};
 r.themeBefore = await page.evaluate(() => document.documentElement.getAttribute("data-theme"));

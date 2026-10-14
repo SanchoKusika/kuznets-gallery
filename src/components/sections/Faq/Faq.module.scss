@@ -7,11 +7,10 @@
   gap: clamp(24px, 4vw, 64px);
 
   &__intro {
+    @include rule-top(14px);
     display: flex;
     flex-direction: column;
     gap: 18px;
-    border-top: 1px solid var(--ink);
-    padding-top: 14px;
   }
 
   &__eyebrow {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/Icon/Icon";
 import { Media } from "@/components/ui/Media/Media";
 import { bem } from "@/lib/bem";
-import { plural } from "@/lib/format";
+import { worksWord } from "@/lib/format";
 import s from "./Categories.module.scss";
 
 const b = bem(s, "categories");
@@ -27,7 +27,7 @@ export function Categories({ rows }: { rows: Row[] }) {
             {/* Number and word are separate flex items (10px apart), as rendered in the prototype. */}
             <span className={b("count")}>
               <span>{r.count}</span>
-              <span>{plural(r.count, "работа", "работы", "работ")}</span>
+              <span>{worksWord(r.count)}</span>
               <Icon name="arrow-right" />
             </span>
             <Media src={r.img} sizes="120px" className={b("thumb")} imgClassName={b("thumb-img")} />

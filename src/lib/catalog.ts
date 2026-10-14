@@ -72,7 +72,3 @@ export function getCatalog(): Artwork[] {
     .filter((p): p is Artwork => p !== null);
   return cache;
 }
-
-export function countIn(items: Artwork[], category: CategoryKey | "all") {
-  return category === "all" ? items.length : items.filter((p) => p.tags.includes(category)).length;
-}

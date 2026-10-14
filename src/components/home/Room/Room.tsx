@@ -5,7 +5,7 @@ import s from "./Room.module.scss";
 
 const b = bem(s, "room");
 
-/** Full-bleed interior shot with a caption plate, then a client quote. */
+/** Wide interior shot (within the gutters) with a caption plate, then a client quote. */
 export function Room() {
   return (
     <section className={b()} data-reveal>

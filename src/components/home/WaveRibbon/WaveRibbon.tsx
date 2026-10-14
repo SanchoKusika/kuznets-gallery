@@ -67,14 +67,12 @@ export function WaveRibbon({ titles }: { titles: string[] }) {
     <div ref={rootRef} className={b(null, { ready: vb !== null })} title="Потяните, чтобы изменить направление">
       {vb !== null && (
         <svg className={b("svg")} viewBox={`0 0 ${vb} ${RIBBON.height}`} aria-hidden="true">
-          <defs>
-            <path ref={pathRef} id={pathId} d={wavePath(vb)} />
-          </defs>
-          <path className={b("band")} d={wavePath(vb)} />
-          <text ref={measureRef} className={b("measure")} x="0" y="-999">
+          {/* The band is also the path the text runs along. */}
+          <path ref={pathRef} id={pathId} className={b("band")} d={wavePath(vb)} strokeWidth={RIBBON.band} />
+          <text ref={measureRef} className={b("measure")} x="0" y="-999" fontSize={RIBBON.fontSize}>
             {one}
           </text>
-          <text className={b("text")} dominantBaseline="central">
+          <text className={b("text")} dominantBaseline="central" fontSize={RIBBON.fontSize}>
             <textPath ref={textPathRef} href={`#${pathId}`} startOffset="0" />
           </text>
         </svg>

@@ -24,12 +24,20 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 
 ### Сверка с прототипом
 
-При запущенных `npm run dev` (:3000) и `npx serve design -l 4000` скрипты из `scripts/visual/`
-снимают одно и то же в прототипе и в приложении через системный Chrome (`CHROME_PATH`), результаты — в `.visual/`:
+Скрипты в `scripts/visual/` гоняют системный Chrome (`CHROME_PATH`) против `npm run dev` (:3000)
+и `npx serve design -l 4000`:
+
+| Скрипт | Что делает |
+|---|---|
+| `geometry.mjs [ширины] [путь]` | сравнивает позиции и высоты блоков страницы в прототипе и в приложении |
+| `compare.mjs <папка> <селектор> [ширины] [темы] [роут] [путь]` | скриншот элемента в обоих и попиксельный дифф (PNG в указанную папку, обычно `.visual/`); `ACTION` — JS перед снимком |
+| `menu.mjs <папка> [ширины]` | мобильное меню: середина анимации, открытое состояние, закрытие |
+| `probe.mjs <ширина> "<выражение>"` | вычисляет выражение в обоих и печатает результат |
+| `behavior.mjs` | только приложение: тема, «Контакты», меню, ошибки в консоли |
 
 ```bash
-node scripts/visual/geometry.mjs 1440,960,375 /                 # позиции и высоты блоков страницы
-node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 light,dark "" /   # попиксельный дифф
+node scripts/visual/geometry.mjs 1440,960,375 /
+node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 light,dark "" /
 ```
 
 В Git Bash добавляйте `MSYS_NO_PATHCONV=1`, иначе `/` превратится в путь Windows.
@@ -38,14 +46,18 @@ node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 lig
 
 ```
 src/
-  app/              маршруты; (site)/ — публичный сайт с шапкой и подвалом
-  components/ui/    примитивы дизайн-системы (Icon, Logo, ThemeToggle…)
-  components/layout Header, StaggeredMenu, Footer
-  features/         theme, order (заявка), scroll, motion
-  content/site.ts   тексты и справочники из прототипа
-  lib/              каталог, форматирование, маршруты, bem()
-  styles/           _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)
-design/             эталонные прототипы (не входят в сборку)
+  app/                  маршруты; (site)/ — публичный сайт с шапкой и подвалом
+  components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
+  components/layout/    Header, StaggeredMenu, Footer
+  components/home/      секции главной
+  components/sections/  общие секции: Faq, FrameCards
+  features/             theme, order (заявка), scroll, motion
+  content/site.ts       тексты и справочники из прототипа
+  lib/                  каталог, картинки, форматирование, маршруты, bem()
+  styles/               _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)
+  assets/               логотип и фото для статических импортов
+design/                 эталонные прототипы (не входят в сборку)
+scripts/visual/         сверка с прототипом
 ```
 
 ## Соглашения

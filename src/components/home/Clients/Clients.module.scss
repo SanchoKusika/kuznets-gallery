@@ -12,9 +12,8 @@
 
   &__title {
     @include section-title;
+    @include rule-top;
     margin: 0 0 28px;
-    border-top: 1px solid var(--ink);
-    padding-top: 20px;
     text-wrap: balance;
   }
 
