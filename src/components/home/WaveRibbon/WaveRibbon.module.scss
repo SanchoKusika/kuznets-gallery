@@ -23,18 +23,17 @@ $pad: clamp(8px, 2vw, 28px);
     overflow: visible;
   }
 
+  // Band width and font size come from geometry.ts as SVG attributes.
   &__band {
     fill: none;
     stroke-linejoin: round;
     stroke: var(--accent);
-    stroke-width: 60px;
   }
 
   &__measure,
   &__text {
     font-family: var(--font-sans);
     font-weight: 700;
-    font-size: 34px;
     letter-spacing: 2px;
   }
 

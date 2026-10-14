@@ -10,7 +10,7 @@ import { Room } from "@/components/home/Room/Room";
 import { WaveRibbon } from "@/components/home/WaveRibbon/WaveRibbon";
 import { Faq } from "@/components/sections/Faq/Faq";
 import { CATS, REVIEWS } from "@/content/site";
-import { countIn, getCatalog } from "@/lib/catalog";
+import { getCatalog } from "@/lib/catalog";
 import { routes } from "@/lib/routes";
 
 export default function HomePage() {
@@ -31,7 +31,7 @@ export default function HomePage() {
       key: c.k,
       name: c.n,
       desc: c.d,
-      count: countIn(items, c.k),
+      count: inCat.length,
       img: cover?.src ?? holst.src,
       href: routes.collection(c.k),
     };

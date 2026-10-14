@@ -56,6 +56,22 @@
   line-height: 0.95;
 }
 
+// Ink rule above a block heading ("Нам доверяют…", FAQ intro).
+@mixin rule-top($gap: 20px) {
+  border-top: 1px solid var(--ink);
+  padding-top: $gap;
+}
+
+// Section head: title on the left, link/controls on the right, ink rule above.
+@mixin section-head {
+  @include rule-top;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px 32px;
+  flex-wrap: wrap;
+}
+
 // Display M: block headings ("Подарите картину…", "Цена зависит от размера").
 @mixin display-m {
   font-size: clamp(28px, 3vw, 44px);
