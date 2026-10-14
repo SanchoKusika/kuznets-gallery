@@ -3,9 +3,9 @@ export function formatPrice(n: number | null | undefined) {
   return n == null ? "по запросу" : `${groupThousands(n)} сум`;
 }
 
-/** 90000 → "90 000" (regular space, as in the prototype). */
-export function groupThousands(n: number) {
-  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+/** 90000 → "90 000" (regular space, as in the prototype; the 404 plate uses a thin space). */
+export function groupThousands(n: number, separator = " ") {
+  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 }
 
 /** Russian plural: plural(5, "компания", "компании", "компаний") → "компаний". */
