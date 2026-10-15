@@ -42,8 +42,3 @@ next-env.d.ts
 
 # example env is committed
 !.env.example
-
-# cloudflare / opennext
-.open-next
-.wrangler
-
