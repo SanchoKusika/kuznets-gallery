@@ -7,7 +7,7 @@ import { fromProduct, requireAdmin, toRequest, toReview } from "@/features/admin
 import { SOURCES, STATUSES, type Product, type Req, type ReqPatch, type Review } from "@/features/admin/model";
 import { CATALOG_TAG } from "@/lib/catalog";
 import { REVIEWS_TAG } from "@/lib/reviews";
-import { AUTH_COOKIE_OPTIONS, REMEMBER_COOKIE } from "@/lib/supabase/cookies";
+import { ADMIN_MARKER_COOKIE, AUTH_COOKIE_OPTIONS, REMEMBER_COOKIE } from "@/lib/supabase/cookies";
 import { sessionDb } from "@/lib/supabase/session";
 
 // Every action is a public endpoint: it re-checks the admin session (requireAdmin) and validates input.
@@ -78,7 +78,8 @@ const toRow = (p: ReqPatch) => {
 export async function signIn(login: string, password: string, remember: boolean): Promise<{ error?: string }> {
   if (!login.trim()) return { error: "Укажите логин" };
   const store = await cookies();
-  store.set(REMEMBER_COOKIE, remember ? "1" : "0", { ...AUTH_COOKIE_OPTIONS, ...(remember && { maxAge: 400 * 24 * 3600 }) });
+  const lifetime = { ...AUTH_COOKIE_OPTIONS, ...(remember && { maxAge: 400 * 24 * 3600 }) };
+  store.set(REMEMBER_COOKIE, remember ? "1" : "0", lifetime);
   const db = await sessionDb(remember);
   const { data: email } = await db.rpc("admin_email", { p_login: login.slice(0, 100) });
   if (!email) return { error: "Неверный пароль" };
@@ -89,13 +90,16 @@ export async function signIn(login: string, password: string, remember: boolean)
     await db.auth.signOut();
     return { error: "Неверный пароль" };
   }
+  store.set(ADMIN_MARKER_COOKIE, "1", { ...lifetime, httpOnly: false });
   return {};
 }
 
 export async function signOut() {
   const db = await sessionDb();
   await db.auth.signOut();
-  (await cookies()).delete(REMEMBER_COOKIE);
+  const store = await cookies();
+  store.delete(REMEMBER_COOKIE);
+  store.delete(ADMIN_MARKER_COOKIE);
 }
 
 // —— Requests (no site cache to update: requests never reach the public pages)
