@@ -12,7 +12,7 @@
 - Данные: Supabase — Postgres (каталог, заявки, отзывы, админы), Auth (админка), Storage (картинки работ, бакет `artworks`).
   Схема — `supabase/migrations/`, сайт читает каталог через `'use cache'` с тегами `catalog` / `reviews`
 - Редактор фото в админке: рамка обрезки — `react-image-crop`, поворот и экспорт — canvas
-- Хостинг (этап 10, ещё не настроен): Cloudflare Workers через `@opennextjs/cloudflare`
+- Хостинг: Vercel (см. «Деплой»); демо — https://kuznets-gallery.vercel.app
 
 ## Запуск
 
@@ -25,7 +25,8 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build` (сборка читает каталог из Supabase).
 
 Переменные окружения — в `.env.local` (образец — `.env.example`): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
-`NEXT_PUBLIC_IMAGE_BASE`, для скриптов — `ADMIN_LOGIN` / `ADMIN_PASSWORD`.
+`NEXT_PUBLIC_IMAGE_BASE`, необязательная `NEXT_PUBLIC_SITE_URL`, для скриптов — `ADMIN_LOGIN` / `ADMIN_PASSWORD`. На Vercel — в настройках
+проекта.
 
 ### База данных
 
@@ -57,6 +58,21 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 
 Картинки работ лежат в Storage, в базе — ключ объекта: путь как на WordPress (`2021/04/….jpg`), у новых загрузок —
 `ГГГГ/ММ/ИМЯ-xxxxxx.jpg`. Сайт отдаёт их через `next/image`; адрес бакета — `NEXT_PUBLIC_IMAGE_BASE`.
+
+### Деплой
+
+Vercel, проект `kuznets-gallery` на аккаунте владельца, подключён к GitHub: `main` выкладывается в продакшен
+(сейчас демо — https://kuznets-gallery.vercel.app), у PR — превью. Функции работают во Франкфурте (`vercel.json`,
+`fra1`), рядом с базой Supabase (eu-central-1).
+
+- Переменные Supabase в проект ставит интеграция Supabase ↔ Vercel (Settings → Environment Variables). Приложение
+  берёт из них только `SUPABASE_URL` и `SUPABASE_PUBLISHABLE_KEY`; `NEXT_PUBLIC_IMAGE_BASE` по умолчанию — бакет `artworks`.
+- Адрес сайта — `NEXT_PUBLIC_SITE_URL`, а без неё — продакшен-домен проекта Vercel. Индексируется только
+  продакшен-сборка для `https://kuznets.uz`: на `*.vercel.app`, в превью PR и в локальной сборке без переменной
+  `robots.txt` запрещает всё, а страницы отдают `noindex, nofollow`. Когда kuznets.uz
+  станет продакшен-доменом проекта, следующий деплой откроет сайт для поисковиков.
+- Кеш `'use cache'` и сброс по тегам `catalog` / `reviews` Vercel поддерживает сам: правки из админки попадают на сайт
+  без нового деплоя.
 
 ### Сверка с прототипом
 
@@ -98,6 +114,7 @@ public/assets/          логотипы клиентов (clients/), иконк
 design/                 эталонные прототипы (не входят в сборку)
 supabase/migrations/    схема БД
 scripts/db/             импорт каталога и картинок, демо-заявки
+vercel.json             регион функций на Vercel
 ```
 
 ## Соглашения
@@ -109,4 +126,4 @@ scripts/db/             импорт каталога и картинок, де�
   компоненты (`components/ui`, `components/admin/ui`). Новая зависимость — только если без неё заметно сложнее.
 - Код и комментарии — на английском, интерфейс и документация — на русском. Форматтера нет: стиль как в соседнем коде,
   длинные строки допустимы.
-- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (бакет `artworks` в Supabase Storage), адрес сайта для sitemap и canonical — `NEXT_PUBLIC_SITE_URL` (по умолчанию `https://kuznets.uz`).
+- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (бакет `artworks` в Supabase Storage), адрес сайта для sitemap и canonical — `NEXT_PUBLIC_SITE_URL` (по умолчанию — продакшен-домен проекта Vercel, вне Vercel — `https://kuznets.uz`).
