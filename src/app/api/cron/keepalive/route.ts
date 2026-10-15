@@ -6,6 +6,7 @@ import { publicDb } from "@/lib/supabase/public";
  * are served cached pages that never reach the database. Reads one public row, so it needs no secret.
  */
 export async function GET() {
+  // Request time only: a ping must never be answered by a response prerendered at build.
   await connection();
   const { error } = await publicDb().from("products").select("code").limit(1);
   if (error) {
