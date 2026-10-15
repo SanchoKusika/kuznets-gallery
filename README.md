@@ -63,7 +63,7 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 
 Демо — Vercel, проект `kuznets-gallery` на аккаунте владельца, подключён к GitHub: `main` выкладывается в продакшен
 (https://kuznets-gallery.vercel.app), у PR — превью. Бесплатный план Vercel только для некоммерческих сайтов, поэтому
-прод kuznets.uz планируется на Cloudflare Workers (код — в закрытом PR #19). Функции работают во Франкфурте (`vercel.json`,
+прод kuznets.uz планируется на Cloudflare Workers (код — тег `cloudflare-opennext`, закрытый PR #19; пинг Supabase там — Cron Trigger). Функции работают во Франкфурте (`vercel.json`,
 `fra1`), рядом с базой Supabase (eu-central-1).
 
 - Переменные Supabase в проект ставит интеграция Supabase ↔ Vercel (Settings → Environment Variables). Приложение
@@ -93,7 +93,8 @@ src/
   app/admin/            /admin: вход и панель; actions.ts — Server Actions панели (каждый проверяет сессию)
   app/api/requests/     POST /api/requests: zod-валидация, запись через функцию БД submit_request
   app/api/admin/badge/  GET: число новых заявок для плашки админа (проверяет сессию)
-  app/api/cron/keepalive/  GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
+  app/api/cron/keepalive/
+                        GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
   proxy.ts              обновляет сессию админа перед /admin и /api/admin
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
   components/layout/    Header, StaggeredMenu, Footer
