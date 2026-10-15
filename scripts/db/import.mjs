@@ -2,8 +2,8 @@
 // every catalogue image from WordPress (kuznets.uz/wp-content/uploads) into the `artworks` bucket
 // under the same path. Safe to re-run: existing products, reviews and images are kept.
 //
-//   node --env-file=.env.local scripts/db/import.mjs            catalogue, reviews and images
-//   node --env-file=.env.local scripts/db/import.mjs --images   images only
+//   node --env-file=.env.local --env-file=.env.scripts scripts/db/import.mjs            catalogue, reviews and images
+//   node --env-file=.env.local --env-file=.env.scripts scripts/db/import.mjs --images   images only
 
 import { readFileSync } from "node:fs";
 import { adminClient, must } from "./client.mjs";

@@ -3,8 +3,8 @@
 // and ten open requests in different stages. Demo requests are numbered up to № 1048; real ones
 // start at № 1049 (request_no_seq), so the two never mix. Never run against production data.
 //
-//   node --env-file=.env.local scripts/db/demo.mjs           replace the demo requests
-//   node --env-file=.env.local scripts/db/demo.mjs --purge   only delete them
+//   node --env-file=.env.local --env-file=.env.scripts scripts/db/demo.mjs           replace the demo requests
+//   node --env-file=.env.local --env-file=.env.scripts scripts/db/demo.mjs --purge   only delete them
 
 import { adminClient, must } from "./client.mjs";
 

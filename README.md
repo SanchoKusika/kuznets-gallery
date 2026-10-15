@@ -32,8 +32,8 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 | Что | Как |
 |---|---|
 | Схема, RLS, функции | `supabase/migrations/*.sql` (применяются через Supabase CLI или SQL Editor) |
-| Каталог, отзывы и картинки из прототипа | `node --env-file=.env.local scripts/db/import.mjs` — переносит фото с WordPress в Storage; три «оформления» (холст, багет, стекло) картинами не считаются и не импортируются, 11 дублей WordPress (та же картинка) сливаются с оригиналом |
-| Демо-заявки для аналитики (№ ≤ 1048) | `node --env-file=.env.local scripts/db/demo.mjs`, удалить — `… demo.mjs --purge` |
+| Каталог, отзывы и картинки из прототипа | `node --env-file=.env.local --env-file=.env.scripts scripts/db/import.mjs` — переносит фото с WordPress в Storage; три «оформления» (холст, багет, стекло) картинами не считаются и не импортируются, 11 дублей WordPress (та же картинка) сливаются с оригиналом |
+| Демо-заявки для аналитики (№ ≤ 1048) | `node --env-file=.env.local --env-file=.env.scripts scripts/db/demo.mjs`, удалить — `… demo.mjs --purge` |
 | Новый админ | в SQL Editor: `select public.create_admin('логин', 'Имя', 'e-mail', 'пароль');` (пока админ один — `admin`) |
 
 База — источник правды для каталога: названия, размеры и цены сверены с kuznets.uz, а `import.mjs` при повторном

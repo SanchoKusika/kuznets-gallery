@@ -1,0 +1,13 @@
+// Cloudflare Worker built by OpenNext (`npm run deploy`). Demo on the owner's personal account (workers.dev).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kuznets-gallery",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Static files and the prerendered pages (the read-only Next cache, see open-next.config.ts).
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  // next/image through Cloudflare Images.
+  "images": { "binding": "IMAGES" },
+  "observability": { "enabled": true }
+}

@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
   sassOptions: {
     loadPaths: [path.join(process.cwd(), "src/styles")],
   },
+  experimental: {
+    // On Cloudflare Workers zlib rejects the 500 MB inflate limit Next passes when resuming a PPR page
+    // (RangeError, then the request hangs): keep the resume data uncompressed.
+    disableResumeDataCacheCompression: true,
+  },
 };
 
 export default nextConfig;
