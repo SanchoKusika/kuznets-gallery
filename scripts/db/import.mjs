@@ -19,9 +19,40 @@ const products = JSON.parse(readFileSync(new URL("../../design/data/products.jso
 const NOT_ARTWORKS = new Set(["Холст на подрамнике", "Холст с подрамником + багет", "Бумага в рамке под стеклом"]);
 const isArtwork = (p) => !NOT_ARTWORKS.has(p.t);
 
-// Seven works were listed twice on WordPress (same image): the copy from «Все варианты» only is hidden,
-// the one in a direction stays (owner's decision). Hidden works stay in the admin panel.
-const DUPLICATES = new Set(["KZ-147", "KZ-158", "KZ-161", "KZ-163", "KZ-164", "KZ-167", "KZ-170"]);
+// The same picture was listed twice on WordPress (checked by file contents, not by names: same-name series
+// like «Лама» or «Фраза» are different pictures). The copy is dropped and its directions join the work that stays.
+const DUPLICATE_OF = {
+  "KZ-167": "KZ-011", "KZ-147": "KZ-013", "KZ-158": "KZ-019", "KZ-164": "KZ-024", "KZ-161": "KZ-025", "KZ-132": "KZ-045",
+  "KZ-144": "KZ-064", "KZ-170": "KZ-066", "KZ-120": "KZ-076", "KZ-145": "KZ-104", "KZ-163": "KZ-139",
+};
+// What the kept work takes from its copy: the real title and description («Новинка!» was a badge),
+// the sizes that match the picture, a sharper photo.
+const TAKE = { "KZ-139": ["title", "description", "sizes"], "KZ-045": ["sizes"], "KZ-064": ["sizes"], "KZ-104": ["image"] };
+
+/** The catalogue as stored: prototype loadCatalog() (code KZ-<position>, order = position) without the rest above. */
+function catalogue() {
+  const rows = products
+    .map((p, i) => ({
+      code: p.k || `KZ-${String(i + 1).padStart(3, "0")}`,
+      title: p.t ?? "",
+      description: p.d ?? "",
+      image: p.img ?? "",
+      sizes: (p.s ?? []).map((z) => ({ w: z.w, h: z.h, price: z.p ?? null })),
+      custom_sizes: p.x ?? [],
+      categories: p.c ?? [],
+      hidden: Boolean(p.h),
+      sort_order: i,
+    }))
+    .filter((_, i) => isArtwork(products[i]));
+  const byCode = new Map(rows.map((r) => [r.code, r]));
+  for (const [copyCode, keptCode] of Object.entries(DUPLICATE_OF)) {
+    const copy = byCode.get(copyCode);
+    const kept = byCode.get(keptCode);
+    kept.categories = [...new Set([...kept.categories, ...copy.categories])];
+    for (const field of TAKE[keptCode] ?? []) kept[field] = copy[field];
+  }
+  return rows.filter((r) => !(r.code in DUPLICATE_OF));
+}
 
 // REVIEWS_DEF in design/Admin.dc.html (the site prototype shows the same nine).
 const REVIEWS = [
@@ -37,25 +68,9 @@ const REVIEWS = [
 ];
 
 const db = await adminClient();
+const rows = catalogue();
 
 if (!process.argv.includes("--images")) {
-  // Prototype loadCatalog(): code KZ-<position>, order = position.
-  const rows = products
-    .map((p, i) => {
-      const code = p.k || `KZ-${String(i + 1).padStart(3, "0")}`;
-      return {
-        code,
-        title: p.t ?? "",
-        description: p.d ?? "",
-        image: p.img ?? "",
-        sizes: (p.s ?? []).map((z) => ({ w: z.w, h: z.h, price: z.p ?? null })),
-        custom_sizes: p.x ?? [],
-        categories: p.c ?? [],
-        hidden: Boolean(p.h) || DUPLICATES.has(code),
-        sort_order: i,
-      };
-    })
-    .filter((_, i) => isArtwork(products[i]));
   must(await db.from("products").upsert(rows, { onConflict: "code", ignoreDuplicates: true }));
   console.log(`products: ${rows.length}`);
 
@@ -66,7 +81,7 @@ if (!process.argv.includes("--images")) {
   }
 }
 
-const paths = [...new Set(products.filter(isArtwork).map((p) => p.img).filter(Boolean))];
+const paths = [...new Set(rows.map((r) => r.image).filter(Boolean))];
 let copied = 0;
 let kept = 0;
 const failed = [];
