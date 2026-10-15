@@ -12,7 +12,7 @@
 - Данные: Supabase — Postgres (каталог, заявки, отзывы, админы), Auth (админка), Storage (картинки работ, бакет `artworks`).
   Схема — `supabase/migrations/`, сайт читает каталог через `'use cache'` с тегами `catalog` / `reviews`
 - Редактор фото в админке: рамка обрезки — `react-image-crop`, поворот и экспорт — canvas
-- Хостинг (этап 10, ещё не настроен): Cloudflare Workers через `@opennextjs/cloudflare`
+- Хостинг: Cloudflare Workers через `@opennextjs/cloudflare` (см. «Деплой»); демо — https://kuznets-gallery.sanchezzkusika.workers.dev
 
 ## Запуск
 
@@ -25,7 +25,8 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build` (сборка читает каталог из Supabase).
 
 Переменные окружения — в `.env.local` (образец — `.env.example`): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
-`NEXT_PUBLIC_IMAGE_BASE`, для скриптов — `ADMIN_LOGIN` / `ADMIN_PASSWORD`.
+`NEXT_PUBLIC_IMAGE_BASE`; для деплоя — `NEXT_PUBLIC_SITE_URL` в `.env.production.local`. Логин и пароль админа для скриптов
+(`ADMIN_LOGIN` / `ADMIN_PASSWORD`) — в отдельном `.env.scripts`: OpenNext вшивает все `.env`-файлы Next в код Worker.
 
 ### База данных
 
@@ -39,7 +40,8 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 База — источник правды для каталога: названия, размеры и цены сверены с kuznets.uz, а `import.mjs` при повторном
 запуске ничего не перезаписывает — только добавляет недостающие работы (удалённую в админке вернёт). После правок прямо в базе (SQL, скрипты) сайт
 не узнает о них сам: откройте любую работу в админке (`/admin?edit=KZ-001`) и нажмите «Сохранить» — это сбросит кеш
-по тегу `catalog`. В Storage держим только файлы, на которые ссылается работа или заявка (сейчас 159, по одному на работу).
+по тегу `catalog` (на Cloudflare пока не работает — там только новый деплой, см. «Деплой»). В Storage держим только
+файлы, на которые ссылается работа или заявка (сейчас 159, по одному на работу).
 
 ### Админка
 
@@ -57,6 +59,30 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 
 Картинки работ лежат в Storage, в базе — ключ объекта: путь как на WordPress (`2021/04/….jpg`), у новых загрузок —
 `ГГГГ/ММ/ИМЯ-xxxxxx.jpg`. Сайт отдаёт их через `next/image`; адрес бакета — `NEXT_PUBLIC_IMAGE_BASE`.
+
+### Деплой
+
+Cloudflare Workers через OpenNext (`wrangler.jsonc`, `open-next.config.ts`). Сейчас это демо на личном аккаунте
+владельца — https://kuznets-gallery.sanchezzkusika.workers.dev; потом сайт переедет на другой аккаунт и домен kuznets.uz.
+
+```bash
+npx wrangler login     # один раз, в браузере
+npm run preview        # сборка OpenNext и локальный рантайм Workers: http://localhost:8787
+npm run deploy         # сборка и выкладка (dev-сервер перед этим остановить)
+```
+
+- Адрес сайта для сборки — `NEXT_PUBLIC_SITE_URL` в `.env.production.local`. Индексируется только `https://kuznets.uz`:
+  на любом другом адресе `robots.txt` запрещает всё, а страницы отдают `noindex`.
+- Страницы отдаются такими, какими собраны при деплое (кеш Next лежит в статических файлах Worker и не обновляется):
+  OpenNext пока не поддерживает Cache Components — перерисовка страницы после `updateTag` вешает Worker
+  ([opennextjs-cloudflare#1450](https://github.com/opennextjs/opennextjs-cloudflare/issues/1450)). Поэтому правки
+  из админки попадают на сайт со следующим `npm run deploy`; сама админка, заявки и вход работают как обычно.
+  Когда поддержку выпустят — перейти на R2 (кеш страниц), D1 (теги) и очередь на Durable Object.
+- `experimental.disableResumeDataCacheCompression` в `next.config.ts` нужен Workers: их zlib не принимает лимит распаковки,
+  который Next передаёт при дорисовке PPR-страницы.
+- Картинки `next/image` сжимает Cloudflare Images (binding `IMAGES`).
+- OpenNext официально не поддерживает Windows (предупреждает при сборке), но сборка и деплой с Windows работают.
+  Первые секунды после деплоя часть адресов может отдавать 404, пока Cloudflare раскатывает версию.
 
 ### Сверка с прототипом
 
@@ -94,10 +120,11 @@ src/
   styles/               _tokens.scss, _mixins.scss (`@use "mixins" as *;`), _admin.scss — миксины админки
                         (`@use "mixins" as *; @use "admin" as *;`)
   assets/               логотип и фото для статических импортов
-public/assets/          логотипы клиентов (clients/), иконки веб-манифеста (icons/)
+public/assets/          логотипы клиентов (clients/), иконки веб-манифеста (icons/); public/_headers — кеш /_next/static на Cloudflare
 design/                 эталонные прототипы (не входят в сборку)
 supabase/migrations/    схема БД
 scripts/db/             импорт каталога и картинок, демо-заявки
+wrangler.jsonc, open-next.config.ts   деплой на Cloudflare Workers
 ```
 
 ## Соглашения
