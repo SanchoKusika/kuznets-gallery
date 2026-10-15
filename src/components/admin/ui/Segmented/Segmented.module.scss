@@ -1,0 +1,37 @@
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 99px;
+
+  &--soft {
+    background: var(--paper-2);
+  }
+
+  &--paper {
+    background: var(--paper);
+  }
+
+  &__option {
+    border: 0;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 500;
+    background: transparent;
+    color: var(--ink-2);
+    transition:
+      background 0.25s,
+      color 0.25s;
+
+    &--active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &--paper &__option {
+    padding: 8px 14px;
+  }
+}

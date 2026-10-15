@@ -1,0 +1,315 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.requests {
+  &__toolbar {
+    @include toolbar;
+  }
+
+  &__chips {
+    @include chip-row;
+  }
+
+  &__search {
+    flex: 0 1 320px;
+    min-width: 200px;
+  }
+
+  // —— List: columns by content width (tier)
+  &__table {
+    @include table-shell;
+  }
+
+  &__thead,
+  &__row {
+    display: grid;
+    gap: 16px;
+
+    .requests__table--tier-2 & {
+      grid-template-columns: 72px minmax(0, 1.2fr) minmax(0, 1.4fr) 120px 92px 150px 96px;
+    }
+
+    .requests__table--tier-1 & {
+      grid-template-columns: 64px minmax(0, 1fr) 120px 150px;
+    }
+
+    .requests__table--tier-0 & {
+      grid-template-columns: 56px minmax(0, 1fr) auto;
+    }
+  }
+
+  // Columns shown from tier 1 («Сумма») and only on tier 2 («Состав», «Источник», «Получена»).
+  &__wide,
+  &__full {
+    display: none;
+  }
+
+  &__table--tier-1 &__wide,
+  &__table--tier-2 &__wide,
+  &__table--tier-2 &__full {
+    display: block;
+  }
+
+  &__thead {
+    @include caption;
+    padding: 12px 0;
+  }
+
+  &__row {
+    align-items: center;
+    padding: 14px 12px;
+    margin: 0 -12px;
+    border-top: 1px solid var(--line-soft);
+    cursor: pointer;
+    transition:
+      background 0.25s,
+      padding 0.3s var(--ease-out);
+
+    &:hover {
+      background: var(--paper-3);
+      padding-left: 18px;
+    }
+  }
+
+  &__no {
+    @include meta;
+  }
+
+  &__client {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__name {
+    font-size: 15px;
+    font-weight: 500;
+
+    &--new {
+      font-weight: 600;
+    }
+  }
+
+  &__sub {
+    font-size: 13px;
+    color: var(--ink-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__what {
+    min-width: 0;
+    font-size: 14px;
+    color: var(--ink-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__sum {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  &__src {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__ago {
+    @include meta;
+  }
+
+  &__status {
+    @include label(10.5px);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 11px;
+    background: var(--paper);
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  &__dot,
+  &__column-dot {
+    border-radius: 50%;
+
+    &--new {
+      background: var(--accent);
+    }
+
+    &--open {
+      background: var(--ink);
+    }
+
+    &--closed {
+      background: var(--ink-4);
+    }
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  &__empty {
+    @include empty(23.92px, 28px 0);
+  }
+
+  &__foot {
+    @include list-foot;
+  }
+
+  &__shown {
+    @include caption(12px);
+  }
+
+  // —— Board: a column per status; snap-scrolling below 1024, a column is the screen minus 52px below 640
+  &__board {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(248px, 1fr);
+    gap: 12px;
+    overflow-x: auto;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 0 var(--gutter) 12px;
+    scroll-padding: 0 var(--gutter);
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    align-items: start;
+
+    &--mode-side {
+      scroll-snap-type: none;
+    }
+
+    &--mode-bar {
+      grid-auto-columns: calc(100% - 52px);
+    }
+  }
+
+  &__column {
+    background: var(--paper-2);
+    box-shadow: inset 0 0 0 1px transparent;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    scroll-snap-align: start;
+    transition:
+      background 0.2s,
+      box-shadow 0.2s;
+
+    // Drop target while dragging a card.
+    &--over {
+      background: var(--paper-3);
+      box-shadow: inset 0 0 0 1px var(--ink);
+    }
+  }
+
+  &__column-head {
+    @include label(11px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 4px 8px;
+  }
+
+  &__column-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__column-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  &__column-count {
+    color: var(--ink-3);
+  }
+
+  &__card {
+    background: var(--paper);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition:
+      background 0.25s,
+      opacity 0.2s;
+
+    &:hover {
+      background: var(--paper-hover);
+    }
+
+    &--dragging {
+      opacity: 0.4;
+    }
+  }
+
+  &__card-meta {
+    @include meta(11px);
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__card-name {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__card-what {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--ink-3);
+  }
+
+  &__card-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  &__card-sum {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  &__advance {
+    @include soft-pill;
+    padding: 6px 11px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  &__column-empty {
+    padding: 10px 4px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__column-more {
+    border: 0;
+    background: transparent;
+    padding: 8px 4px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}

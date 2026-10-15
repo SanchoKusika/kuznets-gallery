@@ -1,0 +1,300 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.sales {
+  @include card(clamp(18px, 2vw, 28px));
+  margin-top: 12px;
+
+  &__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px 32px;
+  }
+
+  &__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  &__title {
+    @include card-title;
+  }
+
+  &__total-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px 12px;
+    flex-wrap: wrap;
+  }
+
+  &__total {
+    font-weight: 600;
+    font-size: clamp(40px, 4vw, 60px);
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+  }
+
+  &__unit {
+    font-size: 15px;
+    color: var(--ink-3);
+  }
+
+  &__trend {
+    display: flex;
+    align-items: center;
+    gap: 6px 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+
+  &__delta {
+    display: flex;
+    gap: 6px;
+    color: var(--ink);
+  }
+
+  &__prev {
+    color: var(--ink-3);
+  }
+
+  &__switches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin-top: 22px;
+  }
+
+  &__compare {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  &__legend {
+    margin-left: auto;
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  &__legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__swatch {
+    width: 10px;
+    height: 10px;
+    background: var(--ink);
+
+    &--prev {
+      background: var(--ink-4);
+      opacity: 0.45;
+    }
+  }
+
+  // Bars area; the right margin holds the Y labels (44px on narrow content).
+  &__plot {
+    position: relative;
+    margin: 32px 56px 0 0;
+    height: clamp(200px, 22vw, 300px);
+
+    &--narrow {
+      margin-right: 44px;
+    }
+  }
+
+  &__grid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed var(--line);
+
+    &--top {
+      top: 0;
+    }
+
+    &--mid {
+      top: 50%;
+    }
+  }
+
+  &__y {
+    @include meta(11px);
+    position: absolute;
+    left: calc(100% + 10px);
+    white-space: nowrap;
+
+    &--top {
+      top: 0;
+      transform: translateY(-50%);
+    }
+
+    &--mid {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &--zero {
+      bottom: 0;
+      transform: translateY(50%);
+    }
+  }
+
+  &__bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: stretch;
+  }
+
+  &__bars,
+  &__axis {
+    &--gap-2 {
+      gap: 2px;
+    }
+
+    &--gap-4 {
+      gap: 4px;
+    }
+
+    &--gap-6 {
+      gap: 6px;
+    }
+
+    &--gap-8 {
+      gap: 8px;
+    }
+
+    &--gap-12 {
+      gap: 12px;
+    }
+  }
+
+  &__bar {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;
+  }
+
+  &__prev-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--ink-4);
+    opacity: 0;
+    transition:
+      height 0.5s var(--ease-out),
+      opacity 0.3s;
+
+    &--on {
+      opacity: 0.45;
+    }
+  }
+
+  // Current bar: inset 8% of the slot, 20% when the previous period is shown behind it.
+  &__cur-bar {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: 0;
+    background: var(--ink);
+    transition:
+      height 0.5s var(--ease-out),
+      left 0.3s,
+      right 0.3s,
+      background 0.2s;
+
+    .sales__bar--cmp & {
+      left: 20%;
+      right: 20%;
+    }
+
+    &--hover {
+      background: var(--accent);
+    }
+  }
+
+  &__base {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 1px solid var(--ink-4);
+  }
+
+  &__tip {
+    position: absolute;
+    top: 0;
+    transform: translateX(calc(-100% - 8px));
+    pointer-events: none;
+    z-index: 3;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    white-space: nowrap;
+
+    &--right {
+      transform: translateX(8px);
+    }
+  }
+
+  &__tip-title {
+    @include label(11px);
+    opacity: 0.7;
+  }
+
+  &__tip-value {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  &__tip-line {
+    font-size: 13px;
+
+    &--muted {
+      opacity: 0.7;
+    }
+  }
+
+  &__axis {
+    display: flex;
+    margin: 10px 56px 0 0;
+
+    &--narrow {
+      margin-right: 44px;
+    }
+  }
+
+  &__tick {
+    @include meta(11px);
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}

@@ -35,6 +35,14 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 | Демо-заявки для аналитики (№ ≤ 1048) | `node --env-file=.env.local scripts/db/demo.mjs`, удалить — `… demo.mjs --purge` |
 | Новый админ | в SQL Editor: `select public.create_admin('логин', 'Имя', 'e-mail', 'пароль');` |
 
+### Админка
+
+`/admin` — вход по логину (или e-mail) и паролю через Supabase Auth, сессия в httpOnly-cookie; без «Запомнить это
+устройство» cookie живут до закрытия браузера. Панель рендерится на клиенте (раскладка по ширине окна, локальные даты),
+правки уходят Server Actions: заявки — с автосохранением 250 мс, каталог, прайс и отзывы — сразу, после чего сайт
+пересобирается по тегам `catalog` / `reviews`. `?edit=KZ-001` открывает карточку товара, `?tab=req` — раздел.
+Новую картинку можно перетащить на превью в карточке товара: файл уходит в Storage по подписанной ссылке.
+
 Картинки работ лежат в Storage, в базе — ключ объекта (путь как на WordPress, `2021/04/….jpg`).
 Сайт отдаёт их через `next/image`; адрес бакета — `NEXT_PUBLIC_IMAGE_BASE`.
 
@@ -64,7 +72,9 @@ node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 lig
 ```
 src/
   app/                  маршруты; (site)/ — публичный сайт с шапкой и подвалом
+  app/admin/            /admin: вход и панель; actions.ts — Server Actions панели (каждый проверяет сессию)
   app/api/requests/     POST /api/requests: zod-валидация, запись через функцию БД submit_request
+  proxy.ts              обновляет сессию админа перед /admin
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
@@ -73,6 +83,9 @@ src/
   components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
   components/not-found/ страница 404: рама-маятник, этикетка
+  components/admin/     админка: вход, навигация, обзор и график, заявки (список, доска, карточка),
+                        каталог и карточка товара, прайс, отзывы; ui/ — примитивы дизайн-системы
+  features/admin/       модель, состояние панели (store), аналитика обзора, форматирование, серверная часть
   features/             theme, order (заявка и её drawer), catalog (фильтры коллекции),
                         motion (появление при скролле, курсор), scroll (Lenis, блокировка скролла)
   content/site.ts       тексты и справочники из прототипа

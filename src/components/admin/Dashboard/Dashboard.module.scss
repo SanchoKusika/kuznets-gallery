@@ -1,0 +1,425 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.dashboard {
+  // —— KPI cards: 4 columns from 900px of content, 2 from 300px
+  &__kpis {
+    display: grid;
+    gap: 12px;
+
+    &--cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    &--cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    &--cols-1 {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__kpi {
+    @include card;
+    text-align: left;
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 156px;
+    transition: background 0.25s;
+
+    &:hover {
+      background: var(--paper-3);
+    }
+
+    // Content narrower than 420px: smaller value, no «сум».
+    &--compact {
+      min-height: 136px;
+    }
+  }
+
+  &__caption {
+    @include caption;
+  }
+
+  &__kpi-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: auto;
+    min-width: 0;
+  }
+
+  &__kpi-value {
+    font-weight: 600;
+    font-size: clamp(34px, 3.2vw, 52px);
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+    white-space: nowrap;
+
+    .dashboard__kpi--compact & {
+      font-size: 30px;
+    }
+  }
+
+  &__kpi-unit {
+    font-size: 14px;
+    color: var(--ink-3);
+
+    .dashboard__kpi--compact & {
+      display: none;
+    }
+  }
+
+  &__kpi-sub {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-2);
+    min-width: 0;
+  }
+
+  &__kpi-dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  // —— Three-card rows: 3 columns from 1000px of content, 2 from 620px (third card full width)
+  &__tri {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+
+    &--cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    &--cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+
+      > :nth-child(3) {
+        grid-column: 1 / -1;
+      }
+    }
+
+    &--cols-1 {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__card {
+    @include card;
+
+    &--column {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  &__card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+
+    &--spacing-8 {
+      margin-bottom: 8px;
+    }
+
+    &--spacing-10 {
+      margin-bottom: 10px;
+    }
+
+    &--spacing-18 {
+      margin-bottom: 18px;
+    }
+  }
+
+  &__card-title {
+    @include card-title;
+  }
+
+  &__card-count {
+    @include meta;
+  }
+
+  &__card-period {
+    @include caption;
+  }
+
+  // —— Rows of «Ждут ответа» and «Ближайшие сроки»
+  &__wait {
+    width: calc(100% + 24px);
+    margin: 0 -12px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__row {
+    min-width: 0;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 11px 12px;
+    transition:
+      background 0.25s,
+      padding 0.3s var(--ease-out);
+
+    &:hover {
+      background: var(--paper-3);
+      padding-left: 18px;
+    }
+
+    &--bleed {
+      width: calc(100% + 24px);
+      margin: 0 -12px;
+    }
+  }
+
+  &__row-text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__row-name {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__row-sub {
+    font-size: 13px;
+    color: var(--ink-3);
+
+    &--clip {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &__row-meta {
+    @include tabular;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+
+  &__late {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  &__call {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      background 0.25s,
+      color 0.25s;
+
+    &:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    svg {
+      display: block;
+    }
+  }
+
+  &__empty {
+    @include empty;
+  }
+
+  &__more {
+    margin-top: auto;
+    padding: 14px 6px 1px; // only padding-top is set in the prototype; the rest is the UA default
+    align-self: flex-start;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  // —— «Этапы»
+  &__stage {
+    @include bleed-row(12px);
+    display: grid;
+    grid-template-columns: 8px 112px minmax(0, 1fr) 28px;
+    gap: 12px;
+    align-items: center;
+    transition: background 0.25s;
+
+    &:hover {
+      background: var(--paper-3);
+    }
+  }
+
+  &__stage-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  &__stage-name {
+    font-size: 14px;
+  }
+
+  &__stage-count {
+    @include tabular;
+    font-size: 13px;
+    text-align: right;
+  }
+
+  &__track {
+    display: block;
+    height: 6px;
+    border-radius: 99px;
+    background: var(--paper-3);
+    overflow: hidden;
+  }
+
+  &__fill {
+    display: block;
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.6s var(--ease-out);
+  }
+
+  &__stage-dot,
+  &__fill {
+    &--new {
+      background: var(--accent);
+    }
+
+    &--open,
+    &--ink {
+      background: var(--ink);
+    }
+
+    &--closed {
+      background: var(--ink-4);
+    }
+  }
+
+  // —— «Источники», «Направления»
+  &__shares {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  &__share {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__share-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  &__share-name {
+    font-weight: 500;
+  }
+
+  &__share-pct {
+    @include tabular;
+    font-size: 13px;
+  }
+
+  &__share-sub {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  // —— «Популярные картины»
+  &__popular {
+    @include bleed-row(8px 12px);
+    display: grid;
+    grid-template-columns: 22px 44px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    transition: background 0.25s;
+
+    &:hover {
+      background: var(--paper-3);
+    }
+  }
+
+  &__popular-i {
+    @include meta;
+  }
+
+  &__popular-thumb {
+    width: 44px;
+    height: 44px;
+  }
+
+  &__popular-title {
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__popular-code {
+    @include meta(11px);
+  }
+
+  &__popular-sum {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  &__popular-q {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__popular-r {
+    font-size: 12px;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+}

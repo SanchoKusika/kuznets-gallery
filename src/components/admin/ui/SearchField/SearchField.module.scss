@@ -1,0 +1,17 @@
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--ink);
+
+  &__input {
+    border: 0;
+    background: transparent;
+    padding: 6px 0;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+  }
+}

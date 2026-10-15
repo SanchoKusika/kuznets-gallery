@@ -1,0 +1,9 @@
+.trend-arrow {
+  flex: none;
+  font-weight: 600;
+  color: var(--ink-3);
+
+  &--up {
+    color: var(--accent);
+  }
+}

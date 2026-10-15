@@ -1,0 +1,209 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.prices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
+  gap: 12px;
+  align-items: start;
+
+  &__card {
+    @include card(clamp(18px, 2vw, 28px));
+
+    // «Изменить все цены»; sticky only when both columns fit (content ≥892px).
+    &--all {
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      top: 24px;
+    }
+
+    &--sticky {
+      position: sticky;
+    }
+  }
+
+  &__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  &__title {
+    @include card-title;
+  }
+
+  &__count {
+    @include meta;
+  }
+
+  &__hint {
+    margin: 10px 0 14px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  // Columns: size, count, price; on narrow content the count moves under the size.
+  &__thead,
+  &__row {
+    display: grid;
+    gap: 16px;
+
+    &--tier-1 {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 150px;
+    }
+
+    &--tier-0 {
+      grid-template-columns: minmax(0, 1fr) 124px;
+    }
+  }
+
+  &__thead {
+    @include caption;
+    padding: 10px 0;
+  }
+
+  &__price-head {
+    text-align: right;
+  }
+
+  &__row {
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  &__count-col {
+    .prices__thead--tier-0 &,
+    .prices__row--tier-0 & {
+      display: none;
+    }
+  }
+
+  &__works {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__others {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+  }
+
+  &__label {
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__label-sub {
+    display: none;
+    margin-top: 3px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-3);
+
+    .prices__row--tier-0 & {
+      display: block;
+    }
+  }
+
+  &__input {
+    @include tabular;
+    width: 100%;
+    border: 0;
+    background: var(--paper);
+    padding: 9px 12px;
+    font-size: 14px;
+    outline: none;
+    border-radius: 99px;
+    text-align: right;
+    box-shadow: inset 0 0 0 1px transparent;
+    transition: box-shadow 0.2s;
+
+    &:focus {
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+  }
+
+  &__lede {
+    @include serif;
+    margin: 12px 0 0;
+    font-size: 22.08px;
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__caption {
+    @include caption;
+  }
+
+  &__pct {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  &__pct-input {
+    width: 130px;
+    border: 0;
+    border-bottom: 1px solid var(--ink-3);
+    background: transparent;
+    padding: 4px 0;
+    font-weight: 600;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    outline: none;
+    border-radius: 0;
+
+    &:focus {
+      border-bottom-color: var(--accent);
+    }
+  }
+
+  &__pct-sign {
+    font-weight: 600;
+    font-size: 40px;
+    letter-spacing: -0.05em;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__preview {
+    background: var(--paper);
+    padding: 6px 16px;
+  }
+
+  &__preview-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 14px;
+  }
+
+  &__preview-values {
+    @include tabular;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  &__preview-from {
+    color: var(--ink-3);
+  }
+}

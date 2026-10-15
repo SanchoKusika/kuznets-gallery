@@ -1,0 +1,411 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.request-card {
+  &__title {
+    margin: 0;
+    font-weight: 600;
+    font-size: clamp(34px, 4vw, 48px);
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+  }
+
+  &__steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 22px;
+  }
+
+  // Status pills: current ink, passed paper-3, ahead paper-2.
+  &__step {
+    @include label(10.5px);
+    border: 0;
+    background: var(--paper-2);
+    color: var(--ink-3);
+    border-radius: 99px;
+    padding: 8px 13px;
+    cursor: pointer;
+    transition: opacity 0.25s;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &--past {
+      background: var(--paper-3);
+      color: var(--ink);
+    }
+
+    &--current {
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &__cancel {
+    margin-top: 12px;
+    border: 0;
+    background: transparent;
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-3);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 18px 24px;
+  }
+
+  &__input {
+    @include underline-input;
+
+    &--phone {
+      @include tabular;
+      font-size: 15px;
+    }
+
+    &--select {
+      padding: 7px 0 10px;
+      cursor: pointer;
+    }
+
+    &--date {
+      font-size: 15px;
+    }
+
+    &--comment {
+      @include serif;
+      font-size: 20.24px;
+      line-height: 1.3;
+      resize: vertical;
+    }
+
+    &--note {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 0 10px;
+      font-size: 15px;
+      resize: vertical;
+    }
+  }
+
+  &__contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  &__contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 99px;
+    background: var(--paper-2);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 14px;
+    transition:
+      background 0.25s,
+      color 0.25s;
+
+    &:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    &--call {
+      background: var(--ink);
+      color: var(--paper);
+      font-weight: 500;
+
+      &:hover {
+        background: var(--accent);
+        color: var(--on-accent);
+      }
+    }
+  }
+
+  // —— Items
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px;
+    background: var(--paper-2);
+  }
+
+  &__item-thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  &__item-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__item-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  &__item-name {
+    min-width: 0;
+  }
+
+  &__item-title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__item-code {
+    @include meta(11px);
+    margin-top: 3px;
+  }
+
+  &__item-remove {
+    flex: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--ink-3);
+    font-size: 13px;
+    padding: 4px;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__item-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+  }
+
+  &__item-select {
+    border: 0;
+    background: var(--paper);
+    padding: 6px 10px;
+    border-radius: 99px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    max-width: 100%;
+  }
+
+  &__qty {
+    display: flex;
+    align-items: center;
+    background: var(--paper);
+    border-radius: 99px;
+  }
+
+  &__qty-button {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  &__qty-value {
+    @include tabular;
+    min-width: 20px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  &__item-line {
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  &__picker {
+    margin-top: 8px;
+    padding: 16px;
+    background: var(--paper-2);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__result {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 8px;
+    cursor: pointer;
+    transition: background 0.25s;
+
+    &:hover {
+      background: var(--paper-3);
+    }
+  }
+
+  &__result-thumb {
+    width: 40px;
+    height: 40px;
+  }
+
+  &__result-title {
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  &__result-code {
+    @include meta(11px);
+    display: block;
+    margin-top: 2px;
+  }
+
+  &__result-price {
+    font-size: 13px;
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+
+  &__pick {
+    @include soft-pill;
+    margin-top: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+
+  &__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  &__total-label {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__total-note {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__total-value {
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+  }
+
+  // —— Details
+  &__static {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__static-label {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__static-value {
+    padding: 6px 0 10px;
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  &__comment {
+    margin-top: 18px;
+  }
+
+  // —— Notes
+  &__notes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__note {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    background: var(--paper-2);
+  }
+
+  &__note-when {
+    @include meta(11px);
+  }
+
+  &__note-text {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  &__note-form {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    margin-top: 12px;
+  }
+
+  // —— Footer
+  &__delete {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__done {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  &__autosave {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+}

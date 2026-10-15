@@ -1,0 +1,61 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.admin {
+  @include admin-base;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+
+  &__main {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 32px var(--gutter) 120px;
+  }
+
+  &--bar &__main {
+    padding: 20px var(--gutter) calc(140px + env(safe-area-inset-bottom));
+  }
+
+  &__inner {
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  &__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px 32px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  &__heading {
+    min-width: 0;
+  }
+
+  &__sub {
+    @include caption(12px);
+  }
+
+  &__title {
+    margin: 14px 0 0;
+    font-weight: 600;
+    font-size: clamp(44px, 5.4vw, 80px);
+    line-height: 0.85;
+    letter-spacing: -0.065em;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+}
