@@ -12,7 +12,7 @@
 - Данные: Supabase — Postgres (каталог, заявки, отзывы, админы), Auth (админка), Storage (картинки работ, бакет `artworks`).
   Схема — `supabase/migrations/`, сайт читает каталог через `'use cache'` с тегами `catalog` / `reviews`
 - Редактор фото в админке: рамка обрезки — `react-image-crop`, поворот и экспорт — canvas
-- Хостинг: Vercel (см. «Деплой»); демо — https://kuznets-gallery.vercel.app
+- Хостинг: демо — Vercel, https://kuznets-gallery.vercel.app (см. «Деплой»); прод kuznets.uz — в планах на Cloudflare Workers
 
 ## Запуск
 
@@ -61,8 +61,9 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 
 ### Деплой
 
-Vercel, проект `kuznets-gallery` на аккаунте владельца, подключён к GitHub: `main` выкладывается в продакшен
-(сейчас демо — https://kuznets-gallery.vercel.app), у PR — превью. Функции работают во Франкфурте (`vercel.json`,
+Демо — Vercel, проект `kuznets-gallery` на аккаунте владельца, подключён к GitHub: `main` выкладывается в продакшен
+(https://kuznets-gallery.vercel.app), у PR — превью. Бесплатный план Vercel только для некоммерческих сайтов, поэтому
+прод kuznets.uz планируется на Cloudflare Workers (код — в закрытом PR #19). Функции работают во Франкфурте (`vercel.json`,
 `fra1`), рядом с базой Supabase (eu-central-1).
 
 - Переменные Supabase в проект ставит интеграция Supabase ↔ Vercel (Settings → Environment Variables). Приложение
@@ -73,6 +74,8 @@ Vercel, проект `kuznets-gallery` на аккаунте владельца,
   станет продакшен-доменом проекта, следующий деплой откроет сайт для поисковиков.
 - Кеш `'use cache'` и сброс по тегам `catalog` / `reviews` Vercel поддерживает сам: правки из админки попадают на сайт
   без нового деплоя.
+- Vercel Cron (`vercel.json`) раз в день дёргает `GET /api/cron/keepalive` — один запрос к каталогу: бесплатный Supabase
+  засыпает после недели без запросов, а посетители получают страницы из кеша и базу не трогают.
 
 ### Сверка с прототипом
 
@@ -90,6 +93,7 @@ src/
   app/admin/            /admin: вход и панель; actions.ts — Server Actions панели (каждый проверяет сессию)
   app/api/requests/     POST /api/requests: zod-валидация, запись через функцию БД submit_request
   app/api/admin/badge/  GET: число новых заявок для плашки админа (проверяет сессию)
+  app/api/cron/keepalive/  GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
   proxy.ts              обновляет сессию админа перед /admin и /api/admin
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
   components/layout/    Header, StaggeredMenu, Footer
@@ -114,7 +118,7 @@ public/assets/          логотипы клиентов (clients/), иконк
 design/                 эталонные прототипы (не входят в сборку)
 supabase/migrations/    схема БД
 scripts/db/             импорт каталога и картинок, демо-заявки
-vercel.json             регион функций на Vercel
+vercel.json             регион функций и cron на Vercel
 ```
 
 ## Соглашения
