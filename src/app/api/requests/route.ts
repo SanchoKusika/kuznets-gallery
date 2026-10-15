@@ -32,9 +32,10 @@ export async function POST(req: Request) {
   const { name, phone, comment, items } = parsed.data;
   const { data: no, error } = await publicDb().rpc("submit_request", { p_name: name, p_phone: phone, p_comment: comment, p_items: items });
   if (error) {
-    const limited = error.message === "rate_limited";
-    if (!limited) console.error("submit_request failed", error);
-    return Response.json({ ok: false, error: limited ? "rate_limited" : "failed" }, { status: limited ? 429 : 500 });
+    if (error.message === "rate_limited") return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
+    if (error.message === "invalid_request") return Response.json({ ok: false, error: "invalid" }, { status: 400 });
+    console.error("submit_request failed", error);
+    return Response.json({ ok: false, error: "failed" }, { status: 500 });
   }
   return Response.json({ ok: true, no }, { status: 201 });
 }
