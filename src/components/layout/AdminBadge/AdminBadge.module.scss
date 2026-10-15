@@ -49,6 +49,12 @@
     height: 6px;
     border-radius: 50%;
     background: var(--accent);
+    transition: background 0.25s;
+  }
+
+  // On the accent hover fill the dot turns dark, or it would vanish.
+  &__link:hover &__dot {
+    background: var(--on-accent);
   }
 
   &__code {

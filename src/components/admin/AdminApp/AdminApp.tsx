@@ -93,7 +93,7 @@ function Shell({ edit, tab: tabParam }: { edit?: string; tab?: string }) {
   const section = (k: Tab, node: ReactNode) => <Activity mode={tab === k ? "visible" : "hidden"}>{node}</Activity>;
 
   return (
-    <div className={b(null, { [mode]: true })}>
+    <div className={b(null, { bar: mode === "bar" })}>
       <AdminNav />
       <main className={b("main")} data-screen-label={TABS.find(([k]) => k === tab)?.[1]}>
         <div className={b("inner")}>

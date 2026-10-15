@@ -2,6 +2,8 @@
 @use "admin" as *;
 
 .admin-nav {
+  flex: none;
+
   // —— Sidebar (≥1024)
   &--side {
     flex: 0 0 240px;
