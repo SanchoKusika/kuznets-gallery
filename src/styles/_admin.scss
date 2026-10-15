@@ -56,6 +56,16 @@
   }
 }
 
+// Quiet text button in a drawer footer: «Удалить», «Дублировать», «Сбросить»; the hover colour is set by the caller.
+@mixin footer-link {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink-3);
+  padding: 8px 0;
+}
+
 // Underline-only input (login, drawers): a line in --line that turns accent on focus.
 @mixin underline-input($pad: 6px 0 10px, $size: 16px) {
   width: 100%;

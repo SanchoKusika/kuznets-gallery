@@ -1,0 +1,67 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+// Content of a second drawer laid over the product card.
+.photo-editor {
+  &__stage {
+    display: grid;
+    place-items: center;
+    min-height: 280px;
+    padding: 16px;
+    background: var(--paper-2);
+
+    // react-image-crop: frame and handles in the admin palette.
+    --rc-border-color: rgba(255, 255, 255, 0.85);
+    --rc-focus-color: var(--accent);
+    --rc-drag-handle-bg-colour: var(--accent);
+    --rc-drag-handle-size: 12px;
+  }
+
+  &__crop {
+    max-width: 100%;
+  }
+
+  &__canvas {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100dvh - 330px);
+  }
+
+  &__note {
+    @include caption(12px);
+  }
+
+  &__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    margin-top: 16px;
+  }
+
+  &__aspects,
+  &__turns,
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__actions {
+    gap: 8px;
+  }
+
+  &__turn {
+    @include round-button(36px, var(--paper-2));
+    font-size: 16px;
+  }
+
+  &__reset {
+    @include footer-link;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+}
