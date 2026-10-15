@@ -10,8 +10,8 @@ import s from "./layout.module.scss";
 
 const b = bem(s, "site");
 
-export default function SiteLayout({ children }: LayoutProps<"/">) {
-  const total = getCatalog().length;
+export default async function SiteLayout({ children }: LayoutProps<"/">) {
+  const total = (await getCatalog()).length;
   return (
     <div className={b()}>
       <Header total={total} />

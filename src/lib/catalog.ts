@@ -1,35 +1,26 @@
 import "server-only";
 
-import raw from "@/data/products.json";
+import { cacheLife, cacheTag } from "next/cache";
 import type { CategoryKey, FormatKey } from "@/content/site";
 import { formatPrice } from "@/lib/format";
 import { imageUrl } from "@/lib/images";
 import { routes } from "@/lib/routes";
+import { publicDb } from "@/lib/supabase/public";
 
-type RawSize = { w: number; h: number; p: number | null };
-type RawProduct = {
-  t: string;
-  d?: string;
-  img: string;
-  s?: RawSize[];
-  x?: string[];
-  c?: string[];
-  k?: string;
-  h?: boolean;
-};
+/** Cache tag of everything read from the catalogue; the admin panel updates it after edits. */
+export const CATALOG_TAG = "catalog";
 
+/** A size of an artwork (`sizes` in the database is [{ w, h, price }]). */
 export type ArtworkSize = { w: number; h: number; p: number | null };
 
 export type Artwork = {
-  /** Position in the source catalogue (prototype `id`). */
-  id: number;
   /** Inventory code, e.g. "KZ-001". */
   code: string;
   /** URL segment, e.g. "kz-001". */
   slug: string;
   title: string;
   description: string;
-  /** Image path as stored in the catalogue (inside uploads); stored with requests. */
+  /** Image as stored in the catalogue (object key in storage or a URL); stored with requests. */
   image: string;
   /** Resolved image URL. */
   src: string;
@@ -44,39 +35,41 @@ export type Artwork = {
 export const formatOf = (s?: { w: number; h: number }): FormatKey =>
   !s ? "sq" : s.w === s.h ? "sq" : s.w > s.h ? "h" : "v";
 
-let cache: Artwork[] | null = null;
+/** Visible catalogue in the admin's order — same mapping as the prototype's `loadCatalog()`. */
+export async function getCatalog(): Promise<Artwork[]> {
+  "use cache";
+  cacheTag(CATALOG_TAG);
+  cacheLife("max");
 
-/** Visible catalogue — same mapping as the prototype's `loadCatalog()`. */
-export function getCatalog(): Artwork[] {
-  if (cache) return cache;
-  cache = (raw as RawProduct[])
-    .map((p, i): Artwork | null => {
-      if (p.h) return null;
-      const extra = (p.x ?? []).flatMap((label): ArtworkSize[] => {
-        const m = label.match(/(\d+)\s*\/\s*(\d+)/);
-        return m ? [{ w: Number(m[1]), h: Number(m[2]), p: null }] : [];
-      });
-      const sizes: ArtworkSize[] = [...(p.s ?? []), ...extra];
-      const prices = sizes.map((s) => s.p).filter((v): v is number => Boolean(v));
-      const tags = p.c ?? [];
-      const code = p.k || `KZ-${String(i + 1).padStart(3, "0")}`;
-      return {
-        id: i,
-        code,
-        slug: code.toLowerCase(),
-        title: p.t,
-        description: p.d ?? "",
-        image: p.img,
-        src: imageUrl(p.img),
-        sizes,
-        tags,
-        categories: tags.filter((k): k is CategoryKey => k !== "all"),
-        minPrice: prices.length ? Math.min(...prices) : null,
-        format: formatOf(sizes[0]),
-      };
-    })
-    .filter((p): p is Artwork => p !== null);
-  return cache;
+  const { data, error } = await publicDb()
+    .from("products")
+    .select("code, title, description, image, sizes, custom_sizes, categories")
+    .order("sort_order")
+    .order("code");
+  if (error) throw error;
+
+  return data.map((p): Artwork => {
+    const standard = (p.sizes as { w: number; h: number; price: number | null }[]).map((z) => ({ w: z.w, h: z.h, p: z.price }));
+    const extra = p.custom_sizes.flatMap((label): ArtworkSize[] => {
+      const m = label.match(/(\d+)\s*\/\s*(\d+)/);
+      return m ? [{ w: Number(m[1]), h: Number(m[2]), p: null }] : [];
+    });
+    const sizes = [...standard, ...extra];
+    const prices = sizes.map((s) => s.p).filter((v): v is number => Boolean(v));
+    return {
+      code: p.code,
+      slug: p.code.toLowerCase(),
+      title: p.title,
+      description: p.description,
+      image: p.image,
+      src: imageUrl(p.image),
+      sizes,
+      tags: p.categories,
+      categories: p.categories.filter((k): k is CategoryKey => k !== "all"),
+      minPrice: prices.length ? Math.min(...prices) : null,
+      format: formatOf(sizes[0]),
+    };
+  });
 }
 
 /** Everything a card, list row or related tile needs (prototype `card()`). Plain data for client components. */
@@ -114,10 +107,6 @@ export function toCard(p: Artwork): ArtworkCard {
   };
 }
 
-export function getArtwork(slug: string) {
-  return getCatalog().find((p) => p.slug === slug.toLowerCase());
-}
-
 /** Works of a category; "all" means the whole catalogue (not the catalogue's `all` tag). */
 export const inCategory = (items: Artwork[], category: CategoryKey | "all") =>
   category === "all" ? items : items.filter((p) => p.tags.includes(category));
@@ -126,9 +115,9 @@ export const inCategory = (items: Artwork[], category: CategoryKey | "all") =>
  * Price list for «Покупателям»: the cheapest price of every standard size in the catalogue,
  * sorted by price, then width (prototype `priceMap` / `priceTable`).
  */
-export function getPriceTable() {
+export async function getPriceTable() {
   const cheapest = new Map<string, ArtworkSize & { p: number }>();
-  for (const p of getCatalog()) {
+  for (const p of await getCatalog()) {
     for (const z of p.sizes) {
       if (!z.p) continue;
       const key = `${z.w}/${z.h}`;

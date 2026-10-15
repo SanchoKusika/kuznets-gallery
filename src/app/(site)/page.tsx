@@ -10,14 +10,15 @@ import { Reviews } from "@/components/home/Reviews/Reviews";
 import { Room } from "@/components/home/Room/Room";
 import { WaveRibbon } from "@/components/home/WaveRibbon/WaveRibbon";
 import { Faq } from "@/components/sections/Faq/Faq";
-import { CATS, REVIEWS } from "@/content/site";
+import { CATS } from "@/content/site";
 import { getCatalog, inCategory, toCard } from "@/lib/catalog";
+import { getReviews } from "@/lib/reviews";
 import { routes } from "@/lib/routes";
 
 export const metadata: Metadata = { alternates: { canonical: routes.home } };
 
-export default function HomePage() {
-  const items = getCatalog();
+export default async function HomePage() {
+  const [items, reviews] = await Promise.all([getCatalog(), getReviews()]);
 
   const heroThumbs = inCategory(items, "home").slice(0, 9).map(toCard);
 
@@ -50,7 +51,7 @@ export default function HomePage() {
         <Framing />
         <Occasions />
         <Clients />
-        <Reviews reviews={REVIEWS} />
+        {reviews.length > 0 && <Reviews reviews={reviews} />}
       </main>
       <Faq />
     </>
