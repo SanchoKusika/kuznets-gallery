@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isPhoneValid, type RequestPayload } from "@/lib/request";
+import { publicDb } from "@/lib/supabase/public";
 
 const Item = z.object({
   code: z.string().max(20),
@@ -21,12 +22,20 @@ const RequestBody = z.object({
 
 /**
  * New request from the site drawer (prototype `saveRequest`: status "new", source "Сайт").
- * Until the database lands (stage 7) it only validates the payload.
+ * Stored by the `submit_request` database function, which also rate-limits (3 per phone per 10 minutes).
  */
 export async function POST(req: Request) {
   const parsed = RequestBody.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return Response.json({ ok: false, error: "invalid" }, { status: 400 });
   }
-  return Response.json({ ok: true }, { status: 201 });
+  const { name, phone, comment, items } = parsed.data;
+  const { data: no, error } = await publicDb().rpc("submit_request", { p_name: name, p_phone: phone, p_comment: comment, p_items: items });
+  if (error) {
+    if (error.message === "rate_limited") return Response.json({ ok: false, error: "rate_limited" }, { status: 429 });
+    if (error.message === "invalid_request") return Response.json({ ok: false, error: "invalid" }, { status: 400 });
+    console.error("submit_request failed", error);
+    return Response.json({ ok: false, error: "failed" }, { status: 500 });
+  }
+  return Response.json({ ok: true, no }, { status: 201 });
 }

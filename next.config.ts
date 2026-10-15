@@ -1,5 +1,6 @@
 import path from "node:path";
 import type { NextConfig } from "next";
+import { IMAGE_BASE } from "./src/lib/images";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
@@ -7,7 +8,7 @@ const nextConfig: NextConfig = {
   // Keeps the dev badge out of side-by-side comparisons with the prototype.
   devIndicators: false,
   images: {
-    remotePatterns: [new URL("https://kuznets.uz/wp-content/uploads/**")],
+    remotePatterns: [new URL(IMAGE_BASE + "**")],
     qualities: [75],
   },
   sassOptions: {

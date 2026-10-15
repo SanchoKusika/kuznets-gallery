@@ -9,8 +9,8 @@ export const metadata: Metadata = { title: "Страница не найдена
 const wh = (z: { w: number; h: number }) => `${z.w}×${z.h}`;
 
 /** Every work with the texts of its 404 plate (standard sizes only, thin-space prices, as in the prototype). */
-function hangableWorks(): HangableWork[] {
-  return getCatalog().map((p) => {
+async function hangableWorks(): Promise<HangableWork[]> {
+  return (await getCatalog()).map((p) => {
     const sizes = p.sizes.filter((z) => z.p != null);
     const first = sizes[0];
     const last = sizes[sizes.length - 1];
@@ -26,6 +26,6 @@ function hangableWorks(): HangableWork[] {
   });
 }
 
-export default function NotFoundPage() {
-  return <NotFound pool={hangableWorks()} />;
+export default async function NotFoundPage() {
+  return <NotFound pool={await hangableWorks()} />;
 }

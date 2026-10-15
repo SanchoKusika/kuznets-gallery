@@ -48,7 +48,7 @@ export default async function CollectionPage({ params }: PageProps<"/collection/
   if (!resolved) notFound();
   const { key, cat } = resolved;
 
-  const items = getCatalog();
+  const items = await getCatalog();
   const chips = [{ k: "all" as const, short: "Все" }, ...CATS].map((c) => ({
     key: c.k,
     label: c.short,

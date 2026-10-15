@@ -1,11 +1,11 @@
 /**
- * Base URL for catalogue images. They are served from the current WordPress site for now;
- * once the originals move to our own storage, change NEXT_PUBLIC_IMAGE_BASE
- * (and add the new host to `images.remotePatterns` in next.config.ts).
+ * Base URL for catalogue images: the public `artworks` bucket in Supabase Storage. The database keeps
+ * object keys (the old WordPress upload paths, e.g. "2021/04/KUZNETSOVS-UZBJUDD.jpg"), so moving the files
+ * elsewhere means changing NEXT_PUBLIC_IMAGE_BASE (`images.remotePatterns` follows it).
  */
-export const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE ?? "https://kuznets.uz/wp-content/uploads/";
+export const IMAGE_BASE = process.env.NEXT_PUBLIC_IMAGE_BASE ?? "https://jagdvpeddgzyyqhjliav.supabase.co/storage/v1/object/public/artworks/";
 
-/** Absolute URLs, data: URIs and root paths pass through; anything else is a path inside uploads. */
+/** Absolute URLs, data: URIs and root paths pass through; anything else is an object key in the bucket. */
 export function imageUrl(path: string) {
   return /^(https?:|data:|\/)/.test(path) ? path : IMAGE_BASE + path;
 }

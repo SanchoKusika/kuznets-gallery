@@ -9,7 +9,8 @@
 - SCSS Modules + BEM, токены — CSS-переменные (`src/styles/_tokens.scss`), тёмная тема — `<html data-theme="dark">`
 - Шрифты через `next/font`: Onest + Piazzolla Italic (opsz)
 - Анимации — Web Animations API и CSS, как в прототипе; плавный скролл — Lenis (только сайт). При `prefers-reduced-motion` всё движение выключено, поэтому сверка с прототипом идёт в этом режиме
-- Данные: Supabase (с этапа 7), до этого — `src/data/products.json`
+- Данные: Supabase — Postgres (каталог, заявки, отзывы, админы), Auth (админка), Storage (картинки работ, бакет `artworks`).
+  Схема — `supabase/migrations/`, сайт читает каталог через `'use cache'` с тегами `catalog` / `reviews`
 - Хостинг: Cloudflare Workers через `@opennextjs/cloudflare`
 
 ## Запуск
@@ -20,7 +21,22 @@ npm run dev          # http://localhost:3000
 npx serve design -l 4000   # прототип для сверки: http://localhost:4000/Kuznetsovs%20Gallery.dc.html
 ```
 
-Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build`.
+Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build` (сборка читает каталог из Supabase).
+
+Переменные окружения — в `.env.local` (образец — `.env.example`): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
+`NEXT_PUBLIC_IMAGE_BASE`, для скриптов — `ADMIN_LOGIN` / `ADMIN_PASSWORD`.
+
+### База данных
+
+| Что | Как |
+|---|---|
+| Схема, RLS, функции | `supabase/migrations/*.sql` (применяются через Supabase CLI или SQL Editor) |
+| Каталог, отзывы и картинки из прототипа | `node --env-file=.env.local scripts/db/import.mjs` — переносит фото с WordPress в Storage |
+| Демо-заявки для аналитики (№ ≤ 1048) | `node --env-file=.env.local scripts/db/demo.mjs`, удалить — `… demo.mjs --purge` |
+| Новый админ | в SQL Editor: `select public.create_admin('логин', 'Имя', 'e-mail', 'пароль');` |
+
+Картинки работ лежат в Storage, в базе — ключ объекта (путь как на WordPress, `2021/04/….jpg`).
+Сайт отдаёт их через `next/image`; адрес бакета — `NEXT_PUBLIC_IMAGE_BASE`.
 
 ### Сверка с прототипом
 
@@ -48,7 +64,7 @@ node scripts/visual/compare.mjs .visual/hero "main > :nth-child(1)" 1440,375 lig
 ```
 src/
   app/                  маршруты; (site)/ — публичный сайт с шапкой и подвалом
-  app/api/requests/     POST /api/requests: zod-валидация заявки (запись в БД — этап 7)
+  app/api/requests/     POST /api/requests: zod-валидация, запись через функцию БД submit_request
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
@@ -60,10 +76,13 @@ src/
   features/             theme, order (заявка и её drawer), catalog (фильтры коллекции),
                         motion (появление при скролле, курсор), scroll (Lenis, блокировка скролла)
   content/site.ts       тексты и справочники из прототипа
-  lib/                  каталог, заявка (правила и тип), картинки, форматирование, маршруты, bem()
+  lib/                  каталог и отзывы (Supabase, 'use cache'), заявка (правила и тип), картинки,
+                        форматирование, маршруты, bem(); lib/supabase — клиенты и типы БД
   styles/               _tokens.scss, _mixins.scss (подключаются через `@use "mixins" as *;`)
   assets/               логотип и фото для статических импортов
 design/                 эталонные прототипы (не входят в сборку)
+supabase/migrations/    схема БД
+scripts/db/             импорт каталога и картинок, демо-заявки
 scripts/visual/         сверка с прототипом
 ```
 
@@ -72,4 +91,4 @@ scripts/visual/         сверка с прототипом
 - Один компонент — один BEM-блок и свой `.module.scss`; классы собираются через `bem(styles, "block")`.
 - Инлайн-стилей в разметке нет. Исключения — значения, меняющиеся каждый кадр (курсор, волна, маятник 404),
   и геометрия из данных (графики админки); они задаются через `ref.style` или CSS-переменные.
-- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (по умолчанию `https://kuznets.uz/wp-content/uploads/`), адрес сайта для sitemap и canonical — `NEXT_PUBLIC_SITE_URL` (по умолчанию `https://kuznets.uz`).
+- Картинки каталога берутся по `NEXT_PUBLIC_IMAGE_BASE` (бакет `artworks` в Supabase Storage), адрес сайта для sitemap и canonical — `NEXT_PUBLIC_SITE_URL` (по умолчанию `https://kuznets.uz`).

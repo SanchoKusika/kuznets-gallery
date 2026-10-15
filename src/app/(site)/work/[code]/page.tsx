@@ -6,7 +6,7 @@ import { RelatedWorks } from "@/components/work/RelatedWorks/RelatedWorks";
 import { WorkDetails } from "@/components/work/WorkDetails/WorkDetails";
 import { CATS, FMT } from "@/content/site";
 import { bem } from "@/lib/bem";
-import { getArtwork, getCatalog, toCard } from "@/lib/catalog";
+import { getCatalog, toCard } from "@/lib/catalog";
 import { routes } from "@/lib/routes";
 import s from "./page.module.scss";
 
@@ -14,12 +14,12 @@ const b = bem(s, "work-page");
 
 type Params = PageProps<"/work/[code]">["params"];
 
-export function generateStaticParams() {
-  return getCatalog().map((p) => ({ code: p.slug }));
+export async function generateStaticParams() {
+  return (await getCatalog()).map((p) => ({ code: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const work = getArtwork((await params).code);
+  const { work } = await findArtwork((await params).code);
   if (!work) return {};
   return {
     title: `${work.title} — принт-картина ${work.code}`,
@@ -29,18 +29,25 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
+/** The visible catalogue and the artwork with this URL segment in it (codes are case-insensitive). */
+async function findArtwork(slug: string) {
+  const items = await getCatalog();
+  const index = items.findIndex((p) => p.slug === slug.toLowerCase());
+  return { items, index, work: items[index] };
+}
+
 // Params are read before rendering (not inside <Suspense>) so an unknown code gets a real HTTP 404;
-// every artwork is prerendered by generateStaticParams anyway. `instant = false` allows that block.
+// artworks known at build time are prerendered by generateStaticParams, newer ones render on first visit
+// and are cached. `instant = false` allows that block.
 export const instant = false;
 
 export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
   const { code } = await params;
-  const work = getArtwork(code);
+  const { items, index, work } = await findArtwork(code);
   if (!work) notFound();
   if (code !== work.slug) permanentRedirect(routes.work(work.slug)); // /work/KZ-001 → /work/kz-001
 
-  const items = getCatalog();
-  const next = items[(items.indexOf(work) + 1) % items.length];
+  const next = items[(index + 1) % items.length];
   const category = CATS.find((c) => c.k === work.categories[0]);
   // Uncategorised works fall back to the catalogue's "all" tag, as in the prototype.
   const tag = category?.k ?? "all";

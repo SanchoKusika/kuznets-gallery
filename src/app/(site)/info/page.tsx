@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   alternates: { canonical: routes.info },
 };
 
-export default function InfoPage() {
-  const prices = getPriceTable();
+export default async function InfoPage() {
+  const prices = await getPriceTable();
   return (
     <>
       <main className={b()}>
