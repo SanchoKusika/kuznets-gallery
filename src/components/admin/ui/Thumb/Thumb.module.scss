@@ -1,0 +1,16 @@
+.thumb {
+  position: relative;
+  display: block;
+  background: var(--paper-3);
+  overflow: hidden;
+
+  &__img {
+    object-fit: cover;
+    display: block;
+
+    // Hidden products in the catalogue list.
+    &--dim {
+      opacity: 0.4;
+    }
+  }
+}

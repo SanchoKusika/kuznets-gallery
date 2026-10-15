@@ -1,0 +1,43 @@
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 60;
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.35s var(--ease-out),
+    transform 0.35s var(--ease-out);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 10px 10px 20px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 99px;
+  font-size: 14px;
+  max-width: calc(100vw - 32px);
+
+  &--on {
+    transform: translateX(-50%);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  // Above the bottom tab bar (<640px).
+  &--raised {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+
+  &__undo {
+    border: 0;
+    background: var(--accent);
+    color: var(--on-accent);
+    padding: 7px 14px;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+  }
+}

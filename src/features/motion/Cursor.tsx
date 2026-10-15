@@ -4,6 +4,7 @@ import { getImageProps } from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { bem } from "@/lib/bem";
+import { isForeign } from "@/lib/images";
 import { prefersMotion } from "./prefers-motion";
 import s from "./Cursor.module.scss";
 
@@ -13,7 +14,7 @@ const SHOWN = s["cursor__preview--shown"];
 
 /** Optimised image for the preview well (≤ 280px square). */
 function previewImage(src: string) {
-  const { props } = getImageProps({ src, alt: "", width: 280, height: 280, sizes: "min(280px, 22vw)" });
+  const { props } = getImageProps({ src, alt: "", width: 280, height: 280, sizes: "min(280px, 22vw)", unoptimized: isForeign(src) });
   return props;
 }
 

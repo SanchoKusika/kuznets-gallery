@@ -1,0 +1,171 @@
+// Admin panel mixins (design/Admin.dc.html). Use with `@use "mixins" as *; @use "admin" as *;`.
+@use "mixins" as *;
+
+// Paper-2 panel: KPI cards, dashboard blocks, tables, price sections.
+@mixin card($pad: clamp(18px, 1.8vw, 24px)) {
+  background: var(--paper-2);
+  padding: $pad;
+  min-width: 0;
+}
+
+// Block heading inside a card: «Ждут ответа», «Продажи», «Стандартные размеры».
+@mixin card-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.03em;
+}
+
+// Tabular meta text: counters, codes, dates.
+@mixin meta($size: 12px) {
+  @include tabular;
+  font-size: $size;
+  color: var(--ink-3);
+}
+
+// Small uppercase caption (11px) in ink-3: table heads, section labels.
+@mixin caption($size: 11px) {
+  @include label($size);
+  color: var(--ink-3);
+}
+
+// Full-bleed clickable row inside a card: bleeds 12px into the padding, tints on hover.
+@mixin bleed-row($pad: 11px 12px) {
+  width: calc(100% + 24px);
+  margin: 0 -12px;
+  padding: $pad;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+// Pill button on paper-2 that turns ink on hover: «+ Добавить картину», «+ Размер», board «Следующий статус».
+@mixin soft-pill($bg: var(--paper-2)) {
+  border: 0;
+  background: $bg;
+  border-radius: 99px;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s;
+
+  &:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+}
+
+// Underline-only input (login, drawers): a line in --line that turns accent on focus.
+@mixin underline-input($pad: 6px 0 10px, $size: 16px) {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: $pad;
+  font-size: $size;
+  outline: none;
+  border-radius: 0;
+
+  &:focus {
+    border-bottom-color: var(--accent);
+  }
+}
+
+// Round 36–40px icon button on paper that turns ink on hover (✕, ↑, ↓).
+@mixin round-button($size: 36px, $bg: var(--paper)) {
+  width: $size;
+  height: $size;
+  border: 0;
+  border-radius: 50%;
+  background: $bg;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s;
+
+  &:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+}
+
+// Empty-state line in Piazzolla: «Все новые заявки разобраны.», «Ничего не найдено.».
+@mixin empty($size: 20.24px, $pad: 12px 0) {
+  @include serif;
+  margin: 0;
+  padding: $pad;
+  font-size: $size;
+  color: var(--ink-3);
+}
+
+// Base rules of the admin page (its global <style>): controls inherit the font (zero specificity,
+// so component classes win), lighter placeholders.
+@mixin admin-base {
+  @at-root :where(#{&}) :where(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+  }
+
+  ::placeholder {
+    color: var(--ink-4);
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+// «kuznetsovs.» wordmark with the accent dot.
+@mixin wordmark($size) {
+  font-weight: 600;
+  font-size: $size;
+  letter-spacing: -0.065em;
+}
+
+// —— Lists (requests, catalogue)
+
+// Chips on the left, search on the right.
+@mixin toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 16px;
+}
+
+// Filter chips; `--scroll` (narrow content) — one row scrolling edge to edge.
+@mixin chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  flex: 0 1 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &--scroll {
+    flex-wrap: nowrap;
+    flex: 1 1 100%;
+    margin: 0 calc(-1 * var(--gutter));
+    padding: 0 var(--gutter);
+  }
+}
+
+@mixin table-shell {
+  background: var(--paper-2);
+  padding: 6px clamp(14px, 1.6vw, 22px) 10px;
+}
+
+// «Показано 50 из 584» and «Показать ещё».
+@mixin list-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+}

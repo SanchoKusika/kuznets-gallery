@@ -1,0 +1,108 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.reviews-editor {
+  &__hint {
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  // Number, text + name, actions; on narrow content the actions move under the text.
+  &__item {
+    background: var(--paper-2);
+    padding: clamp(16px, 1.8vw, 24px);
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 12px 20px;
+    align-items: start;
+    transition: opacity 0.3s;
+
+    &--narrow {
+      grid-template-columns: 24px minmax(0, 1fr);
+    }
+
+    &--hidden {
+      opacity: 0.5;
+    }
+  }
+
+  &__index {
+    @include tabular;
+    font-size: 13px;
+    color: var(--accent);
+    padding-top: 8px;
+  }
+
+  &__fields {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__text {
+    @include serif;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 4px 0;
+    font-size: clamp(20.24px, 1.84vw, 25.76px);
+    line-height: 1.25;
+    resize: vertical;
+    outline: none;
+    border-radius: 0;
+  }
+
+  &__name {
+    @include label(12px);
+    width: 100%;
+    max-width: 360px;
+    border: 0;
+    background: transparent;
+    padding: 4px 0;
+    outline: none;
+    border-radius: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    padding-top: 4px;
+
+    .reviews-editor__item--narrow & {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__switch {
+    margin-right: 8px;
+  }
+
+  &__move {
+    @include round-button;
+
+    &--off {
+      opacity: 0.3;
+    }
+  }
+
+  &__remove {
+    @include round-button;
+    display: grid;
+    place-items: center;
+
+    &:hover {
+      background: var(--accent);
+      color: var(--on-accent);
+    }
+  }
+}

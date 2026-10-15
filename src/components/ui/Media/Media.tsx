@@ -1,5 +1,6 @@
 import Image, { type StaticImageData } from "next/image";
 import { bem } from "@/lib/bem";
+import { isForeign } from "@/lib/images";
 import s from "./Media.module.scss";
 
 const b = bem(s, "media");
@@ -31,6 +32,7 @@ export function Media({ src, alt = "", sizes, className, imgClassName, eager }: 
         sizes={sizes}
         loading={eager ? "eager" : "lazy"}
         className={b("img", null, imgClassName)}
+        unoptimized={typeof src === "string" && isForeign(src)}
         {...dims}
       />
     </div>

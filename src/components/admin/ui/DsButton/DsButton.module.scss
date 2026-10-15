@@ -1,0 +1,68 @@
+// Design-system Button: 1px border in every variant, hover swaps the fill (.35s).
+.ds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.35s,
+    color 0.35s;
+
+  &--primary {
+    background: var(--ink);
+    color: var(--paper);
+
+    &:hover:not(:disabled) {
+      background: var(--accent);
+    }
+  }
+
+  &--secondary {
+    border-color: var(--ink);
+    background: transparent;
+    color: var(--ink);
+
+    &:hover:not(:disabled) {
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--ink);
+
+    &:hover:not(:disabled) {
+      background: var(--paper-hover);
+    }
+  }
+
+  &--sm {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  &--md {
+    padding: 14px 24px;
+    font-size: 14px;
+  }
+
+  &--lg {
+    padding: 18px 30px;
+    font-size: 15px;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}

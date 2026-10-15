@@ -1,0 +1,31 @@
+.pill-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+
+  &__select {
+    appearance: none;
+    border: 0;
+    color: var(--ink);
+    padding: 9px 34px 9px 16px;
+    border-radius: 99px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+
+    &--paper {
+      background: var(--paper);
+    }
+
+    &--soft {
+      background: var(--paper-2);
+    }
+  }
+
+  &__chevron {
+    position: absolute;
+    right: 14px;
+    pointer-events: none;
+  }
+}

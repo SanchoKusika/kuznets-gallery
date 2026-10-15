@@ -1,0 +1,231 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.catalog {
+  &__toolbar {
+    @include toolbar;
+  }
+
+  &__chips {
+    @include chip-row;
+  }
+
+  &__tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 1 480px;
+    min-width: 240px;
+  }
+
+  &__search {
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Sticky ink pill with bulk actions; below the top bar on phones.
+  &__bulk {
+    position: sticky;
+    top: 12px;
+    z-index: 15;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 20px;
+    padding: 8px 8px 8px 20px;
+    margin-bottom: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 99px;
+
+    &--bar {
+      top: 66px;
+    }
+  }
+
+  &__bulk-count {
+    @include label(12px);
+  }
+
+  &__bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  &__bulk-button,
+  &__bulk-clear {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  &__bulk-button {
+    padding: 8px 14px;
+    border-radius: 99px;
+    font-size: 14px;
+  }
+
+  &__bulk-clear {
+    width: 36px;
+    border-radius: 50%;
+  }
+
+  &__bulk-delete {
+    border: 0;
+    background: var(--accent);
+    color: var(--on-accent);
+    padding: 8px 16px;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  // —— Table: columns by content width (tier)
+  &__table {
+    @include table-shell;
+  }
+
+  &__thead,
+  &__row {
+    display: grid;
+    gap: 16px;
+    align-items: center;
+
+    .catalog__table--tier-2 & {
+      grid-template-columns: 18px 56px 64px minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr) 112px 38px;
+    }
+
+    .catalog__table--tier-1 & {
+      grid-template-columns: 18px 56px minmax(0, 1fr) 130px 104px 38px;
+    }
+
+    .catalog__table--tier-0 & {
+      grid-template-columns: 18px 56px minmax(0, 1fr) 38px;
+    }
+  }
+
+  &__wide,
+  &__full {
+    display: none;
+  }
+
+  &__table--tier-1 &__wide,
+  &__table--tier-2 &__wide,
+  &__table--tier-2 &__full {
+    display: block;
+  }
+
+  &__thead {
+    @include caption;
+    padding: 12px 0;
+  }
+
+  &__row {
+    padding: 10px 12px;
+    margin: 0 -12px;
+    border-top: 1px solid var(--line-soft);
+    cursor: pointer;
+    transition: background 0.25s;
+
+    &--selected {
+      background: var(--paper-selected);
+    }
+
+    &:hover {
+      background: var(--paper-3);
+    }
+  }
+
+  &__check {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--ink-3);
+    background: transparent;
+    color: var(--paper);
+    padding: 0;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+
+    &--on {
+      background: var(--ink);
+    }
+  }
+
+  &__thumb {
+    width: 100%;
+    aspect-ratio: 1;
+  }
+
+  &__code {
+    @include meta;
+  }
+
+  &__name {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: var(--ink-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__dirs {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  &__sizes {
+    min-width: 0;
+  }
+
+  &__sizes-n {
+    display: block;
+    font-size: 13px;
+  }
+
+  &__sizes-range {
+    @include meta(11px);
+    display: block;
+    margin-top: 4px;
+  }
+
+  &__price {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  &__empty {
+    @include empty(23.92px, 28px 0);
+  }
+
+  &__foot {
+    @include list-foot;
+  }
+
+  &__shown {
+    @include caption(12px);
+  }
+}
