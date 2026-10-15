@@ -14,6 +14,11 @@ const MIME = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "i
 
 const products = JSON.parse(readFileSync(new URL("../../design/data/products.json", import.meta.url), "utf8"));
 
+// WordPress listed the three framing options as products (KZ-073…075, no sizes); the site shows them
+// in «Холст, багет или стекло», so they are not imported. Codes follow the position, so the rest keep theirs.
+const NOT_ARTWORKS = new Set(["Холст на подрамнике", "Холст с подрамником + багет", "Бумага в рамке под стеклом"]);
+const isArtwork = (p) => !NOT_ARTWORKS.has(p.t);
+
 // REVIEWS_DEF in design/Admin.dc.html (the site prototype shows the same nine).
 const REVIEWS = [
   ["Arina Zemskova", "Реальное спасибо за реально крутые и креативные картины! Работаете чётко и качественно, подобрали к нашему интерьеру именно то, что мы хотели видеть."],
@@ -31,17 +36,19 @@ const db = await adminClient();
 
 if (!process.argv.includes("--images")) {
   // Prototype loadCatalog(): code KZ-<position>, order = position.
-  const rows = products.map((p, i) => ({
-    code: p.k || `KZ-${String(i + 1).padStart(3, "0")}`,
-    title: p.t ?? "",
-    description: p.d ?? "",
-    image: p.img ?? "",
-    sizes: (p.s ?? []).map((z) => ({ w: z.w, h: z.h, price: z.p ?? null })),
-    custom_sizes: p.x ?? [],
-    categories: p.c ?? [],
-    hidden: Boolean(p.h),
-    sort_order: i,
-  }));
+  const rows = products
+    .map((p, i) => ({
+      code: p.k || `KZ-${String(i + 1).padStart(3, "0")}`,
+      title: p.t ?? "",
+      description: p.d ?? "",
+      image: p.img ?? "",
+      sizes: (p.s ?? []).map((z) => ({ w: z.w, h: z.h, price: z.p ?? null })),
+      custom_sizes: p.x ?? [],
+      categories: p.c ?? [],
+      hidden: Boolean(p.h),
+      sort_order: i,
+    }))
+    .filter((_, i) => isArtwork(products[i]));
   must(await db.from("products").upsert(rows, { onConflict: "code", ignoreDuplicates: true }));
   console.log(`products: ${rows.length}`);
 
@@ -52,7 +59,7 @@ if (!process.argv.includes("--images")) {
   }
 }
 
-const paths = [...new Set(products.map((p) => p.img).filter(Boolean))];
+const paths = [...new Set(products.filter(isArtwork).map((p) => p.img).filter(Boolean))];
 let copied = 0;
 let kept = 0;
 const failed = [];

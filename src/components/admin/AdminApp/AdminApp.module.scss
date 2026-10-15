@@ -1,8 +1,12 @@
 @use "mixins" as *;
 @use "admin" as *;
 
+// Navigation and content stay together: on very wide screens (4K) the whole panel is centred,
+// the sidebar next to the content (240 + gutters 2×40 + content 1440).
 .admin {
   @include admin-base;
+  max-width: 1760px;
+  margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
