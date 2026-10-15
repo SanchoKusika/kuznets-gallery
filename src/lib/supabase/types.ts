@@ -117,6 +117,7 @@ export type Database = {
       admin_email: { Args: { p_login: string }; Returns: string };
       create_admin: { Args: { p_email: string; p_login: string; p_name: string; p_password: string }; Returns: string };
       is_admin: { Args: never; Returns: boolean };
+      set_product_sizes: { Args: { p_rows: Json }; Returns: undefined };
       submit_request: { Args: { p_comment: string; p_items: Json; p_name: string; p_phone: string }; Returns: number };
     };
     Enums: {

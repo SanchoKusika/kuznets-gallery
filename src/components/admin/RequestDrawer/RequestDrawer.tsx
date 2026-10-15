@@ -26,7 +26,11 @@ const TrashIcon = () => (
 /** Request card in the drawer: status, client, items, due date, comment and manager notes; saves as you type. */
 export function RequestDrawer({ open, id }: { open: boolean; id: string | null }) {
   const { requests, products, updateReq, setStatus, deleteReq, closeDrawer } = useAdmin();
-  const r = requests.find((x) => x.id === id);
+  const found = requests.find((x) => x.id === id);
+  // A deleted request keeps its card on screen while the drawer slides out.
+  const [last, setLast] = useState(found);
+  if (found && found !== last) setLast(found);
+  const r = found ?? (last?.id === id ? last : undefined);
   const [picking, setPicking] = useState(false);
   const [pq, setPq] = useState("");
   const [note, setNote] = useState("");

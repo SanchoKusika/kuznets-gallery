@@ -34,6 +34,9 @@ function readTab(): Tab {
 const SAVE_DELAY = 250;
 const FAILED = "Не удалось сохранить — проверьте соединение";
 
+/** Catalogue order of the panel and the site: sort_order, then code. */
+const byOrder = (a: Product, z: Product) => a.sortOrder - z.sortOrder || a.code.localeCompare(z.code);
+
 function useAdminState(admin: AdminUser, initial: AdminData) {
   const [products, setProducts] = useState(initial.products);
   const [requests, setRequests] = useState(initial.requests);
@@ -214,8 +217,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       setProducts(prev.filter((p) => !codes.includes(p.code)));
       setDrawer(null);
       save(api.deleteProducts(codes));
+      // Undo puts back only the removed products: later edits stay.
       toast(codes.length > 1 ? `Удалено: ${count(codes.length, PICTURES)}` : "Картина удалена", () => {
-        setProducts(prev);
+        setProducts((list) => [...list.filter((p) => !codes.includes(p.code)), ...removed].sort(byOrder));
         save(api.restoreProducts(removed));
       });
     },
@@ -234,14 +238,15 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
   /** Price changes: new sizes for the changed products, with «Вернуть». */
   const applySizes = useCallback(
     (next: Product[], message: string) => {
-      const prev = latest.current.products;
-      const changed = next.filter((p, i) => p !== prev[i]);
-      const before = prev.filter((p) => changed.some((c) => c.code === p.code));
+      const prevBy = new Map(latest.current.products.map((p) => [p.code, p]));
+      const changed = next.filter((p) => prevBy.get(p.code) !== p);
+      const before = new Map(changed.map((p) => [p.code, prevBy.get(p.code)!.sizes]));
       setProducts(next);
       save(api.saveSizes(changed.map((p) => ({ code: p.code, sizes: p.sizes }))));
+      // Undo reverts only these sizes: other edits made meanwhile stay.
       toast(message, () => {
-        setProducts(prev);
-        save(api.saveSizes(before.map((p) => ({ code: p.code, sizes: p.sizes }))));
+        setProducts((list) => list.map((p) => (before.has(p.code) ? { ...p, sizes: before.get(p.code)! } : p)));
+        save(api.saveSizes([...before].map(([code, sizes]) => ({ code, sizes }))));
       });
     },
     [save, toast],
@@ -305,7 +310,7 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       setReviews(prev.filter((x) => x.id !== id));
       save(api.deleteReview(id));
       toast("Отзыв удалён", () => {
-        setReviews(prev);
+        setReviews((list) => [...list.filter((x) => x.id !== id), r].sort((a, z) => a.sortOrder - z.sortOrder));
         save(api.saveReviews([r]));
       });
     },
