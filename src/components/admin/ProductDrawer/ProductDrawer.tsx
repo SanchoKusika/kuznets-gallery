@@ -31,7 +31,8 @@ const onlyDigits = (v: string) => v.replace(/\D/g, "");
 export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit | null }) {
   const { closeDrawer, saveProd, deleteProds, duplicateProd, setDraft, toast } = useAdmin();
   const [uploading, setUploading] = useState(false);
-  const [editing, setEditing] = useState<File | string | null>(null);
+  // The photo in the editor; `n` mounts a fresh editor for every photo, the closed one stays to slide out.
+  const [photo, setPhoto] = useState<{ source: File | string; n: number; open: boolean } | null>(null);
 
   if (!edit) return <Drawer open={false} onClose={closeDrawer} head="" footer={null}>{null}</Drawer>;
   const { draft: e, isNew } = edit;
@@ -51,7 +52,7 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
       const res = await fetch(url, { method: "PUT", body, headers: { "x-upsert": "false" } });
       if (!res.ok) throw new Error(String(res.status));
       setDraft({ image: path });
-      setEditing(null);
+      closePhoto();
     } catch {
       toast("Не удалось загрузить изображение — JPG, PNG или WebP до 15 МБ");
     } finally {
@@ -59,7 +60,9 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
     }
   };
 
-  const pick = (file: File | undefined) => file && setEditing(file);
+  const editPhoto = (source: File | string) => setPhoto((p) => ({ source, n: (p?.n ?? 0) + 1, open: true }));
+  const closePhoto = () => setPhoto((p) => p && { ...p, open: false });
+  const pick = (file: File | undefined) => file && editPhoto(file);
 
   return (
     <>
@@ -67,6 +70,7 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
         open={open}
         onClose={closeDrawer}
         head={`${e.code} · ${isNew ? "Новая картина" : "Редактирование"}`}
+        covered={photo?.open}
         footerWrap
         footer={
           <>
@@ -118,8 +122,8 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
                   type="button"
                   className={b("edit")}
                   onClick={(ev) => {
-                    ev.preventDefault(); // the label around would open the file picker
-                    setEditing(src);
+                    ev.preventDefault(); // the label around must not open the file picker
+                    editPhoto(src);
                   }}
                 >
                   Редактировать
@@ -192,7 +196,7 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
           <Switch on={!e.hidden} />
         </button>
       </Drawer>
-      {editing && <PhotoEditor source={editing} caption={`${e.code} · Фото`} onCancel={() => setEditing(null)} onDone={upload} />}
+      {photo && <PhotoEditor key={photo.n} open={photo.open} source={photo.source} caption={`${e.code} · Фото`} onCancel={closePhoto} onDone={upload} />}
     </>
   );
 }

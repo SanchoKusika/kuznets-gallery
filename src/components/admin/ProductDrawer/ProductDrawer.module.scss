@@ -186,12 +186,7 @@
 
   &__delete,
   &__duplicate {
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--ink-3);
-    padding: 8px 0;
+    @include footer-link;
   }
 
   &__delete {

@@ -26,6 +26,7 @@ const QUALITY = 0.92;
 const FULL: PercentCrop = { unit: "%", x: 0, y: 0, width: 100, height: 100 };
 
 type Props = {
+  open: boolean;
   /** A picked file or the URL of the current photo. */
   source: File | string;
   /** Caption at the top, e.g. "KZ-001 · Фото". */
@@ -63,7 +64,10 @@ async function cropToFile(canvas: HTMLCanvasElement, crop: PercentCrop, name: st
   const out = document.createElement("canvas");
   out.width = Math.max(1, Math.round(sw * k));
   out.height = Math.max(1, Math.round(sh * k));
-  out.getContext("2d")!.drawImage(canvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
+  const ctx = out.getContext("2d")!;
+  ctx.fillStyle = "#fff"; // JPEG has no alpha: transparent parts turn white, not black
+  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
   const blob = await new Promise<Blob | null>((resolve) => out.toBlob(resolve, "image/jpeg", QUALITY));
   if (!blob) throw new Error("encode");
   return new File([blob], `${name}.jpg`, { type: "image/jpeg" });
@@ -72,9 +76,10 @@ async function cropToFile(canvas: HTMLCanvasElement, crop: PercentCrop, name: st
 /**
  * Photo editor over the product card (react-image-crop): free or fixed-ratio crop, 90° turns, reset.
  * The picture is drawn turned on a full-size canvas, which is both the crop area and the export source.
+ * Mounted anew for every photo (it slides in) and kept while closed, so it slides out with its content.
  * Photos come prepared, so it is a safety net: an unchanged file is uploaded as it is.
  */
-export function PhotoEditor({ source, caption, onCancel, onDone }: Props) {
+export function PhotoEditor({ open, source, caption, onCancel, onDone }: Props) {
   const { toast } = useAdmin();
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [failed, setFailed] = useState(false);
@@ -109,16 +114,22 @@ export function PhotoEditor({ source, caption, onCancel, onDone }: Props) {
     ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
   }, [image, rotation]);
 
+  // While uploading the editor stays open, so the result cannot land in the card after «Отмена».
+  const close = () => {
+    if (!pending) onCancel();
+  };
+
   // Esc closes the editor only: caught before the store's listener that closes the product card.
   useEffect(() => {
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       e.stopImmediatePropagation();
-      onCancel();
+      if (!pending) onCancel();
     };
     addEventListener("keydown", onKey, { capture: true });
     return () => removeEventListener("keydown", onKey, { capture: true });
-  }, [onCancel]);
+  }, [open, pending, onCancel]);
 
   const pickAspect = (a: number | undefined) => {
     const canvas = canvasRef.current;
@@ -157,8 +168,8 @@ export function PhotoEditor({ source, caption, onCancel, onDone }: Props) {
 
   return (
     <Drawer
-      open
-      onClose={onCancel}
+      open={open}
+      onClose={close}
       head={caption}
       footer={
         <>
@@ -166,7 +177,7 @@ export function PhotoEditor({ source, caption, onCancel, onDone }: Props) {
             Сбросить
           </button>
           <div className={b("actions")}>
-            <DsButton variant="ghost" onClick={onCancel}>
+            <DsButton variant="ghost" onClick={close} disabled={pending}>
               Отмена
             </DsButton>
             <DsButton onClick={save} disabled={!image || pending}>

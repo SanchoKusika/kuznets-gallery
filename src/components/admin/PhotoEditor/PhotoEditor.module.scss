@@ -57,14 +57,8 @@
     font-size: 16px;
   }
 
-  // Like «Дублировать» in the product card footer.
   &__reset {
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--ink-3);
-    padding: 8px 0;
+    @include footer-link;
 
     &:hover {
       color: var(--ink);

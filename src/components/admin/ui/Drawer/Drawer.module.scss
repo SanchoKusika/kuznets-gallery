@@ -18,6 +18,11 @@ $pad: clamp(20px, 3vw, 32px);
 
   &--open {
     transform: none;
+
+    // Mounted already open (the photo editor): slides in as well.
+    @starting-style {
+      transform: translateX(100%);
+    }
   }
 
   &__scrim {
@@ -32,6 +37,10 @@ $pad: clamp(20px, 3vw, 32px);
     &--open {
       opacity: 1;
       pointer-events: auto;
+
+      @starting-style {
+        opacity: 0;
+      }
     }
   }
 

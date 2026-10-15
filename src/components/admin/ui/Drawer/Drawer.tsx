@@ -14,18 +14,21 @@ type Props = {
   footer: ReactNode;
   /** The product card lets its footer wrap on narrow screens; the request card does not. */
   footerWrap?: boolean;
+  /** Another drawer lies over this one (the photo editor over the product card): it stays, but takes no focus. */
+  covered?: boolean;
   children: ReactNode;
 };
 
 /**
  * Side panel min(620px, 100vw) over a scrim (prototype admin drawer): slides in and out in .45s.
- * It stays mounted while closed, so the last card slides out with its content.
+ * It stays mounted while closed, so the last card slides out with its content; one mounted open slides in too.
  */
-export function Drawer({ open, onClose, head, footer, footerWrap, children }: Props) {
+export function Drawer({ open, onClose, head, footer, footerWrap, covered, children }: Props) {
+  const active = open && !covered;
   return (
     <>
       <div className={b("scrim", { open })} onClick={onClose} />
-      <aside className={b(null, { open })} role="dialog" aria-modal={open} aria-label={head} aria-hidden={!open} inert={!open}>
+      <aside className={b(null, { open })} role="dialog" aria-modal={active} aria-label={head} aria-hidden={!active} inert={!active}>
         <div className={b("head")}>
           <span className={b("caption")}>{head}</span>
           <button type="button" className={b("close")} aria-label="Закрыть" onClick={onClose}>
