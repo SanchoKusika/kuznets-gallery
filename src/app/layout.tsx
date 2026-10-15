@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   },
   description:
     "Принт-картины, объединяющие традиционное и современное. В наличии и на заказ, от 90 000 сум, изготовление 3–7 дней, доставка по Узбекистану.",
-  // Icons and the web manifest are files in app/ (favicon.ico, icon.svg, icon1.png, apple-icon.png, manifest.webmanifest).
-  appleWebApp: { title: "kuznets gallery" },
+  // Icons and the web manifest are files in app/: favicon.ico, icon.svg, apple-icon.png, manifest.ts.
+  appleWebApp: { title: "Kuznetsovs Gallery" },
 };
 
 export const viewport: Viewport = {
