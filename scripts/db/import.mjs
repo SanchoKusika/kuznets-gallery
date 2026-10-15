@@ -19,6 +19,10 @@ const products = JSON.parse(readFileSync(new URL("../../design/data/products.jso
 const NOT_ARTWORKS = new Set(["Холст на подрамнике", "Холст с подрамником + багет", "Бумага в рамке под стеклом"]);
 const isArtwork = (p) => !NOT_ARTWORKS.has(p.t);
 
+// Seven works were listed twice on WordPress (same image): the copy from «Все варианты» only is hidden,
+// the one in a direction stays (owner's decision). Hidden works stay in the admin panel.
+const DUPLICATES = new Set(["KZ-147", "KZ-158", "KZ-161", "KZ-163", "KZ-164", "KZ-167", "KZ-170"]);
+
 // REVIEWS_DEF in design/Admin.dc.html (the site prototype shows the same nine).
 const REVIEWS = [
   ["Arina Zemskova", "Реальное спасибо за реально крутые и креативные картины! Работаете чётко и качественно, подобрали к нашему интерьеру именно то, что мы хотели видеть."],
@@ -37,17 +41,20 @@ const db = await adminClient();
 if (!process.argv.includes("--images")) {
   // Prototype loadCatalog(): code KZ-<position>, order = position.
   const rows = products
-    .map((p, i) => ({
-      code: p.k || `KZ-${String(i + 1).padStart(3, "0")}`,
-      title: p.t ?? "",
-      description: p.d ?? "",
-      image: p.img ?? "",
-      sizes: (p.s ?? []).map((z) => ({ w: z.w, h: z.h, price: z.p ?? null })),
-      custom_sizes: p.x ?? [],
-      categories: p.c ?? [],
-      hidden: Boolean(p.h),
-      sort_order: i,
-    }))
+    .map((p, i) => {
+      const code = p.k || `KZ-${String(i + 1).padStart(3, "0")}`;
+      return {
+        code,
+        title: p.t ?? "",
+        description: p.d ?? "",
+        image: p.img ?? "",
+        sizes: (p.s ?? []).map((z) => ({ w: z.w, h: z.h, price: z.p ?? null })),
+        custom_sizes: p.x ?? [],
+        categories: p.c ?? [],
+        hidden: Boolean(p.h) || DUPLICATES.has(code),
+        sort_order: i,
+      };
+    })
     .filter((_, i) => isArtwork(products[i]));
   must(await db.from("products").upsert(rows, { onConflict: "code", ignoreDuplicates: true }));
   console.log(`products: ${rows.length}`);

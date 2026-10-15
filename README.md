@@ -31,7 +31,7 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 | Что | Как |
 |---|---|
 | Схема, RLS, функции | `supabase/migrations/*.sql` (применяются через Supabase CLI или SQL Editor) |
-| Каталог, отзывы и картинки из прототипа | `node --env-file=.env.local scripts/db/import.mjs` — переносит фото с WordPress в Storage; три «оформления» (холст, багет, стекло) картинами не считаются и не импортируются |
+| Каталог, отзывы и картинки из прототипа | `node --env-file=.env.local scripts/db/import.mjs` — переносит фото с WordPress в Storage; три «оформления» (холст, багет, стекло) картинами не считаются и не импортируются, 7 дублей WordPress приходят скрытыми |
 | Демо-заявки для аналитики (№ ≤ 1048) | `node --env-file=.env.local scripts/db/demo.mjs`, удалить — `… demo.mjs --purge` |
 | Новый админ | в SQL Editor: `select public.create_admin('логин', 'Имя', 'e-mail', 'пароль');` |
 
