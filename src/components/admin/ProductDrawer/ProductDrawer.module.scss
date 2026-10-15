@@ -30,6 +30,16 @@
     display: block;
   }
 
+  // «Редактировать» in the corner of the preview: opens the current photo in the editor.
+  &__edit {
+    @include soft-pill(var(--paper));
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
   &__no-image {
     @include caption(12px);
   }

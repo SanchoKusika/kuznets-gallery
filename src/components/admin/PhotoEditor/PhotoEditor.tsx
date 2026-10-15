@@ -1,0 +1,205 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import ReactCrop, { centerCrop, makeAspectCrop, type PercentCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { Chip } from "@/components/admin/ui/Chip/Chip";
+import { Drawer } from "@/components/admin/ui/Drawer/Drawer";
+import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
+import { useAdmin } from "@/features/admin/store";
+import { bem } from "@/lib/bem";
+import s from "./PhotoEditor.module.scss";
+
+const b = bem(s, "photo-editor");
+
+const ASPECTS: readonly (readonly [string, number | undefined])[] = [
+  ["Свободно", undefined],
+  ["1:1", 1],
+  ["4:5", 4 / 5],
+  ["3:4", 3 / 4],
+  ["4:3", 4 / 3],
+  ["3:2", 3 / 2],
+];
+/** Edited photos are saved as JPEG at full resolution, the long side capped. */
+const MAX_SIDE = 4000;
+const QUALITY = 0.92;
+const FULL: PercentCrop = { unit: "%", x: 0, y: 0, width: 100, height: 100 };
+
+type Props = {
+  /** A picked file or the URL of the current photo. */
+  source: File | string;
+  /** Caption at the top, e.g. "KZ-001 · Фото". */
+  caption: string;
+  onCancel: () => void;
+  /** Uploads the result (a picked file goes as it is when nothing was changed). */
+  onDone: (file: File) => Promise<void>;
+};
+
+const loadImage = (src: string) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // Storage sends CORS headers, so the canvas stays readable
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+
+/** The largest centred frame of `aspect` on a w×h picture; no aspect — the whole picture. */
+const fit = (aspect: number | undefined, w: number, h: number): PercentCrop =>
+  aspect ? centerCrop(makeAspectCrop({ unit: "%", ...(w / h > aspect ? { height: 100 } : { width: 100 }) }, aspect, w, h), w, h) : FULL;
+
+const isWhole = (c: PercentCrop) => c.x < 0.5 && c.y < 0.5 && c.width > 99.5 && c.height > 99.5;
+
+const baseName = (source: File | string) =>
+  (typeof source === "string" ? source.split("/").pop()! : source.name).replace(/\.[^.]+$/, "") || "kartina";
+
+/** The framed part of the canvas as a JPEG file. */
+async function cropToFile(canvas: HTMLCanvasElement, crop: PercentCrop, name: string) {
+  const sx = (crop.x / 100) * canvas.width;
+  const sy = (crop.y / 100) * canvas.height;
+  const sw = (crop.width / 100) * canvas.width;
+  const sh = (crop.height / 100) * canvas.height;
+  const k = Math.min(1, MAX_SIDE / Math.max(sw, sh));
+  const out = document.createElement("canvas");
+  out.width = Math.max(1, Math.round(sw * k));
+  out.height = Math.max(1, Math.round(sh * k));
+  out.getContext("2d")!.drawImage(canvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
+  const blob = await new Promise<Blob | null>((resolve) => out.toBlob(resolve, "image/jpeg", QUALITY));
+  if (!blob) throw new Error("encode");
+  return new File([blob], `${name}.jpg`, { type: "image/jpeg" });
+}
+
+/**
+ * Photo editor over the product card (react-image-crop): free or fixed-ratio crop, 90° turns, reset.
+ * The picture is drawn turned on a full-size canvas, which is both the crop area and the export source.
+ * Photos come prepared, so it is a safety net: an unchanged file is uploaded as it is.
+ */
+export function PhotoEditor({ source, caption, onCancel, onDone }: Props) {
+  const { toast } = useAdmin();
+  const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [aspect, setAspect] = useState<number | undefined>(undefined);
+  const [crop, setCrop] = useState<PercentCrop>(FULL);
+  const [pending, setPending] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const url = typeof source === "string" ? source : URL.createObjectURL(source);
+    let alive = true;
+    loadImage(url).then(
+      (img) => alive && setImage(img),
+      () => alive && setFailed(true),
+    );
+    return () => {
+      alive = false;
+      if (typeof source !== "string") URL.revokeObjectURL(url);
+    };
+  }, [source]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!image || !canvas) return;
+    const side = rotation % 180 !== 0;
+    canvas.width = side ? image.naturalHeight : image.naturalWidth;
+    canvas.height = side ? image.naturalWidth : image.naturalHeight;
+    const ctx = canvas.getContext("2d")!;
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate((rotation * Math.PI) / 180);
+    ctx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+  }, [image, rotation]);
+
+  // Esc closes the editor only: caught before the store's listener that closes the product card.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.stopImmediatePropagation();
+      onCancel();
+    };
+    addEventListener("keydown", onKey, { capture: true });
+    return () => removeEventListener("keydown", onKey, { capture: true });
+  }, [onCancel]);
+
+  const pickAspect = (a: number | undefined) => {
+    const canvas = canvasRef.current;
+    setAspect(a);
+    if (canvas) setCrop(fit(a, canvas.width, canvas.height));
+  };
+
+  const turn = (deg: number) => {
+    setRotation((r) => (r + deg + 360) % 360);
+    setAspect(undefined);
+    setCrop(FULL);
+  };
+
+  const reset = () => {
+    setRotation(0);
+    setAspect(undefined);
+    setCrop(FULL);
+  };
+
+  const save = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const changed = rotation !== 0 || !isWhole(crop);
+    // Nothing changed: the current photo stays, a picked file goes up untouched.
+    if (!changed && typeof source === "string") return onCancel();
+    setPending(true);
+    try {
+      const file = changed ? await cropToFile(canvas, crop, baseName(source)) : (source as File);
+      await onDone(file);
+    } catch {
+      toast("Не удалось подготовить изображение");
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <Drawer
+      open
+      onClose={onCancel}
+      head={caption}
+      footer={
+        <>
+          <button type="button" className={b("reset")} onClick={reset}>
+            Сбросить
+          </button>
+          <div className={b("actions")}>
+            <DsButton variant="ghost" onClick={onCancel}>
+              Отмена
+            </DsButton>
+            <DsButton onClick={save} disabled={!image || pending}>
+              {pending ? "Загрузка…" : "Загрузить"}
+            </DsButton>
+          </div>
+        </>
+      }
+    >
+      <div className={b("stage")}>
+        {image ? (
+          <ReactCrop className={b("crop")} crop={crop} aspect={aspect} keepSelection ruleOfThirds onChange={(_, percent) => setCrop(percent)}>
+            <canvas ref={canvasRef} className={b("canvas")} />
+          </ReactCrop>
+        ) : (
+          <span className={b("note")}>{failed ? "Не удалось открыть изображение" : "Загрузка…"}</span>
+        )}
+      </div>
+      <div className={b("tools")}>
+        <div className={b("aspects")}>
+          {ASPECTS.map(([label, a]) => (
+            <Chip key={label} label={label} active={aspect === a} onClick={() => pickAspect(a)} />
+          ))}
+        </div>
+        <div className={b("turns")}>
+          <button type="button" className={b("turn")} aria-label="Повернуть влево" title="Повернуть влево" onClick={() => turn(-90)}>
+            ↺
+          </button>
+          <button type="button" className={b("turn")} aria-label="Повернуть вправо" title="Повернуть вправо" onClick={() => turn(90)}>
+            ↻
+          </button>
+        </div>
+      </div>
+    </Drawer>
+  );
+}
