@@ -25,9 +25,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
-    "pixelmatch": "^7.1.0",
-    "playwright-core": "^1.56.1",
-    "pngjs": "^7.0.0",
     "sass": "^1.105.1",
     "typescript": "^5"
   }
