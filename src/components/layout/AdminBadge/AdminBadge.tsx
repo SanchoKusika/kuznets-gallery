@@ -24,7 +24,6 @@ export function AdminBadge() {
   useEffect(() => {
     let alive = true;
     const load = async () => {
-      if (!signedIn()) return;
       try {
         const res = await fetch("/api/admin/badge", { cache: "no-store" });
         const data = res.ok ? await res.json() : null;
@@ -33,8 +32,13 @@ export function AdminBadge() {
         // Offline: keep the last state.
       }
     };
-    load();
-    const onVisible = () => document.visibilityState === "visible" && load();
+    if (signedIn()) load();
+    // Signed out in another tab: the marker is gone, hide the badge.
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      if (signedIn()) load();
+      else setFresh(null);
+    };
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       alive = false;
