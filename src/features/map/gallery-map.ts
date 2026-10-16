@@ -33,7 +33,7 @@ function el(className: string, html = "") {
 let loading: Promise<typeof ymaps3> | null = null;
 
 /** Loads the JS API 3.0 script once; a failed load can be retried on the next mount. */
-function loadYmaps(apiKey: string) {
+export function loadYmaps(apiKey: string) {
   // Already on the page (e.g. this module was hot-reloaded): don't add a second script.
   if (!loading && typeof ymaps3 !== "undefined") loading = ymaps3.ready.then(() => ymaps3);
   loading ??= new Promise<typeof ymaps3>((resolve, reject) => {

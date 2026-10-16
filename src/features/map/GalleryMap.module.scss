@@ -93,6 +93,55 @@
     }
   }
 
+  // `MapPlaceholder`: the scheme's background (`style.ts`, tint .035), the crosshair and the pin,
+  // centred like on the live map; fades out once the map is ready.
+  &__placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--inverse-fg) 3.5%, var(--inverse));
+    transition: opacity 0.5s var(--ease-out);
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      opacity: 0.55;
+    }
+
+    &::before {
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background: repeating-linear-gradient(to right, var(--accent) 0 3px, transparent 3px 6px);
+    }
+
+    &::after {
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: repeating-linear-gradient(to bottom, var(--accent) 0 3px, transparent 3px 6px);
+    }
+
+    &--hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+
+    .map__pin {
+      z-index: 1;
+    }
+  }
+
   // Gallery pin: accent dot with a pulsing ring and the name pill.
   &__pin {
     position: relative;
