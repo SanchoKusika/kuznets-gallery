@@ -3,6 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon/Icon";
 import { LOCATION } from "@/content/site";
+import { MapPlaceholder } from "@/features/map/MapPlaceholder";
 import { METRO } from "@/features/map/places";
 import { useGalleryMap } from "@/features/map/useGalleryMap";
 import { bem } from "@/lib/bem";
@@ -17,7 +18,7 @@ const b = bem(s, "location");
  */
 export function Location({ mapKey, children }: { mapKey: string | undefined; children: ReactNode }) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const { map, failed } = useGalleryMap(canvasRef, mapKey);
+  const { map, failed, ready } = useGalleryMap(canvasRef, mapKey);
 
   return (
     <div className={b()}>
@@ -65,6 +66,7 @@ export function Location({ mapKey, children }: { mapKey: string | undefined; chi
 
       <div className={b("frame")}>
         <div ref={canvasRef} className={b("canvas")} />
+        <MapPlaceholder hidden={ready || failed} />
         <div className={b("coords")}>
           <span className={b("coords-dot")} />
           {LOCATION.coords}

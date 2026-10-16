@@ -169,9 +169,11 @@
     }
   }
 
+  // Own stacking context: the map's layers stay under the placeholder and the controls.
   &__canvas {
     position: absolute;
     inset: 0;
+    z-index: 0;
   }
 
   &__coords {

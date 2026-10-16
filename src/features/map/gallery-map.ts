@@ -3,6 +3,7 @@ import { prefersMotion } from "@/features/motion/prefers-motion";
 import { getLenis } from "@/features/scroll/smooth-scroll";
 import type { Theme } from "@/features/theme/theme";
 import { bem } from "@/lib/bem";
+import { PIN_CLASS, PIN_HTML } from "./pin";
 import { GALLERY_LL, GALLERY_ZOOM, METRO, type Station } from "./places";
 import { ACCENT, mapCustomization } from "./style";
 import s from "./GalleryMap.module.scss";
@@ -33,7 +34,7 @@ function el(className: string, html = "") {
 let loading: Promise<typeof ymaps3> | null = null;
 
 /** Loads the JS API 3.0 script once; a failed load can be retried on the next mount. */
-function loadYmaps(apiKey: string) {
+export function loadYmaps(apiKey: string) {
   // Already on the page (e.g. this module was hot-reloaded): don't add a second script.
   if (!loading && typeof ymaps3 !== "undefined") loading = ymaps3.ready.then(() => ymaps3);
   loading ??= new Promise<typeof ymaps3>((resolve, reject) => {
@@ -118,14 +119,7 @@ export async function createGalleryMap(container: HTMLElement, theme: Theme, api
       return pill;
     });
 
-    marker(
-      GALLERY_LL,
-      el(
-        b("pin"),
-        `<div class="${b("pin-pulse")}"></div><div class="${b("pin-dot")}"></div><div class="${b("pin-label")}">Kuznetsovs Gallery</div>`,
-      ),
-      3,
-    );
+    marker(GALLERY_LL, el(PIN_CLASS, PIN_HTML), 3);
 
     // Hint over the map for a plain wheel / one-finger drag.
     const hint = el(b("hint"));
