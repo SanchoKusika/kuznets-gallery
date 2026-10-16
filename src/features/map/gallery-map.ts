@@ -3,7 +3,7 @@ import { prefersMotion } from "@/features/motion/prefers-motion";
 import { getLenis } from "@/features/scroll/smooth-scroll";
 import type { Theme } from "@/features/theme/theme";
 import { bem } from "@/lib/bem";
-import { GALLERY_BUILDING, GALLERY_LL, GALLERY_ZOOM, METRO, type Station } from "./places";
+import { GALLERY_LL, GALLERY_ZOOM, METRO, type Station } from "./places";
 import { ACCENT, mapCustomization } from "./style";
 import s from "./GalleryMap.module.scss";
 
@@ -54,8 +54,8 @@ const isMac = () => /Mac|iPhone|iPad/.test(navigator.platform);
 const isTouch = () => matchMedia("(hover: none), (pointer: coarse)").matches;
 
 /**
- * The footer map: Yandex JS API 3.0 recoloured in the footer palette, with the gallery pin and
- * building and the metro pills. A plain wheel scrolls the page (Ctrl / ⌘ + wheel zooms) and one
+ * The footer map: Yandex JS API 3.0 recoloured in the footer palette, with the gallery pin, an
+ * accent crosshair and the metro pills. A plain wheel scrolls the page (Ctrl / ⌘ + wheel zooms) and one
  * finger scrolls on touch screens, with a hint over the map.
  */
 export async function createGalleryMap(container: HTMLElement, theme: Theme, apiKey: string): Promise<GalleryMap> {
@@ -83,18 +83,12 @@ export async function createGalleryMap(container: HTMLElement, theme: Theme, api
   try {
     const duration = (ms: number) => (prefersMotion() ? ms : 0);
 
-    // Dashed accent crosshair through the gallery and its building in accent.
+    // Dashed accent crosshair through the gallery.
     const dash = { color: ACCENT, width: 1, opacity: 0.55, dash: [3, 3] };
     const line = (coordinates: YLngLat[]) =>
       new y.YMapFeature({ geometry: { type: "LineString", coordinates }, style: { stroke: [dash], interactive: false } });
     map.addChild(line([[GALLERY_LL[0], 41.2], [GALLERY_LL[0], 41.48]]));
     map.addChild(line([[69.1, GALLERY_LL[1]], [69.55, GALLERY_LL[1]]]));
-    map.addChild(
-      new y.YMapFeature({
-        geometry: { type: "Polygon", coordinates: [GALLERY_BUILDING] },
-        style: { fill: ACCENT, fillOpacity: 0.9, stroke: [{ width: 0 }], interactive: false },
-      }),
-    );
 
     const marker = (ll: YLngLat, element: HTMLElement, zIndex = 0) =>
       map.addChild(new y.YMapMarker({ coordinates: ll, zIndex }, element));
