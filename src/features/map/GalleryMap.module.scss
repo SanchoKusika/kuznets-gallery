@@ -1,51 +1,29 @@
 @use "mixins" as *;
 
-// Markers of the footer map (prototype `initMap`), plus the few MapLibre rules the map needs —
-// its full stylesheet (70 KB, mostly control icons) would land on every page with the footer.
+// Markers of the footer map (prototype `initMap`) on Yandex JS API 3.0. A marker element sits
+// with its top-left corner on the point, so each one shifts itself to its anchor.
 
 .map {
   font-family: var(--font-sans);
   overflow: hidden;
+  cursor: grab;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 
-  :global(.maplibregl-canvas) {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  :global(.maplibregl-canvas-container.maplibregl-interactive) {
-    cursor: grab;
-    user-select: none;
-  }
-
-  :global(.maplibregl-canvas-container.maplibregl-interactive:active) {
+  &:active {
     cursor: grabbing;
   }
 
-  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan),
-  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas) {
-    touch-action: pinch-zoom;
+  // One finger scrolls the page on touch screens (the map takes two, see `onActionStart`).
+  @media (hover: none), (pointer: coarse) {
+    &,
+    * {
+      touch-action: pan-x pan-y;
+    }
   }
 
-  :global(.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan),
-  :global(.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas) {
-    touch-action: none;
-  }
-
-  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures),
-  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas) {
-    touch-action: pan-x pan-y;
-  }
-
-  :global(.maplibregl-marker) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    will-change: transform;
-  }
-
-  :global(.maplibregl-cooperative-gesture-screen) {
+  // Shown for a plain wheel or a one-finger drag.
+  &__hint {
     position: absolute;
     inset: 0;
     z-index: 3;
@@ -57,32 +35,21 @@
     color: #fff;
     font-size: 1.4em;
     line-height: 1.2;
+    text-align: center;
     opacity: 0;
     pointer-events: none;
     transition: opacity 1s ease 1s;
-  }
 
-  :global(.maplibregl-cooperative-gesture-screen.maplibregl-show) {
-    opacity: 1;
-    transition: opacity 0.05s;
-  }
-
-  :global(.maplibregl-mobile-message) {
-    display: none;
-  }
-
-  @media (hover: none), (pointer: coarse) {
-    :global(.maplibregl-desktop-message) {
-      display: none;
-    }
-
-    :global(.maplibregl-mobile-message) {
-      display: block;
+    &--on {
+      opacity: 1;
+      transition: opacity 0.05s;
     }
   }
 
   // Metro station: pill with the «М» badge; accent while hovered here or in the list.
   &__metro {
+    transform: translate(-13px, -50%);
+    width: max-content;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -124,46 +91,6 @@
       background: var(--accent);
       color: var(--on-accent);
     }
-  }
-
-  // Neighbour label; hidden until the map is zoomed in (`.map--near`).
-  &__near {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    pointer-events: none;
-    white-space: nowrap;
-    font: 500 11px/1 var(--font-sans);
-    color: var(--inverse-fg);
-    text-shadow:
-      0 0 3px var(--inverse),
-      0 0 3px var(--inverse);
-    opacity: 0;
-    transition: opacity 0.3s;
-
-    .map--near & {
-      opacity: 1;
-    }
-
-    &--canal {
-      @include serif;
-      font-weight: 400;
-      font-size: 13px;
-      line-height: 1;
-      letter-spacing: 0.02em;
-    }
-  }
-
-  &__near-dot {
-    width: 5px;
-    height: 5px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--inverse-fg);
-  }
-
-  &__canal-text {
-    transform: rotate(80deg);
   }
 
   // Gallery pin: accent dot with a pulsing ring and the name pill.

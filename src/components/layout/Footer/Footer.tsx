@@ -33,25 +33,27 @@ export function Footer() {
           </div>
         </div>
 
-        <Location />
+        <Location mapKey={process.env.YANDEX_MAPS_KEY}>
+          <div className={b("links")}>
+            <div className={b("col")}>
+              <span className={b("label")}>Галерея</span>
+              {NAV.map((n) => (
+                <Link key={n.href} href={n.href} className={b("nav-link")}>
+                  {n.n}
+                </Link>
+              ))}
+            </div>
 
-        <div className={b("col")}>
-          <span className={b("label")}>Галерея</span>
-          {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className={b("nav-link")}>
-              {n.n}
-            </Link>
-          ))}
-        </div>
-
-        <div className={b("col")}>
-          <span className={b("label")}>Соцсети</span>
-          <a href={CONTACTS.instagram.href} className={b("instagram")}>
-            <InstagramGlyph className={b("instagram-icon")} />
-            {CONTACTS.instagram.handle}
-          </a>
-          <span className={b("note")}>Доставка по всему Узбекистану, оплачивается отдельно</span>
-        </div>
+            <div className={b("col")}>
+              <span className={b("label")}>Соцсети</span>
+              <a href={CONTACTS.instagram.href} className={b("instagram")}>
+                <InstagramGlyph className={b("instagram-icon")} />
+                {CONTACTS.instagram.handle}
+              </a>
+              <span className={b("note")}>Доставка по всему Узбекистану, оплачивается отдельно</span>
+            </div>
+          </div>
+        </Location>
       </div>
 
       <div className={b("wordmark")}>

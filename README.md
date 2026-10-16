@@ -12,7 +12,7 @@
 - Данные: Supabase — Postgres (каталог, заявки, отзывы, админы), Auth (админка), Storage (картинки работ, бакет `artworks`).
   Схема — `supabase/migrations/`, сайт читает каталог через `'use cache'` с тегами `catalog` / `reviews`
 - Редактор фото в админке: рамка обрезки — `react-image-crop`, поворот и экспорт — canvas
-- Карта в подвале — `maplibre-gl` на тайлах OpenFreeMap (без ключей), стиль в палитре подвала; грузится, только когда подвал близко
+- Карта в подвале — Яндекс Карты, JS API 3.0 (скрипт с ключом, типы — `@yandex/ymaps3-types`), перекрашенная в палитру подвала; грузится, только когда подвал близко
 - Хостинг: демо — Vercel, https://kuznets-gallery.vercel.app (см. «Деплой»); прод kuznets.uz — в планах на Cloudflare Workers
 
 ## Запуск
@@ -26,8 +26,8 @@ npx serve design -l 4000   # прототип для сверки: http://localh
 Проверки: `npx tsc --noEmit`, `npm run lint`, `npm run build` (сборка читает каталог из Supabase).
 
 Переменные окружения — в `.env.local` (образец — `.env.example`): `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
-`NEXT_PUBLIC_IMAGE_BASE`, необязательная `NEXT_PUBLIC_SITE_URL`, для скриптов — `ADMIN_LOGIN` / `ADMIN_PASSWORD`. На Vercel — в настройках
-проекта.
+`NEXT_PUBLIC_IMAGE_BASE`, необязательная `NEXT_PUBLIC_SITE_URL`, ключ карты `YANDEX_MAPS_KEY`, для скриптов —
+`ADMIN_LOGIN` / `ADMIN_PASSWORD`. На Vercel — в настройках проекта.
 
 ### База данных
 
@@ -73,6 +73,9 @@ npx serve design -l 4000   # прототип для сверки: http://localh
   продакшен-сборка для `https://kuznets.uz`: на `*.vercel.app`, в превью PR и в локальной сборке без переменной
   `robots.txt` запрещает всё, а страницы отдают `noindex, nofollow`. Когда kuznets.uz
   станет продакшен-доменом проекта, следующий деплой откроет сайт для поисковиков.
+- Ключ Яндекс Карт `YANDEX_MAPS_KEY` (кабинет developer.tech.yandex.ru, «JavaScript API и HTTP Геокодер»)
+  читает сервер (в Vercel — sensitive) и передаёт карте; браузер всё равно шлёт его Яндексу, поэтому ключ ограничен по HTTP Referer: `localhost`, `kuznets-gallery.vercel.app`. Маску на `*.vercel.app` Яндекс не принимает, поэтому
+  в превью PR вместо карты — «Карта не загрузилась». Для kuznets.uz домен добавляется в ключ (или заводится ключ галереи).
 - Кеш `'use cache'` и сброс по тегам `catalog` / `reviews` Vercel поддерживает сам: правки из админки попадают на сайт
   без нового деплоя.
 - Vercel Cron (`vercel.json`) раз в день дёргает `GET /api/cron/keepalive` — один запрос к каталогу: бесплатный Supabase
