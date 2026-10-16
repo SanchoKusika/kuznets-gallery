@@ -34,7 +34,7 @@ export function useGalleryMap(ref: RefObject<HTMLElement | null>, apiKey: string
     let started = false;
     let calmTimer = 0;
     const init = () => {
-      if (started) return;
+      if (started || cancelled) return;
       started = true;
       stop();
       createGalleryMap(el, themeRef.current, apiKey)
