@@ -1,0 +1,226 @@
+@use "mixins" as *;
+
+// Markers of the footer map (prototype `initMap`), plus the few MapLibre rules the map needs —
+// its full stylesheet (70 KB, mostly control icons) would land on every page with the footer.
+
+.map {
+  font-family: var(--font-sans);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+
+  :global(.maplibregl-canvas) {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  :global(.maplibregl-canvas-container.maplibregl-interactive) {
+    cursor: grab;
+    user-select: none;
+  }
+
+  :global(.maplibregl-canvas-container.maplibregl-interactive:active) {
+    cursor: grabbing;
+  }
+
+  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan),
+  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas) {
+    touch-action: pinch-zoom;
+  }
+
+  :global(.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan),
+  :global(.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas) {
+    touch-action: none;
+  }
+
+  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures),
+  :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas) {
+    touch-action: pan-x pan-y;
+  }
+
+  :global(.maplibregl-marker) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+  }
+
+  :global(.maplibregl-cooperative-gesture-screen) {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    font-size: 1.4em;
+    line-height: 1.2;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease 1s;
+  }
+
+  :global(.maplibregl-cooperative-gesture-screen.maplibregl-show) {
+    opacity: 1;
+    transition: opacity 0.05s;
+  }
+
+  :global(.maplibregl-mobile-message) {
+    display: none;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    :global(.maplibregl-desktop-message) {
+      display: none;
+    }
+
+    :global(.maplibregl-mobile-message) {
+      display: block;
+    }
+  }
+
+  // Metro station: pill with the «М» badge; accent while hovered here or in the list.
+  &__metro {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 3px;
+    border-radius: 99px;
+    background: var(--inverse);
+    border: 1px solid var(--line-inverse);
+    color: var(--inverse-fg);
+    font: 500 11px/1 var(--font-sans);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color 0.25s;
+
+    &--on {
+      border-color: var(--accent);
+    }
+  }
+
+  &__metro-badge {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--inverse-fg);
+    color: var(--inverse);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0;
+    transition:
+      background 0.25s,
+      color 0.25s;
+
+    .map__metro--on & {
+      background: var(--accent);
+      color: var(--on-accent);
+    }
+  }
+
+  // Neighbour label; hidden until the map is zoomed in (`.map--near`).
+  &__near {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: none;
+    white-space: nowrap;
+    font: 500 11px/1 var(--font-sans);
+    color: var(--inverse-fg);
+    text-shadow:
+      0 0 3px var(--inverse),
+      0 0 3px var(--inverse);
+    opacity: 0;
+    transition: opacity 0.3s;
+
+    .map--near & {
+      opacity: 1;
+    }
+
+    &--canal {
+      @include serif;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+  }
+
+  &__near-dot {
+    width: 5px;
+    height: 5px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--inverse-fg);
+  }
+
+  &__canal-text {
+    transform: rotate(80deg);
+  }
+
+  // Gallery pin: accent dot with a pulsing ring and the name pill.
+  &__pin {
+    position: relative;
+    width: 0;
+    height: 0;
+  }
+
+  &__pin-pulse,
+  &__pin-dot {
+    position: absolute;
+    left: -7px;
+    top: -7px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+  }
+
+  &__pin-pulse {
+    border: 1px solid var(--accent);
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: map-pulse 2.4s var(--ease-out) infinite;
+    }
+  }
+
+  &__pin-dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--inverse);
+  }
+
+  &__pin-label {
+    position: absolute;
+    left: 18px;
+    top: -16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    padding: 8px 14px;
+    border-radius: 99px;
+    background: var(--inverse-fg);
+    color: var(--inverse);
+    font: 600 13px/1 var(--font-sans);
+    letter-spacing: -0.01em;
+  }
+}
+
+@keyframes map-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  to {
+    transform: scale(4.5);
+    opacity: 0;
+  }
+}

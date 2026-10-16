@@ -17,6 +17,23 @@ export const CONTACTS = {
 
 export const PRIMARY_PHONE = CONTACTS.phones[0];
 
+/** Footer «Как нас найти» block; the map itself is in `features/map`. */
+export const LOCATION = {
+  title: "махалля Сайрам",
+  lines: [
+    "Мирзо-Улугбекский район, Ташкент",
+    "У улицы Зиёлилар, рядом с каналом Салар",
+    "Остановка «Westminster International School» — 280 м",
+    "Соседи — Ingredi.uz, Mysofa.Uz, Bukva.uz",
+  ],
+  coords: "41.3353° N · 69.3196° E",
+  navigators: [
+    { n: "Яндекс Карты", href: "https://yandex.uz/maps/org/kuznetsovs_gallery/182570160096/" },
+    { n: "2ГИС", href: "https://2gis.uz/tashkent/geo/69.319611%2C41.335306" },
+    { n: "Google Maps", href: "https://www.google.com/maps/search/?api=1&query=41.335306%2C69.319611" },
+  ],
+} as const;
+
 export const CATS: readonly {
   k: CategoryKey;
   n: string;
