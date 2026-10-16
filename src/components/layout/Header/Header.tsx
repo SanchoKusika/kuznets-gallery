@@ -44,8 +44,8 @@ export function Header({ total }: { total: number }) {
     setMenu({ mounted: true, on: false, closing: true });
   }, []);
 
-  // «Контакты» from the menu scrolls once the menu is gone: while it is open the page is locked
-  // (and laid out a little differently), so a target taken then is off.
+  // «Контакты» from the menu scrolls once the menu is gone: while it is open the page is scroll-
+  // locked (`html[data-scroll-lock]`), and a target taken then came out 24px off.
   const contactsAfterClose = useRef(false);
 
   const onMenuClosed = useCallback(() => {
@@ -79,8 +79,17 @@ export function Header({ total }: { total: number }) {
 
   const goContacts = (e: MouseEvent) => {
     e.preventDefault();
-    if (!menuRef.current.mounted) return scrollToContacts();
+    if (!menuRef.current.mounted) {
+      scrollToContacts();
+      return;
+    }
     contactsAfterClose.current = true;
+    closeMenu();
+  };
+
+  // A page link clicked while the menu is still closing wins over a pending «Контакты».
+  const navigateFromMenu = () => {
+    contactsAfterClose.current = false;
     closeMenu();
   };
 
@@ -159,7 +168,7 @@ export function Header({ total }: { total: number }) {
           section={section}
           closing={menu.closing}
           onClosed={onMenuClosed}
-          onNavigate={closeMenu}
+          onNavigate={navigateFromMenu}
           onContacts={goContacts}
         />
       )}

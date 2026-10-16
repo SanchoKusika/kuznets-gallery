@@ -10,7 +10,10 @@ export const setLenis = (instance: Lenis | null) => {
   lenis = instance;
 };
 
-/** Scroll position at which the footer starts right under the sticky header. */
+/**
+ * Scroll position at which the footer starts right under the sticky header. The header is in
+ * flow, so this doesn't change when it shrinks on leaving the top.
+ */
 function contactsTop() {
   const footer = document.getElementById("contacts");
   if (!footer) return document.body.scrollHeight;
@@ -19,19 +22,15 @@ function contactsTop() {
 }
 
 /**
- * "Контакты": smooth-scroll to the start of the footer, under the header (prototype: 60ms after
- * the menu has closed — the header calls this only once the menu is gone). Without Lenis
- * (reduced motion) the browser's smooth scroll does it. The header shrinks once the page leaves
- * the top, so the target is taken again mid-way — the second call just retargets the scroll.
+ * "Контакты": smooth-scroll to the start of the footer, under the header. The prototype scrolls
+ * to the page bottom 60ms after it starts closing the menu; here the header calls this once the
+ * menu is gone, and the 60ms stay. Without Lenis (reduced motion) or with Lenis stopped by a scroll
+ * lock, the browser's smooth scroll does it.
  */
 export function scrollToContacts() {
-  const go = () => {
+  setTimeout(() => {
     const top = contactsTop();
     if (lenis && !lenis.isStopped) lenis.scrollTo(top);
     else window.scrollTo({ top, behavior: "smooth" });
-  };
-  setTimeout(() => {
-    go();
-    setTimeout(go, 450);
   }, 60);
 }
