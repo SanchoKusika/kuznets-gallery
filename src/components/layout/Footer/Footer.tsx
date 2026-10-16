@@ -3,6 +3,7 @@ import { CATS, CONTACTS } from "@/content/site";
 import { bem } from "@/lib/bem";
 import { routes } from "@/lib/routes";
 import { InstagramGlyph } from "./InstagramGlyph";
+import { Location } from "./Location/Location";
 import s from "./Footer.module.scss";
 
 const b = bem(s, "footer");
@@ -31,6 +32,8 @@ export function Footer() {
             ))}
           </div>
         </div>
+
+        <Location />
 
         <div className={b("col")}>
           <span className={b("label")}>Галерея</span>

@@ -405,11 +405,49 @@
 </section>
 </sc-if>
 
-<footer data-screen-label="Контакты" style="margin-top:clamp(48px,6vw,96px); background:var(--kz-inv,#151515); color:var(--kz-invfg,#F2EFE9); padding:clamp(40px,5vw,72px) clamp(16px,3vw,40px) 24px; display:flex; flex-direction:column; gap:clamp(40px,5vw,72px)">
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:32px">
+<footer data-screen-label="Контакты" style="margin-top:clamp(48px,6vw,96px); background:var(--kz-inv,#151515); color:var(--kz-invfg,#F2EFE9); padding:clamp(32px,4vw,56px) clamp(16px,3vw,40px) 20px; display:flex; flex-direction:column; gap:clamp(28px,3.5vw,48px)">
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:24px 32px">
     <div style="grid-column:1 / -1; display:flex; flex-direction:column; gap:16px; min-width:0">
       <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500">Остались вопросы? Звоните</span>
       <div style="display:flex; flex-wrap:wrap; gap:20px clamp(32px,5vw,80px); align-items:flex-start"><div style="display:flex; flex-direction:column; gap:6px"><a href="tel:+998903165913" style="color:var(--kz-invfg,#F2EFE9); text-decoration:none; font-size:clamp(26px,2.6vw,40px); font-weight:500; letter-spacing:-.03em; line-height:1.1; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">+998 90 316 59 13</a><span style="font-size:14px; color:var(--kz-ink4,#A8A399)">Алексей</span></div><div style="display:flex; flex-direction:column; gap:6px"><a href="tel:+998935043719" style="color:var(--kz-invfg,#F2EFE9); text-decoration:none; font-size:clamp(26px,2.6vw,40px); font-weight:500; letter-spacing:-.03em; line-height:1.1; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">+998 93 504 37 19</a><span style="font-size:14px; color:var(--kz-ink4,#A8A399)">Ольга</span></div></div>
+    </div>
+    <div data-screen-label="Карта" style="grid-column:1 / -1; display:grid; grid-template-columns:{{ mapCols }}; gap:clamp(20px,2.5vw,32px); padding-top:clamp(20px,2.5vw,32px); border-top:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); min-width:0">
+      <div style="display:flex; flex-direction:column; gap:20px; min-width:0">
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500; font-size:12px">Как нас найти</span>
+          <span style="font-size:clamp(24px,2.2vw,34px); font-weight:500; letter-spacing:-.03em; line-height:1.1; text-wrap:balance">махалля Сайрам</span>
+          <div style="display:flex; flex-direction:column; gap:2px; font-size:14px; line-height:1.5; color:var(--kz-ink4,#A8A399); text-wrap:balance"><span>Мирзо-Улугбекский район, Ташкент</span><span>У улицы Зиёлилар, рядом с каналом Салар</span><span>Остановка «Westminster International School» — 280 м</span><span>Соседи — Ingredi.uz, Mysofa.Uz, Bukva.uz</span></div>
+        </div>
+        <div style="display:flex; flex-direction:column">
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500; font-size:11px; padding-bottom:8px">Метро · по прямой</span>
+          <sc-for list="{{ mapMetro }}" as="mm" hint-placeholder-count="4">
+            <div onClick="{{ mm.show }}" onPointerEnter="{{ mm.enter }}" onPointerLeave="{{ mm.leave }}" style="display:grid; grid-template-columns:22px minmax(0,1fr) auto; gap:12px; align-items:center; padding:9px 0; border-top:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); cursor:pointer; transition:color .25s, padding .3s cubic-bezier(.2,.7,.2,1)" style-hover="color:var(--kz-accent,#E0502E); padding-left:6px">
+              <span style="width:22px; height:22px; border-radius:50%; border:1px solid currentColor; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700">М</span>
+              <span style="font-size:15px">{{ mm.n }}</span>
+              <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:13px; color:var(--kz-ink4,#A8A399)">{{ mm.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:auto">
+          <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500">Открыть в навигаторе</span>
+          <div style="display:flex; flex-wrap:wrap; gap:8px">
+            <a href="https://yandex.uz/maps/org/kuznetsovs_gallery/182570160096/" target="_blank" rel="noopener" style="display:flex; gap:8px; align-items:center; padding:11px 16px; border-radius:99px; border:1px solid var(--kz-invfg,#F2EFE9); background:var(--kz-invfg,#F2EFE9); color:var(--kz-inv,#151515); text-decoration:none; font-size:14px; font-weight:500; transition:background .25s, color .25s, border-color .25s" style-hover="background:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)">Яндекс Карты<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M7 17L17 7M8 7h9v9"></path></svg></a>
+            <a href="https://2gis.uz/tashkent/geo/69.319611%2C41.335306" target="_blank" rel="noopener" style="display:flex; gap:8px; align-items:center; padding:11px 16px; border-radius:99px; border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); color:var(--kz-invfg,#F2EFE9); text-decoration:none; font-size:14px; font-weight:500; transition:background .25s, color .25s, border-color .25s" style-hover="background:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)">2ГИС<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M7 17L17 7M8 7h9v9"></path></svg></a>
+            <a href="https://www.google.com/maps/search/?api=1&amp;query=41.335306%2C69.319611" target="_blank" rel="noopener" style="display:flex; gap:8px; align-items:center; padding:11px 16px; border-radius:99px; border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); color:var(--kz-invfg,#F2EFE9); text-decoration:none; font-size:14px; font-weight:500; transition:background .25s, color .25s, border-color .25s" style-hover="background:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)">Google Maps<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M7 17L17 7M8 7h9v9"></path></svg></a>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative; aspect-ratio:{{ mapAR }}; min-height:{{ mapMinH }}; background:var(--kz-inv,#151515); border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); overflow:hidden; min-width:0; isolation:isolate">
+        <div ref="{{ mapRef }}" style="position:absolute; inset:0; font-family:Onest, sans-serif"></div>
+        <sc-if value="{{ mapCoordOn }}" hint-placeholder-val="{{ true }}"><div style="position:absolute; left:12px; bottom:10px; z-index:2; pointer-events:none; display:flex; align-items:center; gap:8px; padding:5px 10px; border-radius:99px; background:var(--kz-inv,#151515); font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:11px; text-transform:uppercase; letter-spacing:.1em; font-weight:500; color:var(--kz-invfg,#F2EFE9)"><span style="width:6px; height:6px; border-radius:50%; background:var(--kz-accent,#E0502E); flex:none"></span>41.3353° N · 69.3196° E</div></sc-if>
+        <div style="position:absolute; right:12px; top:12px; z-index:2; display:flex; flex-direction:column; gap:6px">
+          <button onClick="{{ mapZoomIn }}" aria-label="Приблизить" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); background:var(--kz-inv,#151515); color:var(--kz-invfg,#F2EFE9); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; transition:background .25s, color .25s, border-color .25s" style-hover="background:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M12 5v14M5 12h14"></path></svg></button>
+          <button onClick="{{ mapZoomOut }}" aria-label="Отдалить" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); background:var(--kz-inv,#151515); color:var(--kz-invfg,#F2EFE9); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; transition:background .25s, color .25s, border-color .25s" style-hover="background:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><path d="M5 12h14"></path></svg></button>
+          <button onClick="{{ mapRecenter }}" aria-label="К галерее" title="К галерее" style="width:40px; height:40px; border-radius:50%; border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); background:var(--kz-inv,#151515); color:var(--kz-invfg,#F2EFE9); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; transition:background .25s, color .25s, border-color .25s" style-hover="background:var(--kz-accent,#E0502E); border-color:var(--kz-accent,#E0502E); color:var(--kz-on-accent,#151515)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block; flex:none"><circle cx="12" cy="12" r="7"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg></button>
+        </div>
+        <sc-if value="{{ mapFail }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; text-align:center; font-size:14px; color:var(--kz-ink4,#A8A399)">Карта не загрузилась — откройте адрес в навигаторе</div></sc-if>
+        <div style="position:absolute; right:12px; bottom:10px; z-index:2; display:flex; gap:6px; background:var(--kz-inv,#151515); padding:4px 8px; border-radius:99px; font-family:Onest, sans-serif; font-size:10px; letter-spacing:.06em; color:var(--kz-ink4,#A8A399)"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" style="color:var(--kz-ink4,#A8A399); text-decoration:none; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">© OpenStreetMap</a><span>·</span><a href="https://openfreemap.org" target="_blank" rel="noopener" style="color:var(--kz-ink4,#A8A399); text-decoration:none; transition:color .25s" style-hover="color:var(--kz-accent,#E0502E)">OpenFreeMap</a></div>
+      </div>
     </div>
     <div style="display:flex; flex-direction:column; gap:10px; font-size:15px">
       <span style="font-family:Onest, sans-serif; font-variant-numeric:tabular-nums; font-size:12px; text-transform:uppercase; color:var(--kz-ink4,#A8A399); letter-spacing:.1em; font-weight:500">Галерея</span>
@@ -519,6 +557,12 @@ const STEPS = [
 ];
 const fmtP = n => n == null ? 'по запросу' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' сум';
 // Site settings (fixed former tweaks) — change values here.
+const MAP_LL = [69.319611, 41.335306], MAP_Z = 15.9;
+const NEAR = [{ n: 'Har', ll: [69.319482, 41.335862], a: 'right' }, { n: 'Ingredi.uz', ll: [69.319367, 41.335592], a: 'right' }, { n: 'Mysofa.Uz', ll: [69.320659, 41.335074], a: 'left' }, { n: 'Bukva.uz', ll: [69.320451, 41.334804], a: 'left' }, { n: 'Grand aluminium service', ll: [69.320113, 41.334669], a: 'right' }, { n: 'Gosselin Moving', ll: [69.321011, 41.335792], a: 'left' }, { n: 'Bektemir metan', ll: [69.317752, 41.335182], a: 'left' }, { n: 'Space Plast', ll: [69.320149, 41.334038], a: 'left' }, { n: 'Croissant by D Eco', ll: [69.3247, 41.3349], a: 'left' }];
+const CANAL = [69.317242, 41.335306];
+const geoKm = (a, b) => { const R = 6371, r = Math.PI / 180, dl = (b[1] - a[1]) * r, dn = (b[0] - a[0]) * r; const x = Math.sin(dl / 2) ** 2 + Math.cos(a[1] * r) * Math.cos(b[1] * r) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); };
+const METRO = [{ n: 'Пушкин', ll: [69.311244, 41.321708] }, { n: 'Машинасозлар', ll: [69.303947, 41.299439] }, { n: 'Буюк Ипак Йули', ll: [69.327769, 41.326344] }, { n: 'Технопарк', ll: [69.322889, 41.294528] }]
+  .map(s => ({ ...s, km: geoKm(MAP_LL, s.ll) })).filter(s => s.km < 2.5).sort((a, b) => a.km - b.km).map(s => ({ ...s, d: s.km.toFixed(1).replace('.', ',') + ' км' }));
 const CONFIG = {
   theme: 'light',
   accent: '#E0502E',
@@ -720,7 +764,128 @@ class Component extends DCLogic {
     const ac = CONFIG.accent; ac && ac !== '#E0502E' ? r.setProperty('--kz-accent', ac) : r.removeProperty('--kz-accent');
     r.setProperty('--kz-on-accent', onAccent(ac || '#E0502E'));
   }
+  mapRef = el => {
+    if (this._mapIO) { this._mapIO.disconnect(); this._mapIO = null; }
+    if (!el) { if (this._map) { this._map.remove(); this._map = null; } this._mapEl = null; return; }
+    if (el === this._mapEl && this._map) return;
+    this._mapEl = el;
+    if (!window.IntersectionObserver) { this.initMap(el); return; }
+    const go = () => { if (this._mapIO) { this._mapIO.disconnect(); this._mapIO = null; } clearInterval(this._mapPoll); this.initMap(el); };
+    this._mapIO = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) go(); }, { rootMargin: '600px' });
+    this._mapIO.observe(el);
+    clearInterval(this._mapPoll);
+    this._mapPoll = setInterval(() => { if (!el.isConnected) { clearInterval(this._mapPoll); return; } const r = el.getBoundingClientRect(); if (r.top < innerHeight + 600 && r.bottom > -600) go(); }, 700);
+  };
+  loadMapLib() {
+    if (window.maplibregl) return Promise.resolve(window.maplibregl);
+    if (this._mlP) return this._mlP;
+    const V = 'https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl';
+    if (!document.querySelector('link[data-ml]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = V + '.css'; l.setAttribute('data-ml', ''); document.head.appendChild(l); }
+    return this._mlP = new Promise((res, rej) => { const s = document.createElement('script'); s.src = V + '.js'; s.onload = () => window.maplibregl ? res(window.maplibregl) : rej(); s.onerror = rej; document.head.appendChild(s); });
+  }
+  mapStyle() {
+    const dark = this.curTheme() === 'dark', base = dark ? '#0B0B0A' : '#151515', fg = dark ? '#EFEAE2' : '#F2EFE9';
+    const hx = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+    const A = hx(base), B = hx(fg), m = t => 'rgb(' + A.map((v, i) => Math.max(0, Math.round(v + (B[i] - v) * t))).join(',') + ')';
+    const ac = CONFIG.accent || '#E0502E', bg = m(.035), cls = ['get', 'class'], fnt = ['Noto Sans Regular'];
+    const nm = ['coalesce', ['get', 'name:ru'], ['get', 'name:latin'], ['get', 'name']];
+    const lyr = l => ({ source: 'omt', 'source-layer': l }), FC = f => ({ type: 'FeatureCollection', features: f });
+    const roads = ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor', 'service'], big = ['motorway', 'trunk', 'primary'];
+    const w = (z0, z1) => ['interpolate', ['exponential', 1.6], ['zoom'], 11, ['match', cls, ['motorway', 'trunk'], z0[0], 'primary', z0[1], ['secondary', 'tertiary'], z0[2], z0[3]], 18, ['match', cls, ['motorway', 'trunk'], z1[0], 'primary', z1[1], ['secondary', 'tertiary'], z1[2], z1[3]]];
+    const poiF = ['all', ['<=', ['get', 'rank'], 30], ['!=', cls, 'railway'], ['has', 'name']];
+    return {
+      version: 8, glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+      sources: { omt: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' }, gx: { type: 'geojson', data: FC([[[MAP_LL[0], 41.2], [MAP_LL[0], 41.48]], [[69.1, MAP_LL[1]], [69.55, MAP_LL[1]]]].map(c => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: c } }))) }, hl: { type: 'geojson', data: this._hl || FC([]) } },
+      layers: [
+        { id: 'bg', type: 'background', paint: { 'background-color': bg } },
+        { id: 'green', type: 'fill', ...lyr('landcover'), filter: ['match', cls, ['grass', 'wood', 'farmland'], true, false], paint: { 'fill-color': m(.06) } },
+        { id: 'park', type: 'fill', ...lyr('park'), paint: { 'fill-color': m(.065) } },
+        { id: 'water', type: 'fill', ...lyr('water'), paint: { 'fill-color': m(-.25), 'fill-outline-color': m(.2) } },
+        { id: 'waterway-c', type: 'line', ...lyr('waterway'), paint: { 'line-color': m(.2), 'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.5, 18, 9] } },
+        { id: 'waterway', type: 'line', ...lyr('waterway'), paint: { 'line-color': m(-.25), 'line-width': ['interpolate', ['linear'], ['zoom'], 12, .6, 18, 7] } },
+        { id: 'bld', type: 'fill', ...lyr('building'), minzoom: 13, paint: { 'fill-color': m(.09), 'fill-outline-color': m(.17) } },
+        { id: 'hl', type: 'fill', source: 'hl', paint: { 'fill-color': ac, 'fill-opacity': .9 } },
+        { id: 'path', type: 'line', ...lyr('transportation'), minzoom: 15, filter: ['match', cls, ['path', 'track'], true, false], paint: { 'line-color': m(.16), 'line-width': 1, 'line-dasharray': [1, 2] } },
+        { id: 'rail', type: 'line', ...lyr('transportation'), filter: ['match', cls, ['rail', 'transit'], true, false], paint: { 'line-color': m(.32), 'line-width': 1, 'line-dasharray': [4, 3] } },
+        { id: 'road', type: 'line', ...lyr('transportation'), filter: ['match', cls, roads, true, false], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': ['match', cls, ['motorway', 'trunk'], m(.52), 'primary', m(.44), ['secondary', 'tertiary'], m(.34), m(.2)], 'line-width': w([1.6, 1.2, .7, .3], [22, 18, 13, 7]) } },
+        { id: 'gx', type: 'line', source: 'gx', paint: { 'line-color': ac, 'line-width': 1, 'line-opacity': .55, 'line-dasharray': [3, 3] } },
+        { id: 'poi-dot', type: 'circle', ...lyr('poi'), minzoom: 15, filter: poiF, paint: { 'circle-radius': 2.2, 'circle-color': m(.55) } },
+        { id: 'poi-lbl', type: 'symbol', ...lyr('poi'), minzoom: 15, filter: poiF, layout: { 'text-field': nm, 'text-font': fnt, 'text-size': 10.5, 'text-anchor': 'left', 'text-offset': [.7, 0], 'text-max-width': 9, 'text-optional': true }, paint: { 'text-color': m(.55), 'text-halo-color': bg, 'text-halo-width': 1.2 } },
+        { id: 'ww-lbl', type: 'symbol', ...lyr('waterway'), minzoom: 13, layout: { 'symbol-placement': 'line', 'text-field': nm, 'text-font': fnt, 'text-size': 11, 'text-letter-spacing': .12 }, paint: { 'text-color': m(.6), 'text-halo-color': bg, 'text-halo-width': 1.2 } },
+        { id: 'park-lbl', type: 'symbol', ...lyr('park'), filter: ['all', ['==', ['geometry-type'], 'Point'], ['has', 'name']], layout: { 'text-field': nm, 'text-font': fnt, 'text-size': 11, 'text-max-width': 8 }, paint: { 'text-color': m(.55), 'text-halo-color': bg, 'text-halo-width': 1.2 } },
+        { id: 'place-lbl', type: 'symbol', ...lyr('place'), filter: ['match', cls, ['suburb', 'neighbourhood', 'quarter'], true, false], layout: { 'text-field': nm, 'text-font': fnt, 'text-size': 11, 'text-transform': 'uppercase', 'text-letter-spacing': .3, 'text-max-width': 8 }, paint: { 'text-color': m(.45), 'text-halo-color': bg, 'text-halo-width': 1.2 } },
+        { id: 'road-lbl', type: 'symbol', ...lyr('transportation_name'), minzoom: 13, filter: ['match', cls, roads.slice(0, 6), true, false], layout: { 'symbol-placement': 'line', 'text-field': nm, 'text-font': fnt, 'text-size': ['interpolate', ['linear'], ['zoom'], 14, ['match', cls, big, 11, 9.5], 18, ['match', cls, big, 13.5, 12]], 'text-transform': 'uppercase', 'text-letter-spacing': .14, 'text-max-angle': 30, 'symbol-spacing': 320 }, paint: { 'text-color': ['match', cls, [...big, 'secondary'], m(.8), m(.6)], 'text-halo-color': bg, 'text-halo-width': 1.4 } }
+      ]
+    };
+  }
+  mapBounds(ll) { const o = [2 * MAP_LL[0] - ll[0], 2 * MAP_LL[1] - ll[1]]; return [[Math.min(o[0], ll[0]), Math.min(o[1], ll[1])], [Math.max(o[0], ll[0]), Math.max(o[1], ll[1])]]; }
+  mapPad() { const el = this._mapEl, W = el ? el.clientWidth : 800, H = el ? el.clientHeight : 450; const p = Math.min(56, H * .14, W * .1); return { top: p, bottom: p, left: p, right: p }; }
+  mapShow(st) { const map = this._map; if (!map) return; map.fitBounds(this.mapBounds(st.ll), { padding: this.mapPad(), maxZoom: 16.5, duration: this.motionOK() ? 1100 : 0 }); }
+  mapHi(i, on) {
+    const e = this._metroEls && this._metroEls[i]; if (!e) return; const c = e.firstChild;
+    e.style.borderColor = on ? 'var(--kz-accent,#E0502E)' : 'var(--kz-lineinv,rgba(242,239,233,.2))';
+    c.style.background = on ? 'var(--kz-accent,#E0502E)' : 'var(--kz-invfg,#F2EFE9)'; c.style.color = on ? 'var(--kz-on-accent,#151515)' : 'var(--kz-inv,#151515)';
+  }
+  ptIn(pt, g) {
+    const ring = (r) => { let o = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) o = !o; } return o; };
+    const polys = g.type === 'Polygon' ? [g.coordinates] : g.type === 'MultiPolygon' ? g.coordinates : [];
+    return polys.some(p => p[0] && ring(p[0]));
+  }
+  mapFindBuilding() {
+    const map = this._map; if (!map || this._hl) return;
+    const p = map.project(MAP_LL), fs = map.queryRenderedFeatures([[p.x - 12, p.y - 12], [p.x + 12, p.y + 12]], { layers: ['bld'] });
+    if (!fs.length) return;
+    const parts = [];
+    fs.forEach(x => { const g = x.geometry; if (g.type === 'Polygon') parts.push(g.coordinates); else if (g.type === 'MultiPolygon') g.coordinates.forEach(c => parts.push(c)); });
+    if (!parts.length) return;
+    const cen = p => { const r = p[0] || []; let x = 0, y = 0; r.forEach(c => { x += c[0]; y += c[1]; }); return r.length ? [x / r.length, y / r.length] : [1e9, 1e9]; };
+    const d2 = c => (c[0] - MAP_LL[0]) ** 2 + (c[1] - MAP_LL[1]) ** 2;
+    const part = parts.find(p => this.ptIn(MAP_LL, { type: 'Polygon', coordinates: p })) || parts.reduce((a, b) => d2(cen(a)) <= d2(cen(b)) ? a : b);
+    if (d2(cen(part)) > 1e-6) return;
+    this._hl = { type: 'FeatureCollection', features: [{ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: part } }] };
+    const s = map.getSource('hl'); s && s.setData(this._hl);
+  }
+  initMap(el) {
+    this.loadMapLib().then(ml => {
+      if (this._mapEl !== el || this._map) return;
+      const map = this._map = new ml.Map({ container: el, style: this.mapStyle(), center: MAP_LL, zoom: MAP_Z, minZoom: 11, maxZoom: 18.5, attributionControl: false, cooperativeGestures: true, dragRotate: false, pitchWithRotate: false, preserveDrawingBuffer: true,
+        locale: { 'CooperativeGesturesHandler.WindowsHelpText': 'Ctrl + колесо — масштаб карты', 'CooperativeGesturesHandler.MacHelpText': '⌘ + колесо — масштаб карты', 'CooperativeGesturesHandler.MobileHelpText': 'Двигайте карту двумя пальцами' } });
+      map.touchZoomRotate.disableRotation();
+      this._mapTheme = this.curTheme();
+      this._metroEls = METRO.map((st, i) => {
+        const e = document.createElement('div');
+        e.style.cssText = 'display:flex; align-items:center; gap:6px; padding:3px 10px 3px 3px; border-radius:99px; background:var(--kz-inv,#151515); border:1px solid var(--kz-lineinv,rgba(242,239,233,.2)); color:var(--kz-invfg,#F2EFE9); font:500 11px/1 Onest, sans-serif; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; cursor:pointer; transition:border-color .25s';
+        e.innerHTML = '<span style="width:18px; height:18px; flex:none; border-radius:50%; background:var(--kz-invfg,#F2EFE9); color:var(--kz-inv,#151515); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:10px; letter-spacing:0; transition:background .25s, color .25s">М</span>' + st.n;
+        e.onclick = ev => { ev.stopPropagation(); this.mapShow(st); };
+        e.onmouseenter = () => this.mapHi(i, true); e.onmouseleave = () => this.mapHi(i, false);
+        new ml.Marker({ element: e, anchor: 'left', offset: [-13, 0] }).setLngLat(st.ll).addTo(map);
+        return e;
+      });
+      const nearEls = NEAR.map(p => {
+        const e = document.createElement('div'), dot = '<span style="width:5px; height:5px; flex:none; border-radius:50%; background:var(--kz-invfg,#F2EFE9)"></span>', tx = '<span>' + p.n + '</span>';
+        e.style.cssText = 'display:flex; align-items:center; gap:6px; pointer-events:none; white-space:nowrap; font:500 11px/1 Onest, sans-serif; color:var(--kz-invfg,#F2EFE9); text-shadow:0 0 3px var(--kz-inv,#151515), 0 0 3px var(--kz-inv,#151515); transition:opacity .3s';
+        e.innerHTML = p.a === 'left' ? dot + tx : tx + dot;
+        new ml.Marker({ element: e, anchor: p.a, offset: [p.a === 'left' ? -2.5 : 2.5, 0] }).setLngLat(p.ll).addTo(map);
+        return e;
+      });
+      const cn = document.createElement('div');
+      cn.style.cssText = 'pointer-events:none; white-space:nowrap; font:italic 400 13px/1 Piazzolla, serif; letter-spacing:.02em; color:var(--kz-invfg,#F2EFE9); opacity:.75; text-shadow:0 0 3px var(--kz-inv,#151515), 0 0 3px var(--kz-inv,#151515); transform-origin:center';
+      cn.innerHTML = '<div style="transform:rotate(80deg)">канал Салар</div>';
+      new ml.Marker({ element: cn, anchor: 'center' }).setLngLat(CANAL).addTo(map);
+      nearEls.push(cn);
+      const nearUpd = () => { const on = map.getZoom() >= 15.5; nearEls.forEach(e => { e.style.opacity = on ? '1' : '0'; }); };
+      map.on('zoom', nearUpd); nearUpd();
+      const pin = document.createElement('div');
+      pin.style.cssText = 'position:relative; width:0; height:0';
+      const ring = 'position:absolute; left:-7px; top:-7px; width:14px; height:14px; border-radius:50%; ';
+      pin.innerHTML = '<div style="' + ring + 'border:1px solid var(--kz-accent,#E0502E)"></div><div style="' + ring + 'background:var(--kz-accent,#E0502E); box-shadow:0 0 0 3px var(--kz-inv,#151515)"></div><div style="position:absolute; left:18px; top:-16px; display:flex; align-items:center; gap:8px; white-space:nowrap; padding:8px 14px; border-radius:99px; background:var(--kz-invfg,#F2EFE9); color:var(--kz-inv,#151515); font:600 13px/1 Onest, sans-serif; letter-spacing:-.01em">Kuznetsovs Gallery</div>';
+      if (this.motionOK()) pin.firstChild.animate([{ transform: 'scale(1)', opacity: .8 }, { transform: 'scale(4.5)', opacity: 0 }], { duration: 2400, iterations: Infinity, easing: 'cubic-bezier(.2,.7,.2,1)' });
+      new ml.Marker({ element: pin, anchor: 'center' }).setLngLat(MAP_LL).addTo(map);
+      map.once('idle', () => this.mapFindBuilding());
+    }).catch(() => this.setState({ mapFail: true }));
+  }
   componentDidUpdate(pp, ps) {
+    if (this._map && this._mapTheme !== this.curTheme()) { this._mapTheme = this.curTheme(); this._map.setStyle(this.mapStyle()); }
     if (ps && !ps.menuOpen && this.state.menuOpen) this.smOpen();
     if (ps && this.state.menuOpen && this.state.vw >= 960) { this._smBusy = false; document.documentElement.style.overflow = ''; this.setState({ menuOpen: false, smOn: false }); }
     if (ps && (ps.page !== this.state.page || ps.workId !== this.state.workId || ps.menuOpen !== this.state.menuOpen)) this._probe && this._probe();
@@ -757,7 +922,7 @@ class Component extends DCLogic {
     setTimeout(() => { if (!ran) { try { vt.skipTransition(); } catch (er) {} commit(); } }, 400);
     vt.ready.then(() => { const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)); document.documentElement.animate({ clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] }, { duration: 750, easing: 'cubic-bezier(.6,0,.3,1)', pseudoElement: '::view-transition-new(root)' }); }).catch(() => {});
   };
-  componentWillUnmount() { cancelAnimationFrame(this._raf); clearTimeout(this._revT); this._revIO && this._revIO.disconnect(); removeEventListener('storage', this._ls); if (this._pm) { removeEventListener('pointermove', this._pm); removeEventListener('pointerdown', this._pd); removeEventListener('scroll', this._probe, true); document.removeEventListener('mouseout', this._ml); removeEventListener('blur', this._bl); } this._kd && removeEventListener('keydown', this._kd); document.documentElement.style.overflow = ''; removeEventListener('resize', this._onRs); removeEventListener('scroll', this._onRs); this._mo && this._mo.disconnect(); this._io && this._io.disconnect(); }
+  componentWillUnmount() { clearInterval(this._mapPoll); this._mapIO && this._mapIO.disconnect(); if (this._map) { this._map.remove(); this._map = null; } cancelAnimationFrame(this._raf); clearTimeout(this._revT); this._revIO && this._revIO.disconnect(); removeEventListener('storage', this._ls); if (this._pm) { removeEventListener('pointermove', this._pm); removeEventListener('pointerdown', this._pd); removeEventListener('scroll', this._probe, true); document.removeEventListener('mouseout', this._ml); removeEventListener('blur', this._bl); } this._kd && removeEventListener('keydown', this._kd); document.documentElement.style.overflow = ''; removeEventListener('resize', this._onRs); removeEventListener('scroll', this._onRs); this._mo && this._mo.disconnect(); this._io && this._io.disconnect(); }
   save() { try { localStorage.setItem('kz_route', JSON.stringify({ page: this.state.page, workId: this.state.workId, cat: this.state.cat })); } catch (e) {} }
   go = (page, extra = {}) => { this.setState({ page, ...extra }, () => this.save()); window.scrollTo(0, 0); if (this.state.menuOpen) this.closeMenu(); };
   toggleMenu = () => this.state.smOn ? this.closeMenu() : this.openMenu();
@@ -896,6 +1061,10 @@ class Component extends DCLogic {
         { k: 'Формат', v: 'Другое соотношение сторон — на заказ' }
       ],
       addToOrder: () => { if (!w) return; const z = w.sz[s.size]; this.setState({ order: [...order, { key: Date.now(), k: w.no, img: w.img, w: z ? z.w : null, h: z ? z.h : null, t: w.t, src: w.src, size: z ? z.w + '×' + z.h + ' см' : 'на заказ', p: z ? z.p : null, frame: FRAMES[s.frame].n, fi: s.frame }], drawer: true, sent: false }); },
+      mapRef: this.mapRef, mapFail: !!s.mapFail, mapCols: s.vw >= 900 ? 'minmax(0,1fr) minmax(0,2fr)' : 'minmax(0,1fr)', mapAR: compact ? '1' : s.vw >= 900 ? 'auto' : '4/3', mapMinH: s.vw >= 900 ? '340px' : '300px', mapCoordOn: s.vw >= 600,
+      mapZoomIn: () => this._map && this._map.zoomIn(), mapZoomOut: () => this._map && this._map.zoomOut(),
+      mapRecenter: () => this._map && this._map.easeTo({ center: MAP_LL, zoom: MAP_Z, duration: this.motionOK() ? 900 : 0 }),
+      mapMetro: METRO.map((st, i) => ({ n: st.n, d: st.d, show: () => this.mapShow(st), enter: () => this.mapHi(i, true), leave: () => this.mapHi(i, false) })),
       priceTable, steps: STEPS, priceLo: priceMap.size ? String(Math.min(...[...priceMap.values()].map(z => z.p))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : '90 000', priceHi: priceMap.size ? fmtP(Math.max(...[...priceMap.values()].map(z => z.p))) : '',
       openCustom: () => this.setState({ drawer: true, sent: false }),
       orderCount: order.length,

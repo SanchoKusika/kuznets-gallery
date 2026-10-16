@@ -15,8 +15,16 @@ const PATHS = {
   ),
   "arrow-right": <path d="M5 12h14M13 6l6 6-6 6" />,
   "arrow-left": <path d="M19 12H5M11 6l-6 6 6 6" />,
+  "arrow-up-right": <path d="M7 17L17 7M8 7h9v9" />,
   pen: <path d="M14 4l6 6L9 21H3v-6L14 4z" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
+  locate: (
+    <>
+      <circle cx="12" cy="12" r="7" />
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+    </>
+  ),
   sort: <path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4" />,
   search: (
     <>
