@@ -44,9 +44,17 @@ export function Header({ total }: { total: number }) {
     setMenu({ mounted: true, on: false, closing: true });
   }, []);
 
+  // «Контакты» from the menu scrolls once the menu is gone: while it is open the page is locked
+  // (and laid out a little differently), so a target taken then is off.
+  const contactsAfterClose = useRef(false);
+
   const onMenuClosed = useCallback(() => {
     unlockScroll("menu");
     setMenu(MENU_CLOSED);
+    if (contactsAfterClose.current) {
+      contactsAfterClose.current = false;
+      scrollToContacts();
+    }
   }, []);
 
   // Never leave the page locked if the header goes away with the menu open.
@@ -71,8 +79,9 @@ export function Header({ total }: { total: number }) {
 
   const goContacts = (e: MouseEvent) => {
     e.preventDefault();
+    if (!menuRef.current.mounted) return scrollToContacts();
+    contactsAfterClose.current = true;
     closeMenu();
-    scrollToContacts();
   };
 
   const nav = [
