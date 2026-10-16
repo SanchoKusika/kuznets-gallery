@@ -8,23 +8,6 @@ export const GALLERY_LL: LngLat = [69.319145, 41.335224];
 /** The prototype's zoom (MapLibre, 512 px tiles); Yandex counts in 256 px tiles, see `gallery-map.ts`. */
 export const GALLERY_ZOOM = 15.9;
 
-/** The gallery's building, filled with accent (OpenStreetMap way 179946379, under the Yandex point). */
-export const GALLERY_BUILDING: LngLat[] = [
-  [69.3191975, 41.3355996],
-  [69.318893, 41.3350475],
-  [69.3190945, 41.3349802],
-  [69.3191297, 41.3350353],
-  [69.31917, 41.3350216],
-  [69.3192075, 41.3350867],
-  [69.3191672, 41.3351013],
-  [69.3193416, 41.3354025],
-  [69.3193843, 41.3353922],
-  [69.3194254, 41.3354677],
-  [69.3193844, 41.3354791],
-  [69.3194146, 41.3355329],
-  [69.3191975, 41.3355996],
-];
-
 function geoKm(a: LngLat, b: LngLat) {
   const r = Math.PI / 180;
   const dLat = (b[1] - a[1]) * r;
