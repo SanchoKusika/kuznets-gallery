@@ -3,7 +3,7 @@
 
 export type LngLat = [number, number];
 
-/** The gallery as Yandex Maps places it (organisation 182570160096); 2GIS and Google links keep their own point. */
+/** The gallery as Yandex Maps places it (organisation 182570160096); the Google Maps link uses the same point. */
 export const GALLERY_LL: LngLat = [69.319145, 41.335224];
 /** The prototype's zoom (MapLibre, 512 px tiles); Yandex counts in 256 px tiles, see `gallery-map.ts`. */
 export const GALLERY_ZOOM = 15.9;

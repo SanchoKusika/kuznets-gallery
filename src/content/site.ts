@@ -29,8 +29,8 @@ export const LOCATION = {
   coords: "41.3352° N · 69.3191° E",
   navigators: [
     { n: "Яндекс Карты", href: "https://yandex.uz/maps/org/kuznetsovs_gallery/182570160096/" },
-    { n: "2ГИС", href: "https://2gis.uz/tashkent/geo/69.319611%2C41.335306" },
-    { n: "Google Maps", href: "https://www.google.com/maps/search/?api=1&query=41.335306%2C69.319611" },
+    { n: "2ГИС", href: "https://2gis.uz/tashkent/firm/70000001051834827" },
+    { n: "Google Maps", href: "https://www.google.com/maps/search/?api=1&query=41.335224%2C69.319145" },
   ],
 } as const;
 
