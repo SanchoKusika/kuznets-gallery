@@ -143,11 +143,11 @@
     }
   }
 
-  // Square below 600px, 4/3 up to 900px, then as tall as the left column.
   &__extra {
     grid-area: extra;
   }
 
+  // Square below 600px, 4/3 up to 900px, then as tall as the left column.
   &__frame {
     grid-area: frame;
     position: relative;
@@ -174,12 +174,19 @@
     inset: 0;
   }
 
-  &__coords {
-    @include label(11px);
+  // Bottom left: coordinates (from 600px) and the OSM credit for the building outline.
+  &__corner {
     position: absolute;
     left: 12px;
     bottom: 10px;
     z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__coords {
+    @include label(11px);
     pointer-events: none;
     display: none;
     align-items: center;
@@ -246,5 +253,20 @@
     text-align: center;
     font-size: 14px;
     color: var(--ink-4);
+  }
+
+  &__credit {
+    padding: 4px 8px;
+    border-radius: 99px;
+    background: var(--inverse);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: var(--ink-4);
+    text-decoration: none;
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
   }
 }

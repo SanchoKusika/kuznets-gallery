@@ -65,9 +65,15 @@ export function Location({ mapKey, children }: { mapKey: string | undefined; chi
 
       <div className={b("frame")}>
         <div ref={canvasRef} className={b("canvas")} />
-        <div className={b("coords")}>
-          <span className={b("coords-dot")} />
-          {LOCATION.coords}
+        <div className={b("corner")}>
+          <div className={b("coords")}>
+            <span className={b("coords-dot")} />
+            {LOCATION.coords}
+          </div>
+          {/* The building outline comes from OpenStreetMap (ODbL). */}
+          <a className={b("credit")} href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
+            © OpenStreetMap
+          </a>
         </div>
         <div className={b("controls")}>
           <button type="button" aria-label="Приблизить" className={b("control")} onClick={() => map.current?.zoomIn()}>

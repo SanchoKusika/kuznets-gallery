@@ -6,7 +6,13 @@
 .map {
   font-family: var(--font-sans);
   overflow: hidden;
+  cursor: grab;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    cursor: grabbing;
+  }
 
   // One finger scrolls the page on touch screens (the map takes two, see `onActionStart`).
   @media (hover: none), (pointer: coarse) {
@@ -16,7 +22,7 @@
     }
   }
 
-  // Shown for a plain wheel or a one-finger drag (MapLibre's cooperative gestures look).
+  // Shown for a plain wheel or a one-finger drag.
   &__hint {
     position: absolute;
     inset: 0;
