@@ -52,7 +52,7 @@ const dist2 = (c: LngLat) => (c[0] - GALLERY_LL[0]) ** 2 + (c[1] - GALLERY_LL[1]
  * The footer map from the prototype (`initMap`): MapLibre on OpenFreeMap tiles, styled in the
  * footer palette, with the gallery pin, metro and neighbour labels. MapLibre is loaded on demand.
  */
-export async function createGalleryMap(container: HTMLElement, theme: Theme): Promise<GalleryMap> {
+export async function createGalleryMap(container: HTMLElement, theme: Theme, onFail: () => void): Promise<GalleryMap> {
   const ml = await import("maplibre-gl");
   container.classList.add(s.map);
   let currentTheme = theme;
@@ -76,6 +76,22 @@ export async function createGalleryMap(container: HTMLElement, theme: Theme): Pr
     },
   });
   map.touchZoomRotate.disableRotation();
+
+  // Tile server unreachable: the source fails before the first render (tile errors later are
+  // left to MapLibre). The frame then shows the fallback text instead of an empty map.
+  let loaded = false;
+  let removed = false;
+  const remove = () => {
+    if (removed) return;
+    removed = true;
+    map.remove();
+  };
+  map.once("load", () => (loaded = true));
+  map.on("error", (e) => {
+    if (loaded || "tile" in e) return;
+    remove();
+    onFail();
+  });
 
   const duration = (ms: number) => (prefersMotion() ? ms : 0);
 
@@ -151,17 +167,25 @@ export async function createGalleryMap(container: HTMLElement, theme: Theme): Pr
     map.getSource<GeoJSONSource>("highlight")?.setData(highlight);
   });
 
+  // After a failed start the map is gone; the controls stay on screen, so they become no-ops.
+  const live =
+    <A extends unknown[]>(fn: (...args: A) => void) =>
+    (...args: A) => {
+      if (!removed) fn(...args);
+    };
+  const still = prefersMotion() ? undefined : { duration: 0 };
+
   return {
-    zoomIn: () => map.zoomIn(),
-    zoomOut: () => map.zoomOut(),
-    recenter: () => map.easeTo({ center: GALLERY_LL, zoom: GALLERY_ZOOM, duration: duration(900) }),
-    show,
+    zoomIn: live(() => map.zoomIn(still)),
+    zoomOut: live(() => map.zoomOut(still)),
+    recenter: live(() => map.easeTo({ center: GALLERY_LL, zoom: GALLERY_ZOOM, duration: duration(900) })),
+    show: live(show),
     highlight: (i, on) => metroEls[i]?.classList.toggle(s["map__metro--on"], on),
-    setTheme(next) {
+    setTheme: live((next: Theme) => {
       if (next === currentTheme) return;
       currentTheme = next;
       map.setStyle(mapStyle(next, highlight));
-    },
-    destroy: () => map.remove(),
+    }),
+    destroy: remove,
   };
 }

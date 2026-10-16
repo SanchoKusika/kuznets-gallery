@@ -5,7 +5,7 @@ export type LngLat = [number, number];
 export const GALLERY_LL: LngLat = [69.319611, 41.335306];
 export const GALLERY_ZOOM = 15.9;
 
-/** Neighbours shown next to the gallery at zoom ≥ 15.5; `side` is the marker anchor (label left or right of the dot). */
+/** Neighbours shown next to the gallery at zoom ≥ 15.5; `side` is the marker anchor: "left" — dot on the left, name to its right. */
 export const NEAR: readonly { n: string; ll: LngLat; side: "left" | "right" }[] = [
   { n: "Har", ll: [69.319482, 41.335862], side: "right" },
   { n: "Ingredi.uz", ll: [69.319367, 41.335592], side: "right" },

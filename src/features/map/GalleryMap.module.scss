@@ -14,6 +14,15 @@
     left: 0;
   }
 
+  :global(.maplibregl-canvas-container.maplibregl-interactive) {
+    cursor: grab;
+    user-select: none;
+  }
+
+  :global(.maplibregl-canvas-container.maplibregl-interactive:active) {
+    cursor: grabbing;
+  }
+
   :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan),
   :global(.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas) {
     touch-action: pinch-zoom;

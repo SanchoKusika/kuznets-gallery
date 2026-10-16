@@ -24,15 +24,16 @@ export function useGalleryMap(ref: RefObject<HTMLElement | null>) {
     if (!el) return;
     let cancelled = false;
 
+    const fail = () => !cancelled && setFailed(true);
     const init = () => {
       io.disconnect();
-      createGalleryMap(el, themeRef.current)
+      createGalleryMap(el, themeRef.current, fail)
         .then((map) => {
           if (cancelled) return map.destroy();
           mapRef.current = map;
           map.setTheme(themeRef.current);
         })
-        .catch(() => !cancelled && setFailed(true));
+        .catch(fail);
     };
     const io = new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && init(), { rootMargin: "600px" });
     io.observe(el);

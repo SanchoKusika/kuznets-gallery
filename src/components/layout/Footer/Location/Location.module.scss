@@ -72,14 +72,7 @@
     align-items: center;
     padding: 9px 0;
     border-top: 1px solid var(--line-inverse);
-    transition:
-      color 0.25s,
-      padding 0.3s var(--ease-out);
-
-    &:hover {
-      color: var(--accent);
-      padding-left: 6px;
-    }
+    @include slide-link;
   }
 
   &__station-badge {

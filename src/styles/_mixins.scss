@@ -101,6 +101,18 @@
   cursor: pointer;
 }
 
+// Footer list link: turns accent and slides 6px right on hover (gallery nav, metro stations).
+@mixin slide-link {
+  transition:
+    color 0.25s,
+    padding 0.3s var(--ease-out);
+
+  &:hover {
+    color: var(--accent);
+    padding-left: 6px;
+  }
+}
+
 // Image that fills its media well.
 @mixin media-fill($fit: cover) {
   filter: var(--img-filter);

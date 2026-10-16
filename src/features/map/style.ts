@@ -4,6 +4,7 @@ import { GALLERY_LL } from "./places";
 
 // The prototype's `mapStyle()`: OpenFreeMap vector tiles drawn as tints between the footer
 // background and its text colour (`--inverse` / `--inverse-fg` of each theme), accent crosshair.
+// WebGL can't read CSS variables, so the values below mirror `styles/_tokens.scss` — keep them in sync.
 
 const INVERSE: Record<Theme, [string, string]> = {
   light: ["#151515", "#f2efe9"],
