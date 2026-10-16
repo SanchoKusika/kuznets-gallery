@@ -26,7 +26,7 @@ export const LOCATION = {
     "Остановка «Westminster International School» — 280 м",
     "Соседи — Ingredi.uz, Mysofa.Uz, Bukva.uz",
   ],
-  coords: "41.3353° N · 69.3196° E",
+  coords: "41.3352° N · 69.3191° E",
   navigators: [
     { n: "Яндекс Карты", href: "https://yandex.uz/maps/org/kuznetsovs_gallery/182570160096/" },
     { n: "2ГИС", href: "https://2gis.uz/tashkent/geo/69.319611%2C41.335306" },

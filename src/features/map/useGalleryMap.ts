@@ -5,10 +5,11 @@ import { useTheme } from "@/features/theme/theme";
 import { createGalleryMap, type GalleryMap } from "./gallery-map";
 
 /**
- * Creates the footer map once its container comes within 600px of the viewport (MapLibre and
- * the tiles are heavy), follows the site theme and tears the map down on unmount.
+ * Creates the footer map once its container comes within 600px of the viewport (the Yandex API
+ * and tiles are heavy), follows the site theme and tears the map down on unmount. Without a key
+ * or with a failed API load the frame shows the fallback text.
  */
-export function useGalleryMap(ref: RefObject<HTMLElement | null>) {
+export function useGalleryMap(ref: RefObject<HTMLElement | null>, apiKey: string | undefined) {
   const theme = useTheme();
   const themeRef = useRef(theme);
   const mapRef = useRef<GalleryMap | null>(null);
@@ -21,19 +22,18 @@ export function useGalleryMap(ref: RefObject<HTMLElement | null>) {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !apiKey) return;
     let cancelled = false;
 
-    const fail = () => !cancelled && setFailed(true);
     const init = () => {
       io.disconnect();
-      createGalleryMap(el, themeRef.current, fail)
+      createGalleryMap(el, themeRef.current, apiKey)
         .then((map) => {
           if (cancelled) return map.destroy();
           mapRef.current = map;
           map.setTheme(themeRef.current);
         })
-        .catch(fail);
+        .catch(() => !cancelled && setFailed(true));
     };
     const io = new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && init(), { rootMargin: "600px" });
     io.observe(el);
@@ -44,7 +44,7 @@ export function useGalleryMap(ref: RefObject<HTMLElement | null>) {
       mapRef.current?.destroy();
       mapRef.current = null;
     };
-  }, [ref]);
+  }, [ref, apiKey]);
 
-  return { map: mapRef, failed };
+  return { map: mapRef, failed: failed || !apiKey };
 }

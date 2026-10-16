@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon/Icon";
 import { LOCATION } from "@/content/site";
 import { METRO } from "@/features/map/places";
@@ -10,10 +10,14 @@ import s from "./Location.module.scss";
 
 const b = bem(s, "location");
 
-/** Footer «Как нас найти»: address, nearest metro, navigator links and the styled map. */
-export function Location() {
+/**
+ * Footer «Как нас найти»: address, nearest metro, navigator links and the styled map. `children`
+ * (the footer's link columns) go under the address; from 900px the map spans both. `mapKey` is
+ * the Yandex Maps key, read on the server (`YANDEX_MAPS_KEY`).
+ */
+export function Location({ mapKey, children }: { mapKey: string | undefined; children: ReactNode }) {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const { map, failed } = useGalleryMap(canvasRef);
+  const { map, failed } = useGalleryMap(canvasRef, mapKey);
 
   return (
     <div className={b()}>
@@ -83,16 +87,9 @@ export function Location() {
           </button>
         </div>
         {failed && <div className={b("fail")}>Карта не загрузилась — откройте адрес в навигаторе</div>}
-        <div className={b("attribution")}>
-          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
-            © OpenStreetMap
-          </a>
-          <span>·</span>
-          <a href="https://openfreemap.org" target="_blank" rel="noopener">
-            OpenFreeMap
-          </a>
-        </div>
       </div>
+
+      <div className={b("extra")}>{children}</div>
     </div>
   );
 }

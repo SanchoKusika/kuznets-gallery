@@ -1,24 +1,29 @@
-// Map data from the prototype footer (`MAP_LL`, `NEAR`, `CANAL`, `METRO` in Kuznetsovs Gallery.dc.html).
+// Map data from the prototype footer (`MAP_LL`, `METRO` in Kuznetsovs Gallery.dc.html). Its own labels for the
+// neighbours and the canal are gone: the Yandex scheme names them itself.
 
 export type LngLat = [number, number];
 
-export const GALLERY_LL: LngLat = [69.319611, 41.335306];
+/** The gallery as Yandex Maps places it (organisation 182570160096); 2GIS and Google links keep their own point. */
+export const GALLERY_LL: LngLat = [69.319145, 41.335224];
+/** The prototype's zoom (MapLibre, 512 px tiles); Yandex counts in 256 px tiles, see `gallery-map.ts`. */
 export const GALLERY_ZOOM = 15.9;
 
-/** Neighbours shown next to the gallery at zoom ≥ 15.5; `side` is the marker anchor: "left" — dot on the left, name to its right. */
-export const NEAR: readonly { n: string; ll: LngLat; side: "left" | "right" }[] = [
-  { n: "Har", ll: [69.319482, 41.335862], side: "right" },
-  { n: "Ingredi.uz", ll: [69.319367, 41.335592], side: "right" },
-  { n: "Mysofa.Uz", ll: [69.320659, 41.335074], side: "left" },
-  { n: "Bukva.uz", ll: [69.320451, 41.334804], side: "left" },
-  { n: "Grand aluminium service", ll: [69.320113, 41.334669], side: "right" },
-  { n: "Gosselin Moving", ll: [69.321011, 41.335792], side: "left" },
-  { n: "Bektemir metan", ll: [69.317752, 41.335182], side: "left" },
-  { n: "Space Plast", ll: [69.320149, 41.334038], side: "left" },
-  { n: "Croissant by D Eco", ll: [69.3247, 41.3349], side: "left" },
+/** The gallery's building, filled with accent (OpenStreetMap way 179946379, under the Yandex point). */
+export const GALLERY_BUILDING: LngLat[] = [
+  [69.3191975, 41.3355996],
+  [69.318893, 41.3350475],
+  [69.3190945, 41.3349802],
+  [69.3191297, 41.3350353],
+  [69.31917, 41.3350216],
+  [69.3192075, 41.3350867],
+  [69.3191672, 41.3351013],
+  [69.3193416, 41.3354025],
+  [69.3193843, 41.3353922],
+  [69.3194254, 41.3354677],
+  [69.3193844, 41.3354791],
+  [69.3194146, 41.3355329],
+  [69.3191975, 41.3355996],
 ];
-
-export const CANAL: { n: string; ll: LngLat } = { n: "канал Салар", ll: [69.317242, 41.335306] };
 
 function geoKm(a: LngLat, b: LngLat) {
   const r = Math.PI / 180;
