@@ -22,7 +22,7 @@ function tints(theme: Theme) {
 
 export function mapCustomization(theme: Theme): CustomizationConfig {
   const tint = tints(theme);
-  const bg = tint(0.035);
+  const bg = tint(0.035); // also the placeholder's background (`.map__placeholder`)
 
   return [
     { elements: "geometry", stylers: { color: bg } },

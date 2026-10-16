@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { prefersMotion } from "@/features/motion/prefers-motion";
 import { useTheme } from "@/features/theme/theme";
 import { createGalleryMap, loadYmaps, type GalleryMap } from "./gallery-map";
 
@@ -51,7 +50,7 @@ export function useGalleryMap(ref: RefObject<HTMLElement | null>, apiKey: string
           if (cancelled) return map.destroy();
           mapRef.current = map;
           map.setTheme(themeRef.current);
-          timer = window.setTimeout(() => !cancelled && setReady(true), prefersMotion() ? SETTLE_MS : 0);
+          timer = window.setTimeout(() => !cancelled && setReady(true), SETTLE_MS);
         })
         .catch(() => !cancelled && setFailed(true));
     };
@@ -70,9 +69,11 @@ export function useGalleryMap(ref: RefObject<HTMLElement | null>, apiKey: string
     };
     const watch = (rootMargin?: string) =>
       new IntersectionObserver(
-        ([e]) => {
-          if (rootMargin) near = e.isIntersecting;
-          else visible = e.isIntersecting;
+        (es) => {
+          // Entries can queue up; the last one is the current state.
+          const on = es[es.length - 1].isIntersecting;
+          if (rootMargin) near = on;
+          else visible = on;
           arm();
         },
         { rootMargin },

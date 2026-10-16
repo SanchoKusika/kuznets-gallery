@@ -93,7 +93,8 @@
     }
   }
 
-  // `MapPlaceholder`: the scheme's background (`style.ts`, tint .035), the crosshair and the pin,
+  // `MapPlaceholder`: the scheme's background (`style.ts`, tint .035), the crosshair (as drawn in
+  // `gallery-map.ts`: accent, opacity .55, 3/3 dash) and the pin,
   // centred like on the live map; fades out once the map is ready.
   &__placeholder {
     position: absolute;
@@ -103,7 +104,9 @@
     align-items: center;
     justify-content: center;
     background: color-mix(in srgb, var(--inverse-fg) 3.5%, var(--inverse));
-    transition: opacity 0.5s var(--ease-out);
+    transition:
+      opacity 0.5s var(--ease-out),
+      visibility 0.5s;
 
     &::before,
     &::after {
@@ -128,8 +131,10 @@
       background: repeating-linear-gradient(to bottom, var(--accent) 0 3px, transparent 3px 6px);
     }
 
+    // `visibility` also stops the pin's endless pulse once the map is up.
     &--hidden {
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
     }
 

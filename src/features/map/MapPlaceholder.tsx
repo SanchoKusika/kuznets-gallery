@@ -1,4 +1,5 @@
 import { bem } from "@/lib/bem";
+import { PIN_CLASS, PIN_HTML } from "./pin";
 import s from "./GalleryMap.module.scss";
 
 const b = bem(s, "map");
@@ -10,11 +11,7 @@ const b = bem(s, "map");
 export function MapPlaceholder({ hidden }: { hidden: boolean }) {
   return (
     <div className={b("placeholder", { hidden })} aria-hidden="true">
-      <div className={b("pin")}>
-        <div className={b("pin-pulse")} />
-        <div className={b("pin-dot")} />
-        <div className={b("pin-label")}>Kuznetsovs Gallery</div>
-      </div>
+      <div className={PIN_CLASS} dangerouslySetInnerHTML={{ __html: PIN_HTML }} />
     </div>
   );
 }
