@@ -52,7 +52,7 @@
     "title": "Городские арки",
     "file": "art/kz-007.jpg",
     "w": 979,
-    "h": 694,
+    "h": 688,
     "excluded": false
   },
   {
@@ -68,7 +68,7 @@
     "title": "Три арки",
     "file": "art/kz-009.jpg",
     "w": 1080,
-    "h": 713,
+    "h": 694,
     "excluded": false
   },
   {
@@ -315,24 +315,24 @@
     "code": "KZ-040",
     "title": "Икат",
     "file": "art/kz-040.jpg",
-    "w": 627,
-    "h": 620,
+    "w": 511,
+    "h": 498,
     "excluded": false
   },
   {
     "code": "KZ-041",
     "title": "Адрас",
     "file": "art/kz-041.jpg",
-    "w": 627,
-    "h": 618,
+    "w": 511,
+    "h": 498,
     "excluded": false
   },
   {
     "code": "KZ-042",
     "title": "Икат",
     "file": "art/kz-042.jpg",
-    "w": 626,
-    "h": 619,
+    "w": 510,
+    "h": 497,
     "excluded": false
   },
   {
@@ -955,7 +955,7 @@
     "code": "KZ-124",
     "title": "Карта мира",
     "file": "art/kz-124.jpg",
-    "w": 823,
+    "w": 815,
     "h": 581,
     "excluded": false
   },
