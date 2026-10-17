@@ -3,6 +3,7 @@
 //   npm run stills                 → styleframes.jpg (the six styleframes, brief 11)
 //   npm run stills -- reels|promo  → reels-stills.jpg / promo-stills.jpg (key frames of the videos)
 //   npm run stills -- safe         → safe-*.png (Reels with showGuides on the frames from brief 10)
+//   npm run stills -- loop         → loop.gif (the Reels loop seam: last 30 + first 30 frames)
 
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
@@ -18,7 +19,12 @@ fs.mkdirSync(tmp, { recursive: true });
 const npx = process.platform === "win32" ? "npx.cmd" : "npx";
 function still(id, frame, out, props) {
   const args = ["remotion", "still", id, out, `--frame=${frame}`, "--log=error"];
-  if (props) args.push(`--props=${JSON.stringify(props)}`);
+  // Props go through a file: on Windows the shell strips the quotes of inline JSON.
+  if (props) {
+    const file = path.join(tmp, "props.json");
+    fs.writeFileSync(file, JSON.stringify(props));
+    args.push(`--props=${file}`);
+  }
   execFileSync(npx, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
   return out;
 }
@@ -78,6 +84,21 @@ if (mode === "styleframes") {
     .jpeg({ quality: 90 })
     .toFile(path.join(qa, "styleframes.jpg"));
   console.log(path.join(qa, "styleframes.jpg"));
+} else if (mode === "loop") {
+  // Reels loop seam (brief 7, R8): the last 30 and the first 30 frames, every 2nd, as a looping GIF.
+  const dir = path.join(tmp, "loop");
+  fs.rmSync(dir, { recursive: true, force: true });
+  const range = (a, b, sub) => {
+    const args = ["remotion", "render", "Reels", path.join(dir, sub), "--sequence", `--frames=${a}-${b}`, "--every-nth-frame=2", "--image-format=jpeg", "--log=error"];
+    execFileSync(npx, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
+    return fs.readdirSync(path.join(dir, sub)).sort().map((f) => path.join(dir, sub, f));
+  };
+  const frames = [...range(1698, 1727, "a"), ...range(0, 29, "b")];
+  frames.forEach((f, i) => fs.renameSync(f, path.join(dir, `${String(i).padStart(3, "0")}.jpeg`)));
+  const vf = "scale=360:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse";
+  const args = ["remotion", "ffmpeg", "-y", "-loglevel", "error", "-framerate", "30", "-i", path.join(dir, "%03d.jpeg"), "-vf", vf, "-loop", "0", path.join(qa, "loop.gif")];
+  execFileSync(npx, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
+  console.log(path.join(qa, "loop.gif"));
 } else if (mode === "safe") {
   for (const f of [60, 400, 790, 950, 1150, 1600]) still("Reels", f, path.join(qa, `safe-${f}.png`), { showGuides: true });
 } else if (mode === "reels" || mode === "promo") {

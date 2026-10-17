@@ -56,7 +56,8 @@ export const promo = {
   /** P6: 11 × 6 grid. */
   wall: shuffled("promo-wall", 66),
   showroom: check(["KZ-070", "KZ-051", "KZ-049"] as const),
-  craft: check("KZ-041"),
+  /** P7 (brief: KZ-041 Адрас; the owner asked for a more striking work). */
+  craft: check("KZ-022"),
   custom: check("KZ-009"),
   reviews: ["Evgeniya Lyashko", "Дилшод Алимханов", "Max Nam"] as const,
 };

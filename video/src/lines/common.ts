@@ -8,9 +8,9 @@ const f = (n: number) => +n.toFixed(1);
 
 /* ── Three arches ─────────────────────────────────────────────────────────────────────────────── */
 
-// «Три арки» KZ-009, measured on the source (1080 × 713 px): outer edges of each portal, the
+// «Три арки» KZ-009, measured on the source (1080 × 694 px after the mock-up trim): outer edges of each portal, the
 // springing line where the sides start to bend, the apex, and the horizon behind them.
-const ARCHES_SRC = { w: 1080, h: 713 };
+const ARCHES_SRC = { w: 1080, h: 694 };
 const ARCHES = [
   { l: 181, r: 372, apex: 37, spring: 112, base: 342 },
   { l: 456, r: 651, apex: 35, spring: 110, base: 340 },

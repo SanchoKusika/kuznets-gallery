@@ -1,6 +1,7 @@
 import { Composition, Folder, Still } from "remotion";
 import { Promo, promoSchema } from "./promo/Promo";
 import { Reels, reelsSchema } from "./reels/Reels";
+import { ReelsCover } from "./reels/ReelsCover";
 import { barAt } from "./theme/timing";
 import { Canvas3DPreview } from "./dev/Canvas3DPreview";
 import { GridCirclesPreview } from "./dev/GridCirclesPreview";
@@ -33,7 +34,7 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{ useShowroomFootage: false }}
       />
       <Folder name="Extra">
-        <Still id="ReelsCover" component={Reels} schema={reelsSchema} width={1080} height={1920} defaultProps={{ showGuides: false }} />
+        <Still id="ReelsCover" component={ReelsCover} width={1080} height={1920} />
         <Composition
           id="Promo50"
           component={Promo}

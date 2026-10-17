@@ -11,17 +11,22 @@ type Props = {
   exit?: { from: number; duration: number; easing?: EaseFn; to?: "up" | "down" };
   /** Starting offset, % of own height (105 by default, brief 5.6). */
   offset?: number;
+  /**
+   * How far the exit travels, % of own height. Further than the entry: glyphs overflow the line box (descenders of
+   * «д», «у», «р»), and at 105% their tails would stay in the mask.
+   */
+  exitOffset?: number;
   children: ReactNode;
   style?: CSSProperties;
   innerStyle?: CSSProperties;
 };
 
 /** Rise from a mask: `translateY(105%) → 0` inside `overflow: hidden` (transition 1 of the vocabulary). */
-export function MaskRise({ from, duration, easing = ease.rise, exit, offset = 105, children, style, innerStyle }: Props) {
+export function MaskRise({ from, duration, easing = ease.rise, exit, offset = 105, exitOffset = 160, children, style, innerStyle }: Props) {
   const frame = useCurrentFrame();
   const inP = progress(frame, from, duration, easing);
   const outP = exit ? progress(frame, exit.from, exit.duration, exit.easing ?? ease.menuIn) : 0;
-  const y = (1 - inP) * offset - outP * offset * (exit?.to === "down" ? -1 : 1);
+  const y = (1 - inP) * offset - outP * exitOffset * (exit?.to === "down" ? -1 : 1);
   return (
     <div style={{ overflow: "hidden", ...style }}>
       <div style={{ translate: `0 ${y}%`, ...innerStyle }}>{children}</div>

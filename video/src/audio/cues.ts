@@ -48,11 +48,11 @@ export const REELS_CUES: Record<string, Cue[]> = {
     { id: "pencil", at: 0, gainDb: -6, note: "рисуется диван" },
     ...every("morph-swish", 2, 2, 3, -8, "интерьер перетекает"),
   ],
-  R4: every("ring", 0.5, 0.5, 7, -14, "смена работы в круге"),
-  R5: [
-    { id: "grid-ticks", at: 0, gainDb: -10, note: "сетка заполняется" },
-    { id: "plate-slide", at: 1, gainDb: -8, note: "плашка со счётчиком" },
+  R4: [
+    ...every("ring", 0.5, 0.5, 7, -14, "смена работы в круге"),
+    { id: "grid-ticks", at: 3.5, gainDb: -10, note: "круг раскрывается на заполняющуюся сетку" },
   ],
+  R5: [{ id: "plate-slide", at: 1, gainDb: -8, note: "плашка со счётчиком" }],
   R6: [
     { id: "pencil", at: 0.5, gainDb: -6, note: "эскиз трёх арок" },
     { id: "cropmark-tick", at: 2, gainDb: -6, note: "метки обреза" },
