@@ -42,3 +42,10 @@ next-env.d.ts
 
 # example env is committed
 !.env.example
+
+# promo video (Remotion): dependencies, renders, licensed music and footage
+/video/node_modules
+/video/out
+/video/public/audio/music*
+/video/public/audio/stems
+/video/public/footage
