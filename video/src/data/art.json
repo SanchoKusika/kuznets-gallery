@@ -1,0 +1,1274 @@
+[
+  {
+    "code": "KZ-001",
+    "title": "Экзотика",
+    "file": "art/kz-001.jpg",
+    "w": 563,
+    "h": 720,
+    "excluded": false
+  },
+  {
+    "code": "KZ-002",
+    "title": "Окно принцессы",
+    "file": "art/kz-002.jpg",
+    "w": 569,
+    "h": 721,
+    "excluded": false
+  },
+  {
+    "code": "KZ-003",
+    "title": "Мозаичный танец",
+    "file": "art/kz-003.jpg",
+    "w": 564,
+    "h": 714,
+    "excluded": false
+  },
+  {
+    "code": "KZ-004",
+    "title": "Новинка!",
+    "file": "art/kz-004.jpg",
+    "w": 1190,
+    "h": 689,
+    "excluded": false
+  },
+  {
+    "code": "KZ-005",
+    "title": "Яхта в бухте",
+    "file": "art/kz-005.jpg",
+    "w": 1193,
+    "h": 689,
+    "excluded": false
+  },
+  {
+    "code": "KZ-006",
+    "title": "Алишер Навои",
+    "file": "art/kz-006.jpg",
+    "w": 1200,
+    "h": 691,
+    "excluded": false
+  },
+  {
+    "code": "KZ-007",
+    "title": "Городские арки",
+    "file": "art/kz-007.jpg",
+    "w": 979,
+    "h": 694,
+    "excluded": false
+  },
+  {
+    "code": "KZ-008",
+    "title": "Окна двери",
+    "file": "art/kz-008.jpg",
+    "w": 1188,
+    "h": 687,
+    "excluded": false
+  },
+  {
+    "code": "KZ-009",
+    "title": "Три арки",
+    "file": "art/kz-009.jpg",
+    "w": 1080,
+    "h": 713,
+    "excluded": false
+  },
+  {
+    "code": "KZ-010",
+    "title": "Игра",
+    "file": "art/kz-010.jpg",
+    "w": 657,
+    "h": 651,
+    "excluded": false
+  },
+  {
+    "code": "KZ-011",
+    "title": "Тихий Паттерн",
+    "file": "art/kz-011.jpg",
+    "w": 643,
+    "h": 621,
+    "excluded": false
+  },
+  {
+    "code": "KZ-012",
+    "title": "Мозаичный полет",
+    "file": "art/kz-012.jpg",
+    "w": 667,
+    "h": 660,
+    "excluded": false
+  },
+  {
+    "code": "KZ-013",
+    "title": "Карьерный рост",
+    "file": "art/kz-013.jpg",
+    "w": 712,
+    "h": 701,
+    "excluded": false
+  },
+  {
+    "code": "KZ-014",
+    "title": "Алимджан Репит",
+    "file": "art/kz-014.jpg",
+    "w": 735,
+    "h": 498,
+    "excluded": false
+  },
+  {
+    "code": "KZ-015",
+    "title": "Путь домой",
+    "file": "art/kz-015.jpg",
+    "w": 905,
+    "h": 896,
+    "excluded": false
+  },
+  {
+    "code": "KZ-016",
+    "title": "Текстуры города",
+    "file": "art/kz-016.jpg",
+    "w": 704,
+    "h": 697,
+    "excluded": false
+  },
+  {
+    "code": "KZ-017",
+    "title": "Персидская архитектура",
+    "file": "art/kz-017.jpg",
+    "w": 549,
+    "h": 762,
+    "excluded": false
+  },
+  {
+    "code": "KZ-018",
+    "title": "Социальные слои",
+    "file": "art/kz-018.jpg",
+    "w": 703,
+    "h": 696,
+    "excluded": false
+  },
+  {
+    "code": "KZ-019",
+    "title": "Портал Тишины",
+    "file": "art/kz-019.jpg",
+    "w": 212,
+    "h": 700,
+    "excluded": false
+  },
+  {
+    "code": "KZ-020",
+    "title": "Золотой поток",
+    "file": "art/kz-020.jpg",
+    "w": 859,
+    "h": 501,
+    "excluded": false
+  },
+  {
+    "code": "KZ-021",
+    "title": "Цветы пустыни",
+    "file": "art/kz-021.jpg",
+    "w": 213,
+    "h": 695,
+    "excluded": false
+  },
+  {
+    "code": "KZ-022",
+    "title": "She Is Uzbek",
+    "file": "art/kz-022.jpg",
+    "w": 622,
+    "h": 615,
+    "excluded": false
+  },
+  {
+    "code": "KZ-023",
+    "title": "Старый город",
+    "file": "art/kz-023.jpg",
+    "w": 631,
+    "h": 624,
+    "excluded": false
+  },
+  {
+    "code": "KZ-024",
+    "title": "He Is Uzbek",
+    "file": "art/kz-024.jpg",
+    "w": 627,
+    "h": 620,
+    "excluded": false
+  },
+  {
+    "code": "KZ-025",
+    "title": "Templewille",
+    "file": "art/kz-025.jpg",
+    "w": 853,
+    "h": 1184,
+    "excluded": false
+  },
+  {
+    "code": "KZ-026",
+    "title": "Молодые бедуины",
+    "file": "art/kz-026.jpg",
+    "w": 706,
+    "h": 590,
+    "excluded": false
+  },
+  {
+    "code": "KZ-027",
+    "title": "Мозаика",
+    "file": "art/kz-027.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": false
+  },
+  {
+    "code": "KZ-028",
+    "title": "Бухара",
+    "file": "art/kz-028.jpg",
+    "w": 681,
+    "h": 674,
+    "excluded": false
+  },
+  {
+    "code": "KZ-029",
+    "title": "Будда",
+    "file": "art/kz-029.jpg",
+    "w": 660,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-030",
+    "title": "Герб Ташкента",
+    "file": "art/kz-030.jpg",
+    "w": 783,
+    "h": 554,
+    "excluded": false
+  },
+  {
+    "code": "KZ-031",
+    "title": "Восточные мотивы",
+    "file": "art/kz-031.jpg",
+    "w": 661,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-032",
+    "title": "Поп арт пиала",
+    "file": "art/kz-032.jpg",
+    "w": 692,
+    "h": 685,
+    "excluded": false
+  },
+  {
+    "code": "KZ-033",
+    "title": "Восточные мотивы",
+    "file": "art/kz-033.jpg",
+    "w": 658,
+    "h": 652,
+    "excluded": false
+  },
+  {
+    "code": "KZ-034",
+    "title": "Чарующая природа",
+    "file": "art/kz-034.jpg",
+    "w": 691,
+    "h": 684,
+    "excluded": false
+  },
+  {
+    "code": "KZ-035",
+    "title": "Чарующая природа",
+    "file": "art/kz-035.jpg",
+    "w": 658,
+    "h": 652,
+    "excluded": false
+  },
+  {
+    "code": "KZ-036",
+    "title": "Чарующая природа",
+    "file": "art/kz-036.jpg",
+    "w": 667,
+    "h": 660,
+    "excluded": false
+  },
+  {
+    "code": "KZ-037",
+    "title": "Эко Мандала",
+    "file": "art/kz-037.jpg",
+    "w": 625,
+    "h": 618,
+    "excluded": false
+  },
+  {
+    "code": "KZ-038",
+    "title": "Эко Мандала",
+    "file": "art/kz-038.jpg",
+    "w": 623,
+    "h": 616,
+    "excluded": false
+  },
+  {
+    "code": "KZ-039",
+    "title": "Эко Мандала",
+    "file": "art/kz-039.jpg",
+    "w": 622,
+    "h": 615,
+    "excluded": false
+  },
+  {
+    "code": "KZ-040",
+    "title": "Икат",
+    "file": "art/kz-040.jpg",
+    "w": 627,
+    "h": 620,
+    "excluded": false
+  },
+  {
+    "code": "KZ-041",
+    "title": "Адрас",
+    "file": "art/kz-041.jpg",
+    "w": 627,
+    "h": 618,
+    "excluded": false
+  },
+  {
+    "code": "KZ-042",
+    "title": "Икат",
+    "file": "art/kz-042.jpg",
+    "w": 626,
+    "h": 619,
+    "excluded": false
+  },
+  {
+    "code": "KZ-043",
+    "title": "Винтовой самолет",
+    "file": "art/kz-043.jpg",
+    "w": 747,
+    "h": 526,
+    "excluded": false
+  },
+  {
+    "code": "KZ-044",
+    "title": "Турбина",
+    "file": "art/kz-044.jpg",
+    "w": 823,
+    "h": 581,
+    "excluded": false
+  },
+  {
+    "code": "KZ-045",
+    "title": "Винтовой самолет",
+    "file": "art/kz-045.jpg",
+    "w": 617,
+    "h": 738,
+    "excluded": false
+  },
+  {
+    "code": "KZ-046",
+    "title": "Абстракция",
+    "file": "art/kz-046.jpg",
+    "w": 787,
+    "h": 490,
+    "excluded": false
+  },
+  {
+    "code": "KZ-047",
+    "title": "Абстракция",
+    "file": "art/kz-047.jpg",
+    "w": 658,
+    "h": 646,
+    "excluded": false
+  },
+  {
+    "code": "KZ-048",
+    "title": "Абстракция",
+    "file": "art/kz-048.jpg",
+    "w": 697,
+    "h": 489,
+    "excluded": false
+  },
+  {
+    "code": "KZ-049",
+    "title": "Рыбаки",
+    "file": "art/kz-049.jpg",
+    "w": 692,
+    "h": 685,
+    "excluded": false
+  },
+  {
+    "code": "KZ-050",
+    "title": "Тропики",
+    "file": "art/kz-050.jpg",
+    "w": 712,
+    "h": 1197,
+    "excluded": false
+  },
+  {
+    "code": "KZ-051",
+    "title": "Берег ``Бэй Бич``",
+    "file": "art/kz-051.jpg",
+    "w": 696,
+    "h": 492,
+    "excluded": false
+  },
+  {
+    "code": "KZ-052",
+    "title": "Мандала",
+    "file": "art/kz-052.jpg",
+    "w": 796,
+    "h": 394,
+    "excluded": false
+  },
+  {
+    "code": "KZ-053",
+    "title": "Давид",
+    "file": "art/kz-053.jpg",
+    "w": 587,
+    "h": 755,
+    "excluded": false
+  },
+  {
+    "code": "KZ-054",
+    "title": "Ганеша",
+    "file": "art/kz-054.jpg",
+    "w": 528,
+    "h": 730,
+    "excluded": false
+  },
+  {
+    "code": "KZ-055",
+    "title": "Золотая мандала",
+    "file": "art/kz-055.jpg",
+    "w": 427,
+    "h": 738,
+    "excluded": false
+  },
+  {
+    "code": "KZ-056",
+    "title": "Силует танцовщицы",
+    "file": "art/kz-056.jpg",
+    "w": 524,
+    "h": 726,
+    "excluded": false
+  },
+  {
+    "code": "KZ-057",
+    "title": "Мандала",
+    "file": "art/kz-057.jpg",
+    "w": 424,
+    "h": 733,
+    "excluded": false
+  },
+  {
+    "code": "KZ-058",
+    "title": "Ананас",
+    "file": "art/kz-058.jpg",
+    "w": 694,
+    "h": 687,
+    "excluded": false
+  },
+  {
+    "code": "KZ-059",
+    "title": "Фраза",
+    "file": "art/kz-059.jpg",
+    "w": 661,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-060",
+    "title": "Фраза",
+    "file": "art/kz-060.jpg",
+    "w": 670,
+    "h": 663,
+    "excluded": false
+  },
+  {
+    "code": "KZ-061",
+    "title": "Африканская мандала",
+    "file": "art/kz-061.jpg",
+    "w": 656,
+    "h": 644,
+    "excluded": false
+  },
+  {
+    "code": "KZ-062",
+    "title": "Коренная американка",
+    "file": "art/kz-062.jpg",
+    "w": 392,
+    "h": 776,
+    "excluded": false
+  },
+  {
+    "code": "KZ-063",
+    "title": "Разноцветные перья",
+    "file": "art/kz-063.jpg",
+    "w": 856,
+    "h": 552,
+    "excluded": false
+  },
+  {
+    "code": "KZ-064",
+    "title": "Восточный орнамент",
+    "file": "art/kz-064.jpg",
+    "w": 724,
+    "h": 638,
+    "excluded": false
+  },
+  {
+    "code": "KZ-065",
+    "title": "Стеклянный потолок",
+    "file": "art/kz-065.jpg",
+    "w": 432,
+    "h": 747,
+    "excluded": false
+  },
+  {
+    "code": "KZ-066",
+    "title": "Ретро Мотоцикл",
+    "file": "art/kz-066.jpg",
+    "w": 499,
+    "h": 691,
+    "excluded": false
+  },
+  {
+    "code": "KZ-067",
+    "title": "Страсть",
+    "file": "art/kz-067.jpg",
+    "w": 513,
+    "h": 710,
+    "excluded": false
+  },
+  {
+    "code": "KZ-068",
+    "title": "Губы",
+    "file": "art/kz-068.jpg",
+    "w": 671,
+    "h": 660,
+    "excluded": false
+  },
+  {
+    "code": "KZ-069",
+    "title": "Перед поцелуем",
+    "file": "art/kz-069.jpg",
+    "w": 514,
+    "h": 711,
+    "excluded": false
+  },
+  {
+    "code": "KZ-070",
+    "title": "Лондон",
+    "file": "art/kz-070.jpg",
+    "w": 645,
+    "h": 639,
+    "excluded": false
+  },
+  {
+    "code": "KZ-071",
+    "title": "Горячо",
+    "file": "art/kz-071.jpg",
+    "w": 775,
+    "h": 577,
+    "excluded": false
+  },
+  {
+    "code": "KZ-072",
+    "title": "Айс Бейби",
+    "file": "art/kz-072.jpg",
+    "w": 538,
+    "h": 744,
+    "excluded": false
+  },
+  {
+    "code": "KZ-076",
+    "title": "Идейная рыбка",
+    "file": "art/kz-076.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": false
+  },
+  {
+    "code": "KZ-077",
+    "title": "Динозаврик",
+    "file": "art/kz-077.jpg",
+    "w": 662,
+    "h": 655,
+    "excluded": true
+  },
+  {
+    "code": "KZ-078",
+    "title": "Динозаврик",
+    "file": "art/kz-078.jpg",
+    "w": 664,
+    "h": 657,
+    "excluded": true
+  },
+  {
+    "code": "KZ-079",
+    "title": "Бэтман",
+    "file": "art/kz-079.jpg",
+    "w": 507,
+    "h": 703,
+    "excluded": true
+  },
+  {
+    "code": "KZ-080",
+    "title": "Парад планет",
+    "file": "art/kz-080.jpg",
+    "w": 385,
+    "h": 762,
+    "excluded": false
+  },
+  {
+    "code": "KZ-081",
+    "title": "Девочки - сила!",
+    "file": "art/kz-081.jpg",
+    "w": 660,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-082",
+    "title": "Космонавт",
+    "file": "art/kz-082.jpg",
+    "w": 662,
+    "h": 655,
+    "excluded": false
+  },
+  {
+    "code": "KZ-083",
+    "title": "Бэймакс",
+    "file": "art/kz-083.jpg",
+    "w": 491,
+    "h": 674,
+    "excluded": true
+  },
+  {
+    "code": "KZ-084",
+    "title": "Собака хипстер",
+    "file": "art/kz-084.jpg",
+    "w": 542,
+    "h": 751,
+    "excluded": false
+  },
+  {
+    "code": "KZ-085",
+    "title": "Лама",
+    "file": "art/kz-085.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": false
+  },
+  {
+    "code": "KZ-086",
+    "title": "Лама",
+    "file": "art/kz-086.jpg",
+    "w": 660,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-087",
+    "title": "Лама",
+    "file": "art/kz-087.jpg",
+    "w": 673,
+    "h": 666,
+    "excluded": false
+  },
+  {
+    "code": "KZ-088",
+    "title": "Футбольный мяч",
+    "file": "art/kz-088.jpg",
+    "w": 668,
+    "h": 661,
+    "excluded": false
+  },
+  {
+    "code": "KZ-089",
+    "title": "Теннисные мячи",
+    "file": "art/kz-089.jpg",
+    "w": 671,
+    "h": 664,
+    "excluded": false
+  },
+  {
+    "code": "KZ-090",
+    "title": "Волейбольные мячи",
+    "file": "art/kz-090.jpg",
+    "w": 663,
+    "h": 656,
+    "excluded": false
+  },
+  {
+    "code": "KZ-091",
+    "title": "Пятачки",
+    "file": "art/kz-091.jpg",
+    "w": 643,
+    "h": 637,
+    "excluded": false
+  },
+  {
+    "code": "KZ-092",
+    "title": "Фраза",
+    "file": "art/kz-092.jpg",
+    "w": 617,
+    "h": 610,
+    "excluded": false
+  },
+  {
+    "code": "KZ-093",
+    "title": "Пёсики",
+    "file": "art/kz-093.jpg",
+    "w": 656,
+    "h": 650,
+    "excluded": false
+  },
+  {
+    "code": "KZ-094",
+    "title": "Супер герои",
+    "file": "art/kz-094.jpg",
+    "w": 817,
+    "h": 451,
+    "excluded": true
+  },
+  {
+    "code": "KZ-095",
+    "title": "Фраза",
+    "file": "art/kz-095.jpg",
+    "w": 659,
+    "h": 653,
+    "excluded": false
+  },
+  {
+    "code": "KZ-096",
+    "title": "Погнали!",
+    "file": "art/kz-096.jpg",
+    "w": 664,
+    "h": 657,
+    "excluded": false
+  },
+  {
+    "code": "KZ-097",
+    "title": "Котик",
+    "file": "art/kz-097.jpg",
+    "w": 659,
+    "h": 653,
+    "excluded": false
+  },
+  {
+    "code": "KZ-098",
+    "title": "Идея",
+    "file": "art/kz-098.jpg",
+    "w": 615,
+    "h": 608,
+    "excluded": false
+  },
+  {
+    "code": "KZ-099",
+    "title": "Черепашка",
+    "file": "art/kz-099.jpg",
+    "w": 680,
+    "h": 673,
+    "excluded": false
+  },
+  {
+    "code": "KZ-100",
+    "title": "Башня Хивы",
+    "file": "art/kz-100.jpg",
+    "w": 352,
+    "h": 1164,
+    "excluded": false
+  },
+  {
+    "code": "KZ-101",
+    "title": "Альпинисты",
+    "file": "art/kz-101.jpg",
+    "w": 948,
+    "h": 682,
+    "excluded": false
+  },
+  {
+    "code": "KZ-102",
+    "title": "Король Лев",
+    "file": "art/kz-102.jpg",
+    "w": 389,
+    "h": 539,
+    "excluded": false
+  },
+  {
+    "code": "KZ-103",
+    "title": "Грязные деньги",
+    "file": "art/kz-103.jpg",
+    "w": 782,
+    "h": 325,
+    "excluded": true
+  },
+  {
+    "code": "KZ-104",
+    "title": "Турбина",
+    "file": "art/kz-104.jpg",
+    "w": 648,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-105",
+    "title": "Мотивация",
+    "file": "art/kz-105.jpg",
+    "w": 624,
+    "h": 617,
+    "excluded": false
+  },
+  {
+    "code": "KZ-106",
+    "title": "Ташкент",
+    "file": "art/kz-106.jpg",
+    "w": 546,
+    "h": 541,
+    "excluded": false
+  },
+  {
+    "code": "KZ-107",
+    "title": "Мотивация",
+    "file": "art/kz-107.jpg",
+    "w": 621,
+    "h": 614,
+    "excluded": false
+  },
+  {
+    "code": "KZ-108",
+    "title": "Подъем в гору",
+    "file": "art/kz-108.jpg",
+    "w": 484,
+    "h": 670,
+    "excluded": false
+  },
+  {
+    "code": "KZ-109",
+    "title": "Философская картина",
+    "file": "art/kz-109.jpg",
+    "w": 646,
+    "h": 640,
+    "excluded": false
+  },
+  {
+    "code": "KZ-110",
+    "title": "Формула успеха",
+    "file": "art/kz-110.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": false
+  },
+  {
+    "code": "KZ-111",
+    "title": "Нити Ташкента",
+    "file": "art/kz-111.jpg",
+    "w": 656,
+    "h": 650,
+    "excluded": false
+  },
+  {
+    "code": "KZ-112",
+    "title": "Код времени",
+    "file": "art/kz-112.jpg",
+    "w": 661,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-113",
+    "title": "Солнечный портал",
+    "file": "art/kz-113.jpg",
+    "w": 656,
+    "h": 650,
+    "excluded": false
+  },
+  {
+    "code": "KZ-114",
+    "title": "Винтажный биткоин",
+    "file": "art/kz-114.jpg",
+    "w": 672,
+    "h": 665,
+    "excluded": false
+  },
+  {
+    "code": "KZ-115",
+    "title": "Погода успеха",
+    "file": "art/kz-115.jpg",
+    "w": 671,
+    "h": 664,
+    "excluded": false
+  },
+  {
+    "code": "KZ-116",
+    "title": "Винтажный доллар",
+    "file": "art/kz-116.jpg",
+    "w": 576,
+    "h": 663,
+    "excluded": false
+  },
+  {
+    "code": "KZ-117",
+    "title": "Карлеоне",
+    "file": "art/kz-117.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": true
+  },
+  {
+    "code": "KZ-118",
+    "title": "Птица Хумо",
+    "file": "art/kz-118.jpg",
+    "w": 705,
+    "h": 698,
+    "excluded": false
+  },
+  {
+    "code": "KZ-119",
+    "title": "Компас",
+    "file": "art/kz-119.jpg",
+    "w": 780,
+    "h": 505,
+    "excluded": false
+  },
+  {
+    "code": "KZ-121",
+    "title": "Африканец",
+    "file": "art/kz-121.jpg",
+    "w": 652,
+    "h": 646,
+    "excluded": false
+  },
+  {
+    "code": "KZ-122",
+    "title": "Африканка",
+    "file": "art/kz-122.jpg",
+    "w": 658,
+    "h": 652,
+    "excluded": false
+  },
+  {
+    "code": "KZ-123",
+    "title": "Расписание",
+    "file": "art/kz-123.jpg",
+    "w": 653,
+    "h": 647,
+    "excluded": false
+  },
+  {
+    "code": "KZ-124",
+    "title": "Карта мира",
+    "file": "art/kz-124.jpg",
+    "w": 823,
+    "h": 581,
+    "excluded": false
+  },
+  {
+    "code": "KZ-125",
+    "title": "Фраза на стену",
+    "file": "art/kz-125.jpg",
+    "w": 656,
+    "h": 650,
+    "excluded": false
+  },
+  {
+    "code": "KZ-126",
+    "title": "Фраза на стену",
+    "file": "art/kz-126.jpg",
+    "w": 659,
+    "h": 653,
+    "excluded": false
+  },
+  {
+    "code": "KZ-127",
+    "title": "Фраза на стену",
+    "file": "art/kz-127.jpg",
+    "w": 658,
+    "h": 652,
+    "excluded": false
+  },
+  {
+    "code": "KZ-128",
+    "title": "Амстердам",
+    "file": "art/kz-128.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": false
+  },
+  {
+    "code": "KZ-129",
+    "title": "Бруклинский мост",
+    "file": "art/kz-129.jpg",
+    "w": 662,
+    "h": 655,
+    "excluded": false
+  },
+  {
+    "code": "KZ-130",
+    "title": "Китайская стена",
+    "file": "art/kz-130.jpg",
+    "w": 654,
+    "h": 648,
+    "excluded": false
+  },
+  {
+    "code": "KZ-131",
+    "title": "Франклин",
+    "file": "art/kz-131.jpg",
+    "w": 880,
+    "h": 436,
+    "excluded": true
+  },
+  {
+    "code": "KZ-133",
+    "title": "Зелень",
+    "file": "art/kz-133.jpg",
+    "w": 704,
+    "h": 697,
+    "excluded": false
+  },
+  {
+    "code": "KZ-134",
+    "title": "Воздушный шар",
+    "file": "art/kz-134.jpg",
+    "w": 668,
+    "h": 661,
+    "excluded": false
+  },
+  {
+    "code": "KZ-135",
+    "title": "Хлопок",
+    "file": "art/kz-135.jpg",
+    "w": 675,
+    "h": 696,
+    "excluded": false
+  },
+  {
+    "code": "KZ-136",
+    "title": "Фраза на стену",
+    "file": "art/kz-136.jpg",
+    "w": 661,
+    "h": 654,
+    "excluded": false
+  },
+  {
+    "code": "KZ-137",
+    "title": "Рахмат",
+    "file": "art/kz-137.jpg",
+    "w": 657,
+    "h": 651,
+    "excluded": false
+  },
+  {
+    "code": "KZ-138",
+    "title": "До и после полудня",
+    "file": "art/kz-138.jpg",
+    "w": 441,
+    "h": 601,
+    "excluded": false
+  },
+  {
+    "code": "KZ-139",
+    "title": "Сквозь пыль веков",
+    "file": "art/kz-139.jpg",
+    "w": 896,
+    "h": 887,
+    "excluded": false
+  },
+  {
+    "code": "KZ-140",
+    "title": "Время для кофе",
+    "file": "art/kz-140.jpg",
+    "w": 980,
+    "h": 938,
+    "excluded": false
+  },
+  {
+    "code": "KZ-141",
+    "title": "Время для кофе",
+    "file": "art/kz-141.jpg",
+    "w": 948,
+    "h": 939,
+    "excluded": false
+  },
+  {
+    "code": "KZ-142",
+    "title": "Рожденный быть классным",
+    "file": "art/kz-142.jpg",
+    "w": 989,
+    "h": 941,
+    "excluded": false
+  },
+  {
+    "code": "KZ-143",
+    "title": "Праздничные тарелки",
+    "file": "art/kz-143.jpg",
+    "w": 665,
+    "h": 658,
+    "excluded": false
+  },
+  {
+    "code": "KZ-146",
+    "title": "Мандала",
+    "file": "art/kz-146.jpg",
+    "w": 531,
+    "h": 525,
+    "excluded": false
+  },
+  {
+    "code": "KZ-148",
+    "title": "Городские",
+    "file": "art/kz-148.jpg",
+    "w": 710,
+    "h": 699,
+    "excluded": false
+  },
+  {
+    "code": "KZ-149",
+    "title": "Бетонная мозаика",
+    "file": "art/kz-149.jpg",
+    "w": 712,
+    "h": 701,
+    "excluded": false
+  },
+  {
+    "code": "KZ-150",
+    "title": "Байрам",
+    "file": "art/kz-150.jpg",
+    "w": 905,
+    "h": 896,
+    "excluded": false
+  },
+  {
+    "code": "KZ-151",
+    "title": "Мысли девушки",
+    "file": "art/kz-151.jpg",
+    "w": 744,
+    "h": 434,
+    "excluded": false
+  },
+  {
+    "code": "KZ-152",
+    "title": "Окрыленная",
+    "file": "art/kz-152.jpg",
+    "w": 612,
+    "h": 431,
+    "excluded": false
+  },
+  {
+    "code": "KZ-153",
+    "title": "Аква Мандала",
+    "file": "art/kz-153.jpg",
+    "w": 809,
+    "h": 501,
+    "excluded": false
+  },
+  {
+    "code": "KZ-154",
+    "title": "Кокандская мозаика",
+    "file": "art/kz-154.jpg",
+    "w": 444,
+    "h": 606,
+    "excluded": false
+  },
+  {
+    "code": "KZ-155",
+    "title": "Ляганы",
+    "file": "art/kz-155.jpg",
+    "w": 208,
+    "h": 678,
+    "excluded": false
+  },
+  {
+    "code": "KZ-156",
+    "title": "Кокандская мозаика",
+    "file": "art/kz-156.jpg",
+    "w": 439,
+    "h": 593,
+    "excluded": false
+  },
+  {
+    "code": "KZ-157",
+    "title": "Окна двери",
+    "file": "art/kz-157.jpg",
+    "w": 212,
+    "h": 700,
+    "excluded": false
+  },
+  {
+    "code": "KZ-159",
+    "title": "Башня Бухары",
+    "file": "art/kz-159.jpg",
+    "w": 351,
+    "h": 1162,
+    "excluded": false
+  },
+  {
+    "code": "KZ-160",
+    "title": "Яхта в бухте",
+    "file": "art/kz-160.jpg",
+    "w": 442,
+    "h": 724,
+    "excluded": false
+  },
+  {
+    "code": "KZ-162",
+    "title": "Морской полет",
+    "file": "art/kz-162.jpg",
+    "w": 441,
+    "h": 723,
+    "excluded": false
+  },
+  {
+    "code": "KZ-165",
+    "title": "Между линиями",
+    "file": "art/kz-165.jpg",
+    "w": 687,
+    "h": 680,
+    "excluded": false
+  },
+  {
+    "code": "KZ-166",
+    "title": "Цветок Урбанизма",
+    "file": "art/kz-166.jpg",
+    "w": 711,
+    "h": 699,
+    "excluded": false
+  },
+  {
+    "code": "KZ-168",
+    "title": "Пахтакор",
+    "file": "art/kz-168.jpg",
+    "w": 545,
+    "h": 540,
+    "excluded": false
+  },
+  {
+    "code": "KZ-169",
+    "title": "Supreme",
+    "file": "art/kz-169.jpg",
+    "w": 543,
+    "h": 538,
+    "excluded": true
+  },
+  {
+    "code": "KZ-171",
+    "title": "Ретро Бьюик",
+    "file": "art/kz-171.jpg",
+    "w": 568,
+    "h": 695,
+    "excluded": false
+  },
+  {
+    "code": "KZ-172",
+    "title": "Водоворот",
+    "file": "art/kz-172.jpg",
+    "w": 731,
+    "h": 516,
+    "excluded": false
+  },
+  {
+    "code": "KZ-173",
+    "title": "Бэймакс",
+    "file": "art/kz-173.jpg",
+    "w": 476,
+    "h": 660,
+    "excluded": true
+  }
+]
