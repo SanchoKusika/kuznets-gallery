@@ -2,6 +2,7 @@ import { evolvePath, getLength, getSubpaths } from "@remotion/paths";
 import type { Element } from "../lines/shapes";
 import { pencil } from "./LinePath";
 import { ease } from "../theme/easing";
+import { color } from "../theme/tokens";
 
 export type LineStyle = { color: string; width: number };
 
@@ -27,7 +28,7 @@ export function prepareRoom(elements: readonly Element[], width: number): Prepar
 }
 
 /** One element at drawing progress p (its subpaths one after another, like a pen), alive with its motion. */
-export function RoomElement({ el, p, beat, line, fine }: { el: PreparedElement; p: number; beat: number; line: LineStyle; fine: LineStyle }) {
+export function RoomElement({ el, p, beat, line, fine, paper = color.paper }: { el: PreparedElement; p: number; beat: number; line: LineStyle; fine: LineStyle; paper?: string }) {
   if (p <= 0) return null;
   const m = el.motion?.(beat) ?? {};
   const s = el.fine ? fine : line;
@@ -44,7 +45,8 @@ export function RoomElement({ el, p, beat, line, fine }: { el: PreparedElement; 
         done += len;
         if (q <= 0) return null;
         const evo = q < 1 ? evolvePath(q, d) : m.dash ? { strokeDasharray: m.dash.array, strokeDashoffset: -m.dash.offset } : null;
-        return <path key={i} d={d} fill="none" stroke={s.color} strokeWidth={s.width} strokeLinecap="round" strokeLinejoin="round" style={evo ?? undefined} />;
+        const solid = el.fill && p >= 1;
+        return <path key={i} d={d} fill={solid ? paper : "none"} stroke={s.color} strokeWidth={s.width} strokeLinecap="round" strokeLinejoin="round" style={evo ?? undefined} />;
       })}
     </g>
   );
@@ -55,14 +57,31 @@ export function RoomElement({ el, p, beat, line, fine }: { el: PreparedElement; 
  * the same way (`erased` 0 → 1); `beat` drives the elements' idle motion. Renders `<g>`s for an enclosing SVG in
  * the room box's coordinates.
  */
-export function RoomStrokes({ room, drawn, erased = 0, beat, line, fine }: { room: PreparedElement[]; drawn: number; erased?: number; beat: number; line: LineStyle; fine: LineStyle }) {
+export function RoomStrokes({
+  room,
+  drawn,
+  erased = 0,
+  beat,
+  line,
+  fine,
+  paper,
+}: {
+  room: PreparedElement[];
+  drawn: number;
+  erased?: number;
+  beat: number;
+  line: LineStyle;
+  fine: LineStyle;
+  /** Fill of the solid elements (the wall's colour). */
+  paper?: string;
+}) {
   if (drawn <= 0 || erased >= 1) return null;
   return (
     <>
       {room.map((el, i) => {
         const local = (x: number) => Math.max(0, Math.min(1, (x - el.start) / ELEMENT_SPAN));
         const p = pencil(ease.out(local(drawn))) * (1 - ease.in(local(erased)));
-        return <RoomElement key={i} el={el} p={p} beat={beat} line={line} fine={fine} />;
+        return <RoomElement key={i} el={el} p={p} beat={beat} line={line} fine={fine} paper={paper} />;
       })}
     </>
   );

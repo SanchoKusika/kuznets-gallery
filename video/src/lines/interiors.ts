@@ -41,8 +41,9 @@ const home: Room = {
         `M292 336V394H648V336` +
         `M276 394L270 420M664 394L670 420`,
     },
-    { d: cushion(340, 262, 62, 4) + cushion(598, 260, 58, -3) },
-    { d: `M652 270Q680 254 706 272L712 352Q694 366 674 352L670 306` + `M684 286L690 344`, fine: true },
+    { d: cushion(340, 262, 62, 4) + cushion(598, 260, 58, -3), fill: true },
+    { d: `M652 270Q680 254 706 272L712 352Q694 366 674 352L670 306Q662 286 652 270`, fill: true },
+    { d: `M684 286L690 344`, fine: true },
     // Arc lamp: base, the arc over the sofa, the dome, the bulb and its light.
     {
       d: `${ellipse(880, 421, 40, 7)}M880 414V176Q880 52 752 52Q676 52 640 92` + `M604 138C604 110 622 94 640 94C658 94 676 110 676 138H604` + circle(640, 146, 6),
@@ -55,7 +56,7 @@ const home: Room = {
       motion: (b) => ({ rotate: sway(2, 2.5, 1)(b), pivot: [1000, 356] }),
     },
     // Rug with fringes.
-    { d: ellipse(470, 428, 300, 16) + `M164 422L150 418M164 432L150 436M776 422L790 418M776 432L790 436`, fine: true },
+    { d: ellipse(470, 442, 300, 13) + `M174 438L160 435M174 446L160 449M766 438L780 435M766 446L780 449`, fine: true, fill: true },
     // A cat sitting on the rug, eyes shut, its tail flicking.
     {
       d:
@@ -95,7 +96,7 @@ const kids: Room = {
         `M376 426V318Q376 298 396 298Q416 298 416 318V426` +
         `M150 360V426M352 360V426`,
     },
-    { d: cushion(158, 308, 44, 2) },
+    { d: cushion(158, 308, 44, 2), fill: true },
     { d: circle(310, 286, 18) + circle(296, 270, 7) + circle(324, 270, 7) + `M292 318Q290 302 310 302Q330 302 328 318Q326 326 310 326Q294 326 292 318` + circle(310, 290, 2.5) },
     // Rocket: body, window, fins, stripes, flame.
     {
@@ -122,7 +123,7 @@ const kids: Room = {
     // Blocks on the floor.
     { d: rr(770, 382, 44, 44, 4) + rr(820, 382, 44, 44, 4) + rr(795, 338, 44, 44, 4) + `M782 414L792 392L802 414M786 406H798` + `M833 392H849M833 392V414H843Q851 414 851 408Q851 402 843 402H833` + circle(817, 360, 10) },
     // Round rug.
-    { d: ellipse(560, 432, 240, 12) + ellipse(560, 432, 200, 8), fine: true },
+    { d: ellipse(560, 444, 240, 12) + ellipse(560, 444, 200, 8), fine: true, fill: true },
   ],
 };
 
@@ -163,7 +164,7 @@ const office: Room = {
       d: rr(860, 196, 120, 96, 26) + `M920 292V312` + rr(846, 312, 148, 18, 9) + `M920 330V384M864 404L920 384L976 404M920 384V404` + circle(864, 414, 7) + circle(976, 414, 7) + circle(920, 412, 7),
       motion: (b) => ({ rotate: sway(2, 4, 1)(b), pivot: [920, 410] }),
     },
-    { d: ellipse(920, 428, 110, 9), fine: true },
+    { d: ellipse(920, 440, 110, 9), fine: true, fill: true },
   ],
 };
 

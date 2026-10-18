@@ -1,7 +1,7 @@
 // All on-screen copy of both videos (brief 9.3). Typography (non-breaking spaces) is applied here.
 
-import { CLIENTS, CONTACTS } from "./site";
-import { companiesWord, NBSP, typo, worksWord } from "./typo";
+import { CONTACTS } from "./site";
+import { NBSP, typo, worksWord } from "./typo";
 import { WORKS_COUNT } from "./art";
 
 /** «{n} авторских работ» with the right word form; n comes from the counter. */
@@ -29,22 +29,18 @@ export const copy = {
     hero: "картины",
     lede: typo("Авторские принт-картины — от восточной мозаики до поп-арта. В наличии и на заказ."),
     halls: ["для дома", "для детской", "для офиса", "для общественных мест"],
-    hover: "смотреть",
     canvasOnStretcher: "холст на подрамнике",
     wallTitle: worksTitle,
     wallSub: typo("больше их нигде нет"),
     framingTitle: typo("багет превращает принт в настоящую картину"),
     stepsTitle: typo("от идеи до стены — 3–7 дней"),
-    clientsCount: CLIENTS.length,
-    /** «нам доверяют 42 компании»; the number is painted accent by the scene. */
-    clientsLine: (n: number) => ({ before: "нам доверяют ", number: String(n), after: ` ${companiesWord(n)}` }),
     stats: [
       ["от 90\u00A0000\u00A0сум", "за картину"],
       ["3–7\u00A0дней", "изготовление"],
       [`${WORKS_COUNT}\u00A0${worksWord(WORKS_COUNT)}`, "в коллекции"],
       ["Узбекистан", "доставка по стране"],
     ] as const,
-    /** Both phones, as in the Reels CTA. */
-    contacts: ["kuznets.uz", ...CONTACTS.phones.map((p) => p.label.replace(/ /g, NBSP)), CONTACTS.instagram.handle].join(" · "),
+    /** The site in the finale's accent pill; phones and Instagram come from CONTACTS. */
+    site: "kuznets.uz",
   },
 } as const;

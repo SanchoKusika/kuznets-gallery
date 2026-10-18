@@ -22,18 +22,18 @@ export function P2Hero() {
   const box = { position: "absolute", left: cx - 800, width: 1600, textAlign: "center" } as const;
   return (
     <>
-      <div style={{ ...box, top: 300 }}>
+      <div style={{ ...box, top: 250 }}>
         <MaskRise from={S.P2 + t.b(1)} duration={t.b(1)} exit={exit(0)}>
           <div style={{ ...label(type.promo.label), color: color.ink3 }}>{copy.promo.eyebrow}</div>
         </MaskRise>
       </div>
-      <div style={{ ...box, top: 352 }}>
+      <div style={{ ...box, top: 302 }}>
         {/* Room for the descender of «р» inside the mask. */}
         <MaskRise from={S.P2 + t.s(1)} duration={t.b(2)} exit={exit(1)} style={{ paddingBottom: 60, marginBottom: -60 }}>
           <div style={{ ...display(type.promo.hero, 600, -0.075, 0.86), color: color.ink }}>{copy.promo.hero}</div>
         </MaskRise>
       </div>
-      <div style={{ ...box, left: cx - 560, width: 1120, top: 690 }}>
+      <div style={{ ...box, left: cx - 560, width: 1120, top: 636 }}>
         <MaskRise from={S.P2 + t.b(1.5)} duration={t.b(1.5)} exit={exit(2)} style={{ paddingBottom: 12 }}>
           <div style={{ ...serif(type.promo.lede, 1.2), color: color.ink2 }}>{copy.promo.lede}</div>
         </MaskRise>

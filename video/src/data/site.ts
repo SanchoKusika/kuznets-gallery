@@ -15,16 +15,6 @@ export const FRAMES = [
   { n: "Бумага в рамке под стеклом", note: "Расчёт отдельно", d: "Печать на бумаге в рамке со стеклом — лёгкий вариант для небольших форматов." },
 ] as const;
 
-export const CLIENTS = [
-  "Pepsi", "Red Bull", "Kapitalbank", "NBU", "Anorbank", "Sanoat Qurilish Bank", "Click", "Humo Arena",
-  "Iteca Exhibitions", "United Cement Group", "Uzcopper", "ADM Global", "Safia", "Beanberry",
-  "Community Coffee Bar", "Мята Lounge", "Apexpizza", "Sherin", "The Wax Bar", "Befit One", "Hair Boss",
-  "Space Coworking", "Ground Zero", "Tenet", "Shavi", "Prestige Travel", "Comfort Plaza", "Atom Stroy",
-  "Betomax", "Carbon", "Agrover", "Alimkhanov Pharm Group", "Asia Pharm Consulting", "Bavaria Reha",
-  "De Factum Laboratories", "Referans", "Онкологический центр РУз", "Школа Al-Xorazmiy", "Webnow", "Восток",
-  "Мой Бухгалтер", "Западня",
-] as const;
-
 export const STEPS = [
   { n: "1", t: "Выбор", d: "Выбираете работу из коллекции или присылаете свою идею." },
   { n: "2", t: "Макет", d: "Дизайнер готовит макет под размер и интерьер." },

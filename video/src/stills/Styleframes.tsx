@@ -8,7 +8,6 @@ import { LogoBuild, logoSchedule } from "../effects/LogoBuild";
 import { Canvas3D } from "../effects/Canvas3D";
 import { BagetFrame, GlassFrame } from "../effects/Framing";
 import { ArtImage } from "../primitives/ArtImage";
-import { DotCursor } from "../primitives/DotCursor";
 import { hallLabel, hallWorkRect } from "../lines/promo";
 import { PROMO_ROOM, PROMO_ROOMS } from "../lines/promoRooms";
 import { prepareRoom, RoomStrokes } from "../primitives/LineRoom";
@@ -108,7 +107,7 @@ export function SfReelsLogo() {
   );
 }
 
-/** 5 · Promo P3, hall «для дома» with museum labels, hover on «Тихий Паттерн» (frame 700). */
+/** 5 · Promo P3, hall «для дома» with museum labels (frame 700). */
 export function SfPromoHall() {
   const hall = promo.halls[0];
   return (
@@ -124,14 +123,12 @@ export function SfPromoHall() {
       {hall.codes.map((code, i) => {
         const r = hallWorkRect(i);
         const l = hallLabel(i);
-        const hover = code === hall.hover;
         return (
           <div key={code}>
-            <div style={{ position: "absolute", left: r.x, top: r.y, scale: hover ? "1.05" : undefined }}>
-              <ArtImage code={code} width={r.w} height={r.h} shadow parentScale={hover ? 1.05 : 1} />
+            <div style={{ position: "absolute", left: r.x, top: r.y }}>
+              <ArtImage code={code} width={r.w} height={r.h} shadow />
             </div>
             <MuseumLabel code={code} from={-100} step={2} x={l.x} y={l.y} style={{ width: l.w }} />
-            {hover ? <DotCursor x={r.x + r.w / 2 + 30} y={r.y + r.h / 2 + 20} d={150} label={copy.promo.hover} /> : null}
           </div>
         );
       })}

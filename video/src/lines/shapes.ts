@@ -19,6 +19,8 @@ export type Element = {
   motion?: (beat: number) => Motion;
   /** A finer, lighter stroke (patterns, steam, light rays). */
   fine?: boolean;
+  /** Solid: closed shapes are filled with the paper once drawn, so lines behind (the floor's boards) stop at them. */
+  fill?: boolean;
 };
 
 export const n = (v: number) => +v.toFixed(1);

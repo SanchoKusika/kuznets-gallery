@@ -70,10 +70,11 @@ const home: Element[] = [
       rr(1100, 150, 140, 44, 12) +
       `M820 194V250H1240V194M780 250L776 ${F}M1280 250L1284 ${F}`,
   },
-  { d: cushion(870, 122, 56, 4) + cushion(1030, 124, 50, 2) + cushion(1192, 120, 52, -3) },
-  { d: `M1244 116Q1272 100 1298 118L1304 196Q1286 210 1266 196L1262 150M1278 130L1284 190`, fine: true },
+  { d: cushion(870, 122, 56, 4) + cushion(1030, 124, 50, 2) + cushion(1192, 120, 52, -3), fill: true },
+  { d: `M1244 116Q1272 100 1298 118L1304 196Q1286 210 1266 196L1262 150Q1252 128 1244 116`, fill: true },
+  { d: `M1278 130L1284 190`, fine: true },
   // Rug with fringes.
-  { d: ellipse(1030, 264, 340, 12) + `M690 260L676 256M690 268L676 272M1370 260L1384 256M1370 268L1384 272`, fine: true },
+  { d: ellipse(1030, 278, 330, 12) + `M700 274L686 271M700 282L686 285M1360 274L1374 271M1360 282L1374 285`, fine: true, fill: true },
   // Side table with a monstera.
   { d: ellipse(1400, 190, 42, 8) + `M1400 198V258M1376 260H1424` },
   {
@@ -110,9 +111,9 @@ const kids: Element[] = [
       `M656 206H1056M760 170Q900 160 1056 172V206H756Q750 186 760 170` +
       `M1056 ${F}V140Q1056 120 1076 120Q1096 120 1096 140V${F}M690 206V${F}M1020 206V${F}`,
   },
-  { d: cushion(706, 152, 50, 2) },
+  { d: cushion(706, 152, 50, 2), fill: true },
   { d: circle(980, 130, 18) + circle(966, 114, 7) + circle(994, 114, 7) + `M962 162Q960 146 980 146Q1000 146 998 162Q996 170 980 170Q964 170 962 162` + circle(980, 134, 2.5) },
-  { d: ellipse(850, 266, 300, 10) + ellipse(850, 266, 250, 6), fine: true },
+  { d: ellipse(850, 278, 300, 12) + ellipse(850, 278, 250, 7), fine: true, fill: true },
   // Rocket with its flame.
   {
     d:
@@ -194,7 +195,6 @@ const pub: Element[] = [
   { d: pendant(1200, 16), motion: (b) => ({ rotate: sway(2, 3, 2)(b), pivot: [1200, -30] }) },
   // Bar counter with slats; a coffee machine, cups, bottles on it.
   { d: rr(560, 118, 800, 16, 4) + `M590 134V${F}M1330 134V${F}` },
-  { d: `M640 134V${F}M700 134V${F}M760 134V${F}M820 134V${F}M880 134V${F}M940 134V${F}M1000 134V${F}M1060 134V${F}M1120 134V${F}M1180 134V${F}M1240 134V${F}M1290 134V${F}`, fine: true },
   { d: rr(590, 50, 110, 68, 8) + `M620 50V36H670V50M630 84H660V96M616 118V108M674 118V108` + circle(645, 66, 6) },
   { d: cup(724, 116) },
   { d: wisps(724, 82), fine: true, motion: steam(22) },

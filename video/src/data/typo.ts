@@ -28,4 +28,3 @@ export function plural(n: number, one: string, few: string, many: string) {
 }
 
 export const worksWord = (n: number) => plural(n, "работа", "работы", "работ");
-export const companiesWord = (n: number) => plural(n, "компания", "компании", "компаний");

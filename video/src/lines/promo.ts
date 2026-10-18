@@ -275,7 +275,7 @@ export const MOON_STARS_AT = { x: 1600, y: 40 } as const;
 export const SHOWROOM_GRID = { x: 323, y: 194, w: 1274, h: 691 } as const;
 
 /** Back wall corners of the room (screen px, final). Vanishing point at the frame centre. */
-const ROOM = { x0: 150, x1: 1770, y0: 112, y1: 1004 } as const;
+export const ROOM = { x0: 150, x1: 1770, y0: 112, y1: 1004 } as const;
 
 /** Picture windows (screen px) inside the frames leaning on the floor; the scene puts the photos here. */
 export const SHOWROOM_PHOTOS = (() => {
@@ -293,12 +293,12 @@ export const SHOWROOM_PHOTOS = (() => {
 })();
 
 /** Frame band of the leaning frames around their photo windows. */
-const LEAN_BAND = 14;
+export const LEAN_BAND = 14;
 
 /**
  * Showroom around the grid wall, full-frame box 1920 × 1080 at (0, 0), in final screen coordinates
  * (after the 1 → 0.72 zoom). Nothing enters SHOWROOM_GRID.
- * Parts: room (ceiling and corner lines), floor, ceiling grille and spots, things on the floor and side wall.
+ * Parts: room (ceiling and corner lines), floor, ceiling grille. What stands in it is in `showroom.ts` (P6).
  */
 export const showroom: LineArt = (() => {
   const { x0, x1, y0, y1 } = ROOM;
@@ -318,7 +318,7 @@ export const showroom: LineArt = (() => {
   const room = poly([tl, { x: x0, y: y0 }, { x: x1, y: y0 }, tr]) + `M${x0} ${y0}V${y1}M${x1} ${y0}V${y1}`;
   const floor = poly([bl, { x: x0, y: y1 }, { x: x1, y: y1 }, br]);
 
-  // Ventilation grille on the ceiling: a perspective slot with slats, and two spot lights.
+  // Ventilation grille on the ceiling: a perspective slot with slats.
   const g = { back: 84, front: 50, bx0: 800, bx1: 1120, fx0: 776, fx1: 1144 };
   let grille = poly(
     [
@@ -334,44 +334,7 @@ export const showroom: LineArt = (() => {
     const t = i / slats;
     grille += `M${n1(g.fx0 + (g.fx1 - g.fx0) * t)} ${g.front}L${n1(g.bx0 + (g.bx1 - g.bx0) * t)} ${g.back}`;
   }
-  for (const sx of [520, 1400]) {
-    grille += `M${sx} ${28}V${40}` + rr(sx - 13, 40, 26, 30, 5);
-  }
-
-  // On the floor: three frames with photos, a round board (left), a frame leaning in the corner,
-  // and a frame on the right side wall in perspective.
-  let things = "";
-  for (const p of SHOWROOM_PHOTOS) things += rect(p.x - LEAN_BAND, p.y - LEAN_BAND, p.w + 2 * LEAN_BAND, p.h + 2 * LEAN_BAND) + rect(p.x, p.y, p.w, p.h);
-  things += circle(238, 942, 62) + circle(238, 942, 46);
-  const lean = (pts: Pt[]) => poly(pts, true);
-  things += lean([
-    { x: 1632, y: 1010 },
-    { x: 1652, y: 846 },
-    { x: 1756, y: 852 },
-    { x: 1740, y: 1012 },
-  ]);
-  things += lean([
-    { x: 1648, y: 994 },
-    { x: 1664, y: 864 },
-    { x: 1740, y: 868 },
-    { x: 1726, y: 996 },
-  ]);
-  // Side wall frame: edges vertical, top and bottom converge on the vanishing point.
-  const side = (x: number, top: number, bottom: number, x2: number) => {
-    const k = (x2 - vp.x) / (x - vp.x);
-    return poly(
-      [
-        { x, y: top },
-        { x: x2, y: vp.y + (top - vp.y) * k },
-        { x: x2, y: vp.y + (bottom - vp.y) * k },
-        { x, y: bottom },
-      ],
-      true,
-    );
-  };
-  things += side(1800, 340, 560, 1880) + side(1812, 362, 538, 1868);
-
-  return { w: 1920, h: 1080, roles: ["room", "floor", "grille", "frames"], parts: [room, floor, grille, things] };
+  return { w: 1920, h: 1080, roles: ["room", "floor", "grille"], parts: [room, floor, grille] };
 })();
 
 // ─── P5: arch window ─────────────────────────────────────────────────────────────────────────
