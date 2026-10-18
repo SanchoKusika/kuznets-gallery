@@ -15,13 +15,15 @@ export const MUSIC = {
 } as const;
 
 /**
- * Reels, 10 bars: 1–4 verse (groove) · 5–6 chorus (the drop, R4–R5) · 7 break (R6) · 8 the build's last bar (the
- * logo builds) · 9 the final chorus's downbeat hit (the dot pops) · 10 the tail's last chord, which leads back into
- * bar 1 (the loop).
+ * Reels, 10 bars: 1–4 the verse's second half (its last bar has the gap before the drop) · 5–6 the chorus's second
+ * half (the drop, R4–R5) · 7 break (R6) · 8 the build's last bar (the logo builds) · 9 the final chorus's downbeat hit
+ * (the dot pops) · 10 the tail's last chord, Am9, which leads back into bar 1's Cmaj9 (the loop). The chorus is the
+ * one that runs straight into the break in the source: cut from its first half, the full groove dropped into the
+ * break mid-phrase and the sound changed abruptly at R6 (owner, 19.10).
  */
 export const REELS_EDIT: MusicSegment[] = [
-  { fromBar: 2, bars: 4 },
-  { fromBar: 8, bars: 2 },
+  { fromBar: 4, bars: 4 },
+  { fromBar: 10, bars: 2 },
   { fromBar: 12, bars: 1 },
   { fromBar: 17, bars: 1 },
   { fromBar: 18, bars: 1 },

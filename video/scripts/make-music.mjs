@@ -316,11 +316,13 @@ filterBus(bassBus, "hp", 34);
 
 const master = bus(LENGTH);
 mixInto(master, drums, 1);
-mixInto(master, bassBus, 1);
+mixInto(master, bassBus, 0.8); // −2 dB: the owner asked for a little less bass (19.10)
 mixInto(master, keys, 1);
 mixInto(master, hook, 1);
 mixInto(master, pads, 0.8);
 mixInto(master, fx, 1);
+// And a touch less low end overall (the kick's thump).
+filterBus(master, "lowshelf", 110, 0.7, -1.5);
 
 // Space: one room for keys, hook, claps and pads; a dotted-eighth echo on the hook.
 const send = bus(LENGTH);
