@@ -210,7 +210,8 @@ export function R8EdgeToWave() {
           scale={CANVAS_HANDOFF.scale}
           rotY={rotY}
           rotX={mix(CANVAS_HANDOFF.rotX, 0, turnP)}
-          shadow={1 - turnP}
+          // The flat picture of R6 has no shadow: it shows only while the canvas turns.
+          shadow={Math.sin(Math.PI * turnP)}
           perspective={PERSPECTIVE}
           depth={depth}
         />

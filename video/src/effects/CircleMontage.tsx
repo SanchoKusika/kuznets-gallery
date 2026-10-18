@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { CIRCLES } from "../data/selection";
-import { ArtImage } from "../primitives/ArtImage";
+import { art } from "../data/art";
+import { ArtImage, coverCrop, type Crop } from "../primitives/ArtImage";
 import { ease, mix, progress } from "../theme/easing";
 import { useTiming } from "../theme/timing";
 import { color, stroke } from "../theme/tokens";
@@ -26,6 +27,11 @@ type Props = {
   strokeWidth?: number;
   /** Ring travel beyond the circle, px. */
   ringTravel?: number;
+  /**
+   * While the mask grows, the last work leaves the circle and lands as a square tile (centre `x`, `y`, side `size`,
+   * the tile's centred crop) — so it does not vanish when the scene cuts to the wall it is part of.
+   */
+  land?: { from: number; duration: number; x: number; y: number; size: number };
   children?: ReactNode;
 };
 
@@ -45,6 +51,7 @@ export function CircleMontage({
   expand,
   strokeWidth = stroke.reels,
   ringTravel = 180,
+  land,
   children,
 }: Props) {
   const frame = useCurrentFrame();
@@ -78,6 +85,42 @@ export function CircleMontage({
     const fade = progress(frame, from, ringLife, ease.linear);
     if (fade >= 1) continue;
     rings.push(<circle key={n} cx={x} cy={y} r={R + ringTravel * t} fill="none" stroke={color.accent} strokeWidth={strokeWidth} opacity={1 - fade} />);
+  }
+
+  const l = land ? progress(frame, land.from, land.duration, ease.inOut) : 0;
+  if (land && l > 0) {
+    // Circle → tile: centre, size, crop (the round motif → the tile's centred square) and corners all travel.
+    const a = art(code);
+    const from: Crop = { x: c.cx - c.r, y: c.cy - c.r, w: 2 * c.r, h: 2 * c.r };
+    const to = coverCrop(a.w, a.h, 1);
+    const crop = { x: mix(from.x, to.x, l), y: mix(from.y, to.y, l), w: mix(from.w, to.w, l), h: mix(from.h, to.h, l) };
+    const side = mix(diameter, land.size, l);
+    const cx = mix(x, land.x, l);
+    const cy = mix(y, land.y, l);
+    return (
+      <AbsoluteFill>
+        <AbsoluteFill style={{ clipPath: `circle(${mask}px at ${x}px ${y}px)` }}>{children}</AbsoluteFill>
+        {rings.length > 0 ? (
+          <svg width={width} height={height} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+            {rings}
+          </svg>
+        ) : null}
+        <div
+          style={{
+            position: "absolute",
+            left: cx - side / 2,
+            top: cy - side / 2,
+            width: side,
+            height: side,
+            borderRadius: `${50 * (1 - l) ** 1.5}%`,
+            overflow: "hidden",
+            boxShadow: `0 ${(18 * Math.sin(Math.PI * l)).toFixed(1)}px ${(40 * Math.sin(Math.PI * l)).toFixed(1)}px rgba(21,21,21,${(0.3 * Math.sin(Math.PI * l)).toFixed(3)})`,
+          }}
+        >
+          <ArtImage code={code} width={side} height={side} crop={crop} fast />
+        </div>
+      </AbsoluteFill>
+    );
   }
 
   return (

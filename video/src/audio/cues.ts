@@ -1,6 +1,6 @@
 // Sound effect cues of every scene (brief 9.2): `at` in beats from the scene start, gain in dB
-// relative to the SFX bus (which itself sits 18–24 dB under the music). Files: public/sfx/<id>.wav;
-// a missing file stays silent. scripts/cues.mjs turns this into out/CUES.md.
+// relative to the SFX bus (which itself sits 18–24 dB under the music). Files: public/sfx/<id>.wav, made by
+// scripts/make-sfx.mjs (`npm run sfx`); a missing file stays silent. scripts/cues.mjs turns this into out/CUES.md.
 
 export type SfxId =
   | "dot-whoosh"
@@ -9,6 +9,7 @@ export type SfxId =
   | "swing"
   | "pencil"
   | "morph-swish"
+  | "spin"
   | "ring"
   | "grid-ticks"
   | "plate-slide"
@@ -37,16 +38,16 @@ const every = (id: SfxId, from: number, step: number, n: number, gainDb: number,
 
 export const REELS_CUES: Record<string, Cue[]> = {
   R1: [
-    { id: "dot-whoosh", at: 0, gainDb: -6, note: "точка входит справа" },
-    { id: "nail-tap", at: 2, gainDb: -2, note: "точка становится шляпкой гвоздя" },
+    { id: "dot-whoosh", at: 0.25, gainDb: -6, note: "точка прыгает к гвоздю" },
+    { id: "nail-tap", at: 1.5, gainDb: -2, note: "точка становится шляпкой гвоздя" },
+    { id: "swing", at: 3.25, gainDb: -6, note: "холст падает сверху" },
+    { id: "wire-creak", at: 3.7, gainDb: -4, note: "трос ловит холст" },
   ],
-  R2: [
-    { id: "wire-creak", at: 0, gainDb: -6, note: "первое качание" },
-    ...every("swing", 0, 1, 4, -8, "качание рамы"),
-  ],
+  R2: [...every("swing", 0, 1, 4, -10, "качание рамы")],
   R3: [
-    { id: "pencil", at: 0, gainDb: -6, note: "рисуется диван" },
-    ...every("morph-swish", 2, 2, 3, -8, "интерьер перетекает"),
+    { id: "pencil", at: 0, gainDb: -8, note: "нить становится полом, рисуется гостиная" },
+    ...every("spin", 2, 2, 3, -6, "холст разворачивается на гвозде"),
+    ...every("pencil", 2.25, 2, 3, -10, "рисуется следующая комната"),
   ],
   R4: [
     ...every("ring", 0.5, 0.5, 7, -14, "смена работы в круге"),
@@ -58,8 +59,8 @@ export const REELS_CUES: Record<string, Cue[]> = {
     { id: "cropmark-tick", at: 2, gainDb: -6, note: "метки обреза" },
     { id: "fill-whoosh", at: 2.5, gainDb: -6, note: "эскиз заполняется картиной" },
   ],
-  R7: [{ id: "canvas-thump", at: 0, gainDb: -8, note: "холст поворачивается в 3D" }],
   R8: [
+    { id: "canvas-thump", at: 0, gainDb: -8, note: "холст встаёт ребром" },
     ...every("bead-drop", 1, 1, 3, -6, "бусина"),
     { id: "dot-pop", at: 4, gainDb: -4, note: "точка в «O»" },
     { id: "gradient-swell", at: 8, gainDb: -6, note: "градиент аватара" },
@@ -103,7 +104,6 @@ export const PROMO_CUES: Record<string, Cue[]> = {
     { id: "cropmark-tick", at: 2, gainDb: -8, note: "метки обреза" },
     { id: "envelope", at: 5, gainDb: -6, note: "крафт-конверт" },
   ],
-  P9: [...every("paper-card", 0.25, 2.25, 3, -12, "отзыв")],
   P10: [
     { id: "curtain", at: 0, gainDb: -4, note: "шторки" },
     ...every("bead-drop", 1.5, 0.5, 3, -6, "бусина"),

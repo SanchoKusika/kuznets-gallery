@@ -18,7 +18,8 @@ export const copy = {
     customSteps: ["идея", "макет", "печать · 3–7\u00A0дней"],
     ctaLine1: typo("авторские картины в наличии и на заказ"),
     ctaLine2: typo("от 90\u00A0000\u00A0сум · доставка по Узбекистану"),
-    ctaButton: typo("заявка — в директ"),
+    /** The pill of the CTA: both phones of the gallery (the owner chose them over «заявка — в директ»). */
+    ctaPhones: CONTACTS.phones.map((p) => p.label.replace(/ /g, " ")),
     ctaSite: "kuznets.uz",
     /** Size caption of the sketch in R6. */
     sketchSize: "85\u00A0×\u00A050\u00A0см",

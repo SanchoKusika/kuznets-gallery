@@ -21,6 +21,19 @@ const check = <T extends string | readonly string[]>(codes: T): T => {
   return codes;
 };
 
+/** `code` at `index` of a list (swapped with its old place if it is already there). */
+const placeAt = (codes: string[], code: string, index: number) => {
+  const out = codes.filter((c) => c !== code).slice(0, codes.length - 1);
+  out.splice(index, 0, code);
+  return out;
+};
+
+/** R4 and P5: one per eighth. */
+const CIRCLE_WORKS = check(["KZ-104", "KZ-037", "KZ-172", "KZ-065", "KZ-044", "KZ-038", "KZ-055", "KZ-039"] as const);
+
+/** R5: the tile the last circle work lands in when R4's circle opens onto the wall (the one behind the circle). */
+export const WALL_LANDING_TILE = 17;
+
 /** Frame sizes of R3 (brief: kids 420×840 — 420×830 keeps KZ-080 within the 1.1× limit). */
 export const reels = {
   /** R2: one per beat; the fifth swings into R3. */
@@ -32,12 +45,11 @@ export const reels = {
     { key: "cafe", code: check("KZ-140"), frame: { w: 620, h: 620 } },
   ] as const,
   /** R4 and P5: one per eighth. */
-  circles: check(["KZ-104", "KZ-037", "KZ-172", "KZ-065", "KZ-044", "KZ-038", "KZ-055", "KZ-039"] as const),
-  /** R5: 50 different works (5 × 10). */
-  wall: shuffled("reels-wall", 50),
+  circles: CIRCLE_WORKS,
+  /** R5: 50 different works (5 × 10); the last circle work sits in the landing tile. */
+  wall: placeAt(shuffled("reels-wall", 50), CIRCLE_WORKS[CIRCLE_WORKS.length - 1], WALL_LANDING_TILE),
   /** R6–R8. */
   custom: check("KZ-009"),
-  reviews: ["Max Nam", "Максим и Алеся"] as const,
 };
 
 export const promo = {
@@ -59,5 +71,4 @@ export const promo = {
   /** P7 (brief: KZ-041 Адрас; the owner asked for a more striking work). */
   craft: check("KZ-022"),
   custom: check("KZ-009"),
-  reviews: ["Evgeniya Lyashko", "Дилшод Алимханов", "Max Nam"] as const,
 };

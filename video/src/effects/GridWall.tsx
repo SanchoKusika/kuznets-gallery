@@ -40,7 +40,22 @@ type Props = {
   exitFrom?: number;
   /** Product of ancestor scales (P6 camera pull-back), for the 1.1× check. */
   parentScale?: number;
+  /** A tile kept empty until a frame (a work flying in lands there). */
+  hold?: { index: number; until: number };
 };
+
+/** Centre and side of a tile on screen at a frame, with the grid's settle scale (where a flying work must land). */
+export function gridTileAt(layout: GridLayout, index: number, frame: number, width: number, height: number, settle: { from: number; duration: number; scale?: number }) {
+  const { cols, rows, tile, gap } = layout;
+  const gridW = cols * tile + (cols - 1) * gap;
+  const gridH = rows * tile + (rows - 1) * gap;
+  const left = layout.left ?? (width - gridW) / 2;
+  const top = layout.top ?? (height - gridH) / 2;
+  const s = mix(settle.scale ?? 1.06, 1, progress(frame, settle.from, settle.duration, ease.out));
+  const cx = left + (index % cols) * (tile + gap) + tile / 2;
+  const cy = top + Math.floor(index / cols) * (tile + gap) + tile / 2;
+  return { x: width / 2 + (cx - width / 2) * s, y: height / 2 + (cy - height / 2) * s, size: tile * s };
+}
 
 /**
  * A showroom wall of square centre crops (brief 6.3 GridWall, R5 / P6): tiles appear by a diagonal wave
@@ -57,6 +72,7 @@ export function GridWall({
   settleScale = 1.06,
   exitFrom,
   parentScale = 1,
+  hold,
 }: Props) {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
@@ -80,7 +96,7 @@ export function GridWall({
       const inP = progress(frame, fillFrom + d * step * k, FILL_TILE * k, ease.out);
       const outP = exitFrom === undefined ? 0 : progress(frame, exitFrom + (last - d) * EXIT_STEP * k, EXIT_TILE * k, ease.out);
       const opacity = inP * (1 - outP);
-      if (opacity <= 0) continue;
+      if (opacity <= 0 || (hold && hold.index === i && frame < hold.until)) continue;
       const s = mix(0.92, 1, inP);
       tiles.push(
         <div

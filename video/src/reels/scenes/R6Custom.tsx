@@ -32,7 +32,7 @@ const titleLines = () => {
 /**
  * R6 (bar 7, the break): the title rises, the three arches are sketched by hand at the size of the work, crop marks
  * and the size caption tick in, a circle from the middle arch fills the sketch with the real «Три арки», the steps
- * line lights up word by word. The flat picture is shown until `cut` (R7 replaces it with the 3D canvas there); the
+ * line lights up word by word. The flat picture is shown until `cut` (R8 replaces it with the 3D canvas there); the
  * texts leave into their masks around the cut.
  */
 export function R6Custom({ cut }: { cut: number }) {

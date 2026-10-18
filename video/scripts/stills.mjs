@@ -9,10 +9,14 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
+import { REELS_BARS } from "../src/timeline.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
 const qa = path.join(root, "out/qa");
 const tmp = path.join(root, "out/stills");
+const BPM = Number(fs.readFileSync(path.join(root, "src/theme/timing.ts"), "utf8").match(/BPM = (\d+(?:\.\d+)?)/)[1]);
+/** Last frame of the Reels at 60 fps. */
+const REELS_LAST = Math.round((REELS_BARS * 4 * 60 * 60) / BPM) - 1;
 fs.mkdirSync(qa, { recursive: true });
 fs.mkdirSync(tmp, { recursive: true });
 
@@ -93,18 +97,18 @@ if (mode === "styleframes") {
     execFileSync(npx, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
     return fs.readdirSync(path.join(dir, sub)).sort().map((f) => path.join(dir, sub, f));
   };
-  const frames = [...range(1698, 1727, "a"), ...range(0, 29, "b")];
+  const frames = [...range(REELS_LAST - 29, REELS_LAST, "a"), ...range(0, 29, "b")];
   frames.forEach((f, i) => fs.renameSync(f, path.join(dir, `${String(i).padStart(3, "0")}.jpeg`)));
   const vf = "scale=360:-1:flags=lanczos,split[a][b];[a]palettegen[p];[b][p]paletteuse";
   const args = ["remotion", "ffmpeg", "-y", "-loglevel", "error", "-framerate", "30", "-i", path.join(dir, "%03d.jpeg"), "-vf", vf, "-loop", "0", path.join(qa, "loop.gif")];
   execFileSync(npx, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
   console.log(path.join(qa, "loop.gif"));
 } else if (mode === "safe") {
-  for (const f of [60, 400, 790, 950, 1150, 1600]) still("Reels", f, path.join(qa, `safe-${f}.png`), { showGuides: true });
+  for (const f of [60, 400, 790, 950, 1150, 1300]) still("Reels", f, path.join(qa, `safe-${f}.png`), { showGuides: true });
 } else if (mode === "reels" || mode === "promo") {
   const frames =
     mode === "reels"
-      ? [60, 160, 300, 430, 600, 700, 820, 900, 1000, 1100, 1250, 1400, 1520, 1620, 1700, 1727]
+      ? [60, 160, 300, 400, 430, 500, 600, 700, 820, 900, 1000, 1060, 1150, 1250, 1380, REELS_LAST]
       : [100, 250, 400, 650, 900, 1100, 1200, 1350, 1500, 1650, 1800, 2000, 2150, 2300, 2500, 2700, 2800, 3000, 3167];
   const id = mode === "reels" ? "Reels" : "Promo";
   const files = frames.map((f) => ({ file: still(id, f, path.join(tmp, `${id}-${f}.png`)), caption: `${id} ${f}` }));

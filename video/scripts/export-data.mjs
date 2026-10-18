@@ -1,7 +1,5 @@
-// Snapshot of the catalogue and reviews from Supabase (the source of truth), so rendering never
-// touches the database:
+// Snapshot of the catalogue from Supabase (the source of truth), so rendering never touches the database:
 //   src/data/catalog.json — code, title, sizes [{ w, h, price }], categories; visible works by sort_order, code
-//   src/data/reviews.json — name, text; visible reviews by sort_order
 //
 //   npm run export:data   (= node --env-file=../.env.local scripts/export-data.mjs)
 // Reads through PostgREST with the publishable key — the same rows the site shows.
@@ -21,10 +19,8 @@ async function select(table, query) {
 }
 
 const catalog = await select("products", "select=code,title,sizes,categories&hidden=eq.false&order=sort_order.asc,code.asc");
-const reviews = await select("reviews", "select=name,text&hidden=eq.false&order=sort_order.asc");
 
 const dir = path.resolve(import.meta.dirname, "../src/data");
 const write = (name, rows) => fs.writeFileSync(path.join(dir, name), JSON.stringify(rows, null, 2) + "\n");
 write("catalog.json", catalog.map(({ code, title, sizes, categories }) => ({ code, title, sizes: sizes.map(({ w, h, price }) => ({ w, h, price })), categories })));
-write("reviews.json", reviews);
-console.log(`catalog.json: ${catalog.length} works, reviews.json: ${reviews.length} reviews`);
+console.log(`catalog.json: ${catalog.length} works`);

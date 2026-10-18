@@ -3,7 +3,6 @@ import { reels } from "../data/selection";
 import { LogoBuild, logoGeometry, logoSchedule } from "../effects/LogoBuild";
 import { ArtFrame } from "../primitives/ArtFrame";
 import { ArtImage } from "../primitives/ArtImage";
-import { Grain } from "../primitives/Grain";
 import { Nail, PictureWire } from "../primitives/PictureWire";
 import { Wall } from "../primitives/Wall";
 import { REELS_SAFE } from "../theme/tokens";
@@ -38,7 +37,6 @@ export function ReelsCover() {
       </ArtFrame>
       <Nail x={nail.x} y={nail.y} />
       <LogoBuild width={LOGO_W} x={NAIL.x} y={logoY} schedule={logoSchedule.still()} />
-      <Grain />
     </AbsoluteFill>
   );
 }

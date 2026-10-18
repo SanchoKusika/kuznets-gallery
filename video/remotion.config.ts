@@ -11,7 +11,7 @@ Config.setOverwriteOutput(true);
 Config.setChromiumOpenGlRenderer("angle");
 
 // Masters: H.264, crf 16, slow preset, BT.709, AAC 320k.
-// Frames as JPEG q95: grain covers the gradients, no banding (checked on stills).
+// Frames as JPEG q95: no banding on the avatar gradient (its 1080 px span has ~110 levels per channel).
 Config.setCodec("h264");
 Config.setCrf(16);
 Config.setX264Preset("slow");

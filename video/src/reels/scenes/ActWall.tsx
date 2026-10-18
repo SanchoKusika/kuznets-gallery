@@ -1,9 +1,9 @@
 import { Sequence, useVideoConfig } from "remotion";
 import { copy } from "../../data/copy";
 import { WORKS_COUNT } from "../../data/art";
-import { reels } from "../../data/selection";
+import { reels, WALL_LANDING_TILE } from "../../data/selection";
 import { CircleMontage } from "../../effects/CircleMontage";
-import { GRID_REELS, GridWall, gridExitDuration } from "../../effects/GridWall";
+import { GRID_REELS, GridWall, gridExitDuration, gridTileAt } from "../../effects/GridWall";
 import { useCounter } from "../../primitives/Counter";
 import { MaskRise } from "../../primitives/MaskRise";
 import { ease } from "../../theme/easing";
@@ -18,19 +18,34 @@ import { CIRCLE } from "../layout";
  * leaves by a reverse diagonal wave that ends on the last frame of R5.
  */
 export function ActWall() {
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const t = useTiming();
   // The grid starts 1b before the mask opens, so its wave has reached the circle when it does (one GridWall
   // in both scenes: the same element under the circle in R4 and on its own in R5).
   const lead = t.b(1);
   const life = lead + t.bar(1);
+  // The last circle work lands in its tile exactly as R5 starts (grid frame = lead).
+  const tile = gridTileAt(GRID_REELS, WALL_LANDING_TILE, lead, width, height, { from: 0, duration: life });
   const grid = (
-    <GridWall codes={reels.wall} layout={GRID_REELS} settleDuration={life} exitFrom={life - gridExitDuration(GRID_REELS, fps)} />
+    <GridWall
+      codes={reels.wall}
+      layout={GRID_REELS}
+      settleDuration={life}
+      exitFrom={life - gridExitDuration(GRID_REELS, fps)}
+      hold={{ index: WALL_LANDING_TILE, until: lead }}
+    />
   );
   return (
     <>
       <Sequence name="R4 круги" durationInFrames={t.bar(1)}>
-        <CircleMontage codes={reels.circles} diameter={CIRCLE.d} x={CIRCLE.x} y={CIRCLE.y} expand={{ from: t.b(3.5), duration: t.b(0.5) }}>
+        <CircleMontage
+          codes={reels.circles}
+          diameter={CIRCLE.d}
+          x={CIRCLE.x}
+          y={CIRCLE.y}
+          expand={{ from: t.b(3.5), duration: t.b(0.5) }}
+          land={{ from: t.b(3.5), duration: t.b(0.5), ...tile }}
+        >
           <Sequence from={t.b(4) - lead}>{grid}</Sequence>
         </CircleMontage>
       </Sequence>

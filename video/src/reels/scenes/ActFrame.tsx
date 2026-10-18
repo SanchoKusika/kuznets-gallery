@@ -1,16 +1,12 @@
-import { AbsoluteFill, Sequence, useCurrentFrame, useVideoConfig } from "remotion";
-import { usePendulum } from "../../effects/Pendulum";
-import { ArtFrame } from "../../primitives/ArtFrame";
+import { AbsoluteFill, Sequence, useCurrentFrame } from "remotion";
 import { ArtImage } from "../../primitives/ArtImage";
-import { LinePath } from "../../primitives/LinePath";
-import { Nail } from "../../primitives/PictureWire";
+import { Nail, WireLine } from "../../primitives/PictureWire";
 import { ease, mix, progress } from "../../theme/easing";
 import type { Timing } from "../../theme/timing";
 import { useTiming } from "../../theme/timing";
-import { color, shadow, stroke } from "../../theme/tokens";
-import { reels } from "../../data/selection";
+import { color, shadow } from "../../theme/tokens";
 import { LOGO_GEOMETRY, LOOP_DOT, NAIL } from "../layout";
-import { actTimes, apexOrigin, dropAt, dropStartTop, frameSizeAt, hangingWire, hangSchedule, hungRect, SWING_FROM, type Hung, type Rect } from "./hanging";
+import { actTimes, APEX, canvasSlots, DEPTH, hangSchedule, PERSPECTIVE, poseAt, wireAt, type CanvasSlot, type Hung, type Size } from "./hanging";
 import { R1Hook } from "./R1Hook";
 import { WorkChip } from "./R2TryOn";
 import { R3Interiors } from "./R3Interiors";
@@ -18,37 +14,43 @@ import { R3Interiors } from "./R3Interiors";
 /** How far the act runs into R4: the frame and the interior fade out under the opening circle (brief R4 +0: 6 frames). */
 export const ACT_FRAME_TAIL = (t: Timing) => t.s(1);
 
-const WIRE = { color: color.ink2, width: stroke.reels * 0.8 };
-
 /**
- * R1: the accent dot flies in from beyond the right edge on a sine (it left R8 through the left edge at the logo dot's
- * height, so the loop reads as one motion), lands on the nail point and shrinks into the nail head.
+ * R1: the accent dot the video ended with (it rests where the logo's dot was) hops onto the nail point — a swoop
+ * down and up, starting from rest so the loop has no jolt — and shrinks into the nail head.
  */
 function DotToNail() {
   const frame = useCurrentFrame();
-  const { width, height } = useVideoConfig();
   const t = useTiming();
   const T = actTimes(t);
-  const q = progress(frame, 0, T.dotArrive, ease.out);
+  const q = progress(frame, 0, T.dotArrive, ease.inOut);
   if (q >= 1) {
     const n = progress(frame, T.nail.from, T.nail.duration, ease.out);
     return <Nail x={NAIL.x} y={NAIL.y} head={mix(LOOP_DOT, 18, n)} shadow={n} />;
   }
-  const x0 = width + LOOP_DOT / 2;
-  const y0 = LOGO_GEOMETRY.dot.cy;
-  // Full 40 px swing while it travels, damped to zero on the nail.
-  const env = 1 - Math.max(0, Math.min(1, (q - 0.55) / 0.45)) ** 2;
-  const x = mix(x0, NAIL.x, q);
-  const y = mix(y0, NAIL.y, q) + 40 * Math.sin(2 * Math.PI * 1.25 * q) * env;
+  const from = LOGO_GEOMETRY.dot;
+  const x = mix(from.cx, NAIL.x, q) + 70 * Math.sin(Math.PI * q);
+  const y = mix(from.cy, NAIL.y, q) + 150 * Math.sin(Math.PI * q) * (1 - q * 0.4);
+  // Squash along the path in the fast middle, round at both ends.
+  const stretch = 1 + 0.18 * Math.sin(Math.PI * q) ** 2;
+  const heading = Math.atan2(NAIL.y - from.cy - 150 * Math.PI * Math.cos(Math.PI * q), NAIL.x - from.cx + 70 * Math.PI * Math.cos(Math.PI * q));
   return (
-    <svg width={width} height={height} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-      <circle cx={x} cy={y} r={LOOP_DOT / 2} fill={color.accent} />
-    </svg>
+    <div
+      style={{
+        position: "absolute",
+        left: x - LOOP_DOT / 2,
+        top: y - LOOP_DOT / 2,
+        width: LOOP_DOT,
+        height: LOOP_DOT,
+        borderRadius: "50%",
+        background: color.accent,
+        transform: `rotate(${heading}rad) scale(${stretch}, ${1 / stretch})`,
+      }}
+    />
   );
 }
 
-/** Works inside the frame: each in its own box, centred; the new one rises from the frame's bottom edge. */
-function Works({ items, rect }: { items: Hung[]; rect: Rect }) {
+/** Works rising in the square canvas: each new one rises from the bottom edge over the previous. */
+function Works({ items, size }: { items: Hung[]; size: Size }) {
   const frame = useCurrentFrame();
   let i = 0;
   while (i + 1 < items.length && frame >= items[i + 1].at) i++;
@@ -56,116 +58,120 @@ function Works({ items, rect }: { items: Hung[]; rect: Rect }) {
   const layers = p < 1 && i > 0 ? [i - 1, i] : [i];
   return (
     <>
-      {layers.map((k) => {
-        const { w, h } = items[k].size;
-        return (
-          <div key={k} style={{ position: "absolute", left: (rect.w - w) / 2, top: k === i ? (1 - p) * rect.h : 0 }}>
-            <ArtImage code={items[k].code} width={w} height={h} />
-          </div>
-        );
-      })}
+      {layers.map((k) => (
+        <div key={k} style={{ position: "absolute", inset: 0, translate: k === i ? `0 ${(1 - p) * 100}%` : undefined }}>
+          <ArtImage code={items[k].code} width={size.w} height={size.h} />
+        </div>
+      ))}
     </>
   );
 }
 
-/**
- * One canvas at its own final size, hung from the nail. `rise` clips the work to the box and lifts it from the box's
- * bottom edge (the box is invisible until the work fills it); the shadow sits on an unclipped sibling and fades in
- * with the rise.
- */
-function Canvas({ code, rect, angle, rise = 1, opacity = 1 }: { code: string; rect: Rect; angle: number; rise?: number; opacity?: number }) {
-  const turn = { rotate: `${angle}deg`, transformOrigin: `${apexOrigin(rect).x}px ${apexOrigin(rect).y}px` };
-  const box = { position: "absolute", left: rect.x, top: rect.y, width: rect.w, height: rect.h, ...turn } as const;
+/** One side of the stretcher: the picture's edge folded round it (gallery wrap), mirrored and in shade. */
+function Side({ code, size, right }: { code: string; size: Size; right: boolean }) {
+  const { w, h } = size;
   return (
-    <div style={{ opacity }}>
-      <div style={{ ...box, boxShadow: shadow.float(Math.max(rect.w, rect.h) / 600), opacity: rise }} />
-      <div style={{ ...box, overflow: "hidden" }}>
-        <div style={{ translate: `0 ${(1 - rise) * 100}%` }}>
-          <ArtImage code={code} width={rect.w} height={rect.h} />
-        </div>
+    <div
+      style={{
+        position: "absolute",
+        left: (right ? w : 0) - DEPTH / 2,
+        top: 0,
+        width: DEPTH,
+        height: h,
+        overflow: "hidden",
+        transform: `rotateY(${right ? 90 : -90}deg)`,
+        backfaceVisibility: "hidden",
+        filter: "brightness(.72)",
+      }}
+    >
+      <div style={{ position: "absolute", left: right ? DEPTH - w : 0, top: 0, scale: "-1 1", transformOrigin: right ? `${w - DEPTH / 2}px 0` : `${DEPTH / 2}px 0` }}>
+        <ArtImage code={code} width={w} height={h} />
       </div>
     </div>
   );
 }
 
 /**
- * R3 changes: no shared frame between two proportions (neither work could cover the in-between box within 1.1×).
- * The new canvas rises inside its own final box over the old one, which fades out over the same beat.
+ * A canvas on the nail in CSS 3D (the act's perspective): turned about its apex by the pendulum and about the
+ * vertical axis through the nail by the R3 spin; the face sits DEPTH / 2 in front of the wire's plane, the sides
+ * show while it turns.
  */
-function RoomCanvases({ angle }: { angle: number }) {
+function HungCanvas({ slot }: { slot: CanvasSlot }) {
   const frame = useCurrentFrame();
   const t = useTiming();
-  const T = actTimes(t);
-  let k = 0;
-  T.changes.forEach((at, i) => {
-    if (frame >= at) k = i + 1;
-  });
-  const rooms = reels.interiors;
-  const p = progress(frame, T.changes[k - 1], T.change, ease.rise);
-  const fade = progress(frame, T.changes[k - 1], T.change, ease.inOut);
+  const pose = poseAt(slot, frame, t);
+  const { w, h } = slot.size;
+  const items = hangSchedule(t);
+  // The code on the sides: the work on top of the square (the one rising), or the slot's own.
+  let top = 0;
+  while (top + 1 < items.length && frame >= items[top + 1].at) top++;
+  const code = slot.code ?? items[top].code;
   return (
-    <>
-      {p < 1 ? <Canvas code={rooms[k - 1].code} rect={hungRect(rooms[k - 1].frame)} angle={angle} opacity={1 - fade} /> : null}
-      <Canvas code={rooms[k].code} rect={hungRect(rooms[k].frame)} angle={angle} rise={p} />
-    </>
+    <div
+      style={{
+        position: "absolute",
+        left: NAIL.x - w / 2,
+        top: pose.top,
+        width: w,
+        height: h,
+        transformStyle: "preserve-3d",
+        transformOrigin: `${w / 2}px ${-APEX}px`,
+        transform: `rotate(${pose.rotZ}deg) rotateY(${pose.rotY}deg)`,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          transform: `translateZ(${DEPTH / 2}px)`,
+          backfaceVisibility: "hidden",
+          boxShadow: shadow.float(Math.max(w, h) / 600),
+        }}
+      >
+        {slot.code ? <ArtImage code={slot.code} width={w} height={h} /> : <Works items={items} size={slot.size} />}
+      </div>
+      {Math.abs(pose.rotY) > 0.5 ? (
+        <>
+          <Side code={code} size={slot.size} right={false} />
+          <Side code={code} size={slot.size} right />
+        </>
+      ) : null}
+    </div>
   );
 }
 
-/** Wire, canvas and nail from R1 +3b to the end of R3. */
+/** Wire, nail and canvas from the drop in R1 to the end of R3: the wire behind the nail's head, the canvas in front. */
 function HangingFrame() {
   const frame = useCurrentFrame();
   const t = useTiming();
-  const T = actTimes(t);
-  const swing = usePendulum(T.r2, SWING_FROM);
-  const size = frameSizeAt(frame, t);
-  const items = hangSchedule(t);
-
-  const wireP = progress(frame, T.wire.from, T.wire.duration, ease.out);
-  if (wireP <= 0) return null;
-  const dropping = frame < T.r2;
-  const drop = dropping ? dropAt(frame, t, size.h) : null;
-  const rect = hungRect(size, drop ? drop.top : undefined);
-  const angle = drop ? drop.angle : swing;
-  const showFrame = frame >= T.drop.from;
-
-  // Before the drop the canvas is above the screen: its wire is drawn from both top corners down to the nail.
-  const corners = hungRect(size, dropStartTop(size.h));
-  const wire =
-    wireP < 1 && !showFrame ? (
-      <>
-        <LinePath d={`M${corners.x} ${corners.y}L${NAIL.x} ${NAIL.y}`} progress={wireP} {...WIRE} />
-        <LinePath d={`M${corners.x + corners.w} ${corners.y}L${NAIL.x} ${NAIL.y}`} progress={wireP} {...WIRE} />
-      </>
-    ) : (
-      <LinePath d={hangingWire(NAIL, rect, angle)} {...WIRE} />
-    );
-
+  const slot = canvasSlots(t).find((s) => frame >= s.from && frame < s.to);
+  const wire = slot ? wireAt(slot, frame, t) : null;
   return (
     <>
-      <svg width={1080} height={1920} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-        {wire}
-      </svg>
-      {showFrame && frame < T.changes[0] ? (
-        <ArtFrame x={rect.x} y={rect.y} w={rect.w} h={rect.h} rotate={angle} origin={apexOrigin(rect)}>
-          <Works items={items} rect={rect} />
-        </ArtFrame>
+      {wire ? <WireLine points={wire} /> : null}
+      <DotToNail />
+      {slot ? (
+        <AbsoluteFill style={{ perspective: PERSPECTIVE, perspectiveOrigin: `${NAIL.x}px ${NAIL.y}px` }}>
+          <HungCanvas slot={slot} />
+        </AbsoluteFill>
       ) : null}
-      {frame >= T.changes[0] ? <RoomCanvases angle={angle} /> : null}
     </>
   );
 }
 
 /**
- * R1–R3 (brief 7): the dot becomes a nail, the canvas drops onto it and swings while the works change (R2), then the
- * interiors are drawn under it and the frame takes each one's proportions (R3). The camera jolts 20 px on every R3
- * change; at R4 +0 everything fades out under R4's opening circle.
+ * R1–R3 (brief 7): the dot becomes a nail, the canvas falls onto it — its wire catches — and swings while the works
+ * change (R2); then the interiors are drawn under it, and on every change the canvas spins round on the nail into the
+ * next work in its own proportions (R3). The camera jolts 20 px on every R3 change; at R4 +0 everything fades out
+ * under R4's opening circle.
  */
 export function ActFrame() {
   const frame = useCurrentFrame();
   const t = useTiming();
   const T = actTimes(t);
   // Camera: a 20 px jolt on the change (menu-in, ½b), then a slow drift back over the pause, so every interior
-  // settles where the layout (and the styleframe) put it.
+  // settles where the layout put it.
   const jolt = T.changes.reduce(
     (y, at) => y - 20 * (progress(frame, at, t.e(1), ease.menuIn) - progress(frame, at + t.e(1), t.b(1), ease.inOut)),
     0,
@@ -181,7 +187,6 @@ export function ActFrame() {
         <R1Hook />
       </Sequence>
       <HangingFrame />
-      <DotToNail />
       <WorkChip />
     </AbsoluteFill>
   );

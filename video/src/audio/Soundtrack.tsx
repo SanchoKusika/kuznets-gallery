@@ -8,8 +8,9 @@ import { MUSIC, PROMO_CALM_BARS, PROMO_EDIT, REELS_CALM_BARS, REELS_EDIT, type M
 
 /** Master trim of the music, dB — set in stage 5 so the master lands at ≈ −14 LUFS. */
 const MUSIC_DB = 0;
-/** SFX bus under the music (brief 9.2: 18–24 dB quieter — tactile and quiet). */
-const SFX_BUS_DB = -20;
+/** SFX bus under the music: the effects peak 15–25 dB under full scale, about 8–18 dB under the music (brief 9.2
+ * asked 18–24 dB; that buried the synthesised effects). */
+const SFX_BUS_DB = -14;
 /** Drums in calm scenes when stems exist. */
 const DUCK_DB = -12;
 

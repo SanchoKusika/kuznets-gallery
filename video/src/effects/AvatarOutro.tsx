@@ -156,15 +156,18 @@ type CollapseProps = {
   dot: { cx: number; cy: number; r: number };
   /** Everything shrinks into the dot: circle mask maxR → dot radius; default +0, ¾b, in-out. */
   collapse?: { from: number; duration: number };
-  /** Then the dot leaves past the left edge; default right after the collapse, ¼b, ease-in. */
+  /** Then the dot settles into the R1 accent point, where it is (loop seam); default right after the collapse, ¼b. */
   exit?: { from: number; duration: number };
-  /** The dot becomes the R1 accent point on the way out (loop seam): colour and diameter at the edge. */
+  /** The R1 accent point: colour and diameter the dot ends with. */
   exitColor?: string;
   exitSize?: number;
   children: ReactNode;
 };
 
-/** Final collapse of the Reels (R8 +11b): the whole outro shrinks into the orange dot, which then exits left. */
+/**
+ * Final collapse of the Reels (R8 +11b): the whole outro shrinks into the orange dot, which then becomes the accent
+ * point R1 starts from — same place, colour and size, at rest — so the last frame and frame 0 are the same picture.
+ */
 export function CollapseToDot({ dot, collapse, exit, exitColor = color.accent, exitSize = 28, children }: CollapseProps) {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
@@ -179,9 +182,9 @@ export function CollapseToDot({ dot, collapse, exit, exitColor = color.accent, e
     return <AbsoluteFill style={{ clipPath: `circle(${r.toFixed(1)}px at ${dot.cx}px ${dot.cy}px)` }}>{children}</AbsoluteFill>;
   }
 
-  const p = progress(frame, ex.from, ex.duration, ease.in);
+  const p = progress(frame, ex.from, ex.duration, ease.inOut);
   const size = mix(dot.r * 2, exitSize, p);
-  const x = mix(dot.cx, -exitSize, p);
+  const x = dot.cx;
   return (
     <AbsoluteFill>
       <div

@@ -42,6 +42,8 @@
     "export:data": "node --env-file=../.env.local scripts/export-data.mjs",
     "logo:vectorize": "node scripts/vectorize-logo.mjs",
     "click": "node scripts/make-click-track.mjs",
+    "music": "node scripts/make-music.mjs",
+    "sfx": "node scripts/make-sfx.mjs",
     "cues": "node scripts/cues.mjs",
     "lint": "eslint src && tsc"
   }

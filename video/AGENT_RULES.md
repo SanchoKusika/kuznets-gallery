@@ -37,7 +37,7 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
 - `src/theme/fonts.ts` — `fonts.sans` (Onest), `fonts.serif` (Piazzolla Italic 300); style helpers
   `display(size, weight, trackingEm, lh)`, `label(size)`, `serif(size)`, `text(size, weight)`, `tabular`.
 - `src/data/art.ts` — `art(code)` → `{ code, title, file, w, h }` (throws on excluded works), `ALLOWED`, `CATALOG`,
-  `cheapest(code)`, `review(name)`, `WORKS_COUNT`. `src/data/typo.ts` — `typo()` (non-breaking spaces).
+  `cheapest(code)`, `WORKS_COUNT`. `src/data/typo.ts` — `typo()` (non-breaking spaces).
 - `src/data/selection.ts` — which works go where (`reels.*`, `promo.*`, `CIRCLES`). `src/data/copy.ts` — all texts.
   `src/data/site.ts` — CONTACTS, FRAMES, CLIENTS, STEPS from the site.
 - `src/primitives/ArtImage.tsx` — `<ArtImage code width height crop? parentScale? zoom? fast? shadow? filter? style?>`:
@@ -48,11 +48,15 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
   drawings part by part; `<LinePath d progress>` (inside your own `<svg>`); `pencil(t)`; `threadPath(...)`.
 - `src/primitives/MaskRise.tsx` — `<MaskRise from duration easing? exit? offset? exitOffset?>` (rise from a mask; the
   exit travels 160% so glyph tails leave the mask), `<FadeRise …>`.
-- Other primitives: `Wall` (paper wall, Reels window shadow), `Grain`, `SafeZone`, `Chip`/`Pill`, `useCounter`,
-  `CircleReveal`/`coverRadius`, `Curtains`, `DotCursor`, `ArtFrame`/`ArtSwap`, `MuseumLabel`, `Nail`/`PictureWire`.
+- Other primitives: `Wall` (paper wall, Reels window shadow), `SafeZone`, `Chip`/`Pill`, `useCounter`,
+  `CircleReveal`/`coverRadius`, `Curtains`, `DotCursor`, `ArtFrame`/`ArtSwap`, `MuseumLabel`, `Nail`/`WireLine`/`PictureWire`. No grain or noise
+  over the frame (the owner removed it).
 - Effects: `Pendulum`, `GridWall`, `CircleMontage`, `Canvas3D`, `WeaveTexture`, `Framing` (BagetFrame, GlassFrame),
-  `LogoBuild` (+ `logoSchedule`, `logoGeometry`), `AvatarOutro`/`CollapseToDot`, `ReviewStack`.
-- Line drawings: `src/lines/reels.ts`, `src/lines/promo.ts`, `src/lines/common.ts`; type `LineArt` in `src/lines/types.ts`.
+  `LogoBuild` (+ `logoSchedule`, `logoGeometry`), `AvatarOutro`/`CollapseToDot`.
+- Line drawings: `src/lines/interiors.ts` (Reels rooms: elements drawn in a sweep, with idle `motion`), `src/lines/promo.ts`,
+  `src/lines/common.ts`; type `LineArt` in `src/lines/types.ts`.
+- Sound: `npm run music` (`scripts/make-music.mjs`) and `npm run sfx` (`scripts/make-sfx.mjs`) synthesise the track and the
+  effects (`scripts/audio/dsp.mjs`); cues in `src/audio/cues.ts`, the bar edit in `src/audio/music-edit.ts`.
 
 ## Style
 
@@ -66,7 +70,7 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
 
 ## Scenes
 
-- A composition root (`src/reels/Reels.tsx`, `src/promo/Promo.tsx`) mounts the wall, Grain, Soundtrack and SafeZone
+- A composition root (`src/reels/Reels.tsx`, `src/promo/Promo.tsx`) mounts the wall, Soundtrack and SafeZone
   once — not in the acts. Each act is one component in its own `<Sequence>`; its frames are relative to the act's
   start. Nested `<Sequence name="R2 …">` per scene inside the act show in the Studio timeline.
 - Positions shared between acts live in a layout module (`src/reels/layout.ts`; Promo gets its own). Import them —

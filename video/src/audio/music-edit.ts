@@ -1,6 +1,7 @@
 // Music edit by bars (brief 9.1): the track is cut into segments on bar lines and glued with a
 // 3-frame crossfade. `fromBar` counts bars of the SOURCE track from its first downbeat.
-// Replace the segments once the licensed track is in public/audio/music.wav.
+// The source is the project's own track (scripts/make-music.mjs, `npm run music`), 24 bars:
+//   0–1 intro (filtered) · 2–7 verse · 8–11 chorus · 12–15 break · 16–17 build · 18–21 final chorus · 22–23 tail
 
 export type MusicSegment = { fromBar: number; bars: number };
 
@@ -13,12 +14,34 @@ export const MUSIC = {
   crossfade: 3,
 } as const;
 
-/** Energy map (brief 9.1): 1–2 groove · 3–4 verse · 5–6 chorus (drop) · 7 break · 8–9 build · 10–11 final chorus · 12 tail. */
-export const REELS_EDIT: MusicSegment[] = [{ fromBar: 0, bars: 12 }];
+/**
+ * Reels, 10 bars: 1–4 verse (groove) · 5–6 chorus (the drop, R4–R5) · 7 break (R6) · 8 the build's last bar (the
+ * logo builds) · 9 the final chorus's downbeat hit (the dot pops) · 10 the tail's last chord, which leads back into
+ * bar 1 (the loop).
+ */
+export const REELS_EDIT: MusicSegment[] = [
+  { fromBar: 2, bars: 4 },
+  { fromBar: 8, bars: 2 },
+  { fromBar: 12, bars: 1 },
+  { fromBar: 17, bars: 1 },
+  { fromBar: 18, bars: 1 },
+  { fromBar: 23, bars: 1 },
+];
 
-/** 1–2 intro (filtered) · 3–8 verse · 9–12 chorus · 13–17 break · 18–19 build · 20 hit · 21–22 tail. */
-export const PROMO_EDIT: MusicSegment[] = [{ fromBar: 0, bars: 22 }];
+/**
+ * Promo, 20 bars: 1–2 intro · 3–8 verse · 9–12 chorus (P4–P6) · 13–16 break (P7–P8) · 17 the build's last bar ·
+ * 18 the hit (curtains, P10) · 19–20 tail (P11).
+ */
+export const PROMO_EDIT: MusicSegment[] = [
+  { fromBar: 0, bars: 2 },
+  { fromBar: 2, bars: 6 },
+  { fromBar: 8, bars: 4 },
+  { fromBar: 12, bars: 4 },
+  { fromBar: 17, bars: 1 },
+  { fromBar: 18, bars: 1 },
+  { fromBar: 22, bars: 2 },
+];
 
 /** Bars (1-based, of the video) where drums are ducked −12 dB when stems exist: the calm scenes. */
-export const REELS_CALM_BARS = [3, 4, 7];
-export const PROMO_CALM_BARS = [1, 2, 13, 14, 15, 16, 17];
+export const REELS_CALM_BARS = [7];
+export const PROMO_CALM_BARS = [13, 14, 15, 16];

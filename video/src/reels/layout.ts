@@ -13,10 +13,10 @@ export const CIRCLE = { x: 540, y: 760, d: 440 };
 export const CUSTOM = { w: 780, h: 501, cx: 540, cy: 820 };
 
 /**
- * R7 → R8: the 3D canvas (KZ-009, CUSTOM.w × CUSTOM.h face) as R7 leaves it on its last frame; R8 starts from exactly
- * this. The R6–R7 act owns these values and may change them; R8 must read them, never copy the numbers.
+ * R6 → R8: the 3D canvas (KZ-009, CUSTOM.w × CUSTOM.h face) R8 starts from — exactly where R6 leaves the flat picture,
+ * so the cut to 3D is invisible.
  */
-export const CANVAS_HANDOFF = { x: 540, y: 1050, scale: 1.1, rotY: -28, rotX: 0 };
+export const CANVAS_HANDOFF = { x: CUSTOM.cx, y: CUSTOM.cy, scale: 1, rotY: 0, rotX: 0 };
 
 /** R8: the logo (≈ 820 px wide, centre y ≈ 700). */
 export const LOGO = { width: 820, x: 540, y: 700 };

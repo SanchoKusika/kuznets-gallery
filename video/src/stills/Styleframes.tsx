@@ -11,11 +11,10 @@ import { ArtImage } from "../primitives/ArtImage";
 import { DotCursor } from "../primitives/DotCursor";
 import { LineDrawing } from "../primitives/LinePath";
 import { HALL, hallLabel, hallWorkRect, promoHome } from "../lines/promo";
-import { Grain } from "../primitives/Grain";
 import { Nail, PictureWire } from "../primitives/PictureWire";
 import { ArtFrame } from "../primitives/ArtFrame";
 import { Chip, Pill } from "../primitives/Chip";
-import { INTERIOR, reelsKids } from "../lines/reels";
+import { RoomStill } from "../reels/scenes/R3Interiors";
 import { pendulumSteps } from "../effects/Pendulum";
 import { MuseumLabel } from "../primitives/MuseumLabel";
 import { Wall } from "../primitives/Wall";
@@ -35,7 +34,6 @@ export function SfReelsHook() {
         этой стене?
       </div>
       <Nail x={540} y={540} />
-      <Grain />
     </AbsoluteFill>
   );
 }
@@ -50,7 +48,7 @@ export function SfReelsKids() {
   return (
     <AbsoluteFill>
       <Wall windowShadow phase={430 / 1728} />
-      <LineDrawing art={reelsKids} progress={1} x={INTERIOR.x} y={INTERIOR.y} width={stroke.reels} />
+      <RoomStill index={1} />
       <div style={{ position: "absolute", left: 65, right: 65, top: 318, textAlign: "center", ...label(26), color: color.ink2 }}>
         {copy.reels.labels.kids}
       </div>
@@ -62,7 +60,6 @@ export function SfReelsKids() {
         <ArtImage code={kids.code} width={frame.w} height={frame.h} />
       </ArtFrame>
       <Nail x={nail.x} y={nail.y} />
-      <Grain />
     </AbsoluteFill>
   );
 }
@@ -88,7 +85,6 @@ export function SfReelsWall() {
         <div style={{ ...display(84, 600, -0.04), ...tabular, color: color.ink }}>{copy.reels.wallTitle(WORKS_COUNT)}</div>
         <div style={{ ...serif(40), color: color.ink2, marginTop: 14 }}>{copy.reels.wallSub}</div>
       </div>
-      <Grain />
     </AbsoluteFill>
   );
 }
@@ -104,10 +100,9 @@ export function SfReelsLogo() {
       <div style={{ ...center, top: 905, ...text(30), color: color.ink }}>{c.ctaLine1}</div>
       <div style={{ ...center, top: 950, ...text(30), color: color.ink }}>{c.ctaLine2}</div>
       <div style={{ ...center, top: 1012 }}>
-        <Pill>{c.ctaButton}</Pill>
+        <Pill>{c.ctaPhones.join("  ")}</Pill>
       </div>
       <div style={{ ...center, top: 1116, ...label(26), color: color.ink2 }}>{c.ctaSite}</div>
-      <Grain />
     </AbsoluteFill>
   );
 }
@@ -134,7 +129,6 @@ export function SfPromoHall() {
           </div>
         );
       })}
-      <Grain />
     </AbsoluteFill>
   );
 }
@@ -165,7 +159,6 @@ export function SfPromoFraming() {
           <div style={{ ...label(16), color: i === 0 ? color.accent : color.ink3, marginTop: 8 }}>{f.note}</div>
         </div>
       ))}
-      <Grain />
     </AbsoluteFill>
   );
 }
