@@ -102,7 +102,7 @@ export function R6Custom({ cut }: { cut: number }) {
       {/* Title: two lines, a sixteenth apart. */}
       <div style={{ position: "absolute", left: REELS_SAFE.x0, top: TITLE_TOP, width: SAFE_W, textAlign: "center" }}>
         {titleLines().map((line, i) => (
-          <MaskRise key={i} from={i * t.s(1)} duration={t.b(1.5)} exit={{ ...exitTitle, from: exitTitle.from + i * t.s(1) / 2 }} style={{ paddingBottom: 6 }}>
+          <MaskRise key={i} from={i * t.s(1)} duration={t.b(1.5)} exit={{ ...exitTitle, from: exitTitle.from + i * t.s(1) / 2 }} innerStyle={{ paddingBottom: 6 }}>
             <div style={{ ...display(type.reels.medium, 500, -0.04, 1), color: color.ink }}>{line}</div>
           </MaskRise>
         ))}

@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { useCurrentFrame } from "remotion";
+import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { copy } from "../../data/copy";
 import { WORKS_COUNT } from "../../data/art";
 import { promo } from "../../data/selection";
 import { GRID_PROMO, GridWall } from "../../effects/GridWall";
 import { SHOWROOM_GRID, SHOWROOM_PHOTOS, showroom } from "../../lines/promo";
-import { EASEL_CANVAS, SHOWROOM_SPOTS, showroomElements } from "../../lines/showroom";
+import { EASEL_CANVAS, RAIL_Y, SHOWROOM_SPOTS, showroomElements } from "../../lines/showroom";
 import { prepareRoom, RoomStrokes } from "../../primitives/LineRoom";
 import { ArtImage } from "../../primitives/ArtImage";
 import { useCounter } from "../../primitives/Counter";
@@ -51,7 +51,7 @@ function SpotCones({ from }: { from: number }) {
       {SHOWROOM_SPOTS.map((x, i) => {
         const on = progress(frame, from + i * t.s(1), t.e(1), ease.out);
         if (on <= 0) return null;
-        const top = 62;
+        const top = RAIL_Y + 40;
         const bottom = SHOWROOM_GRID.y + SHOWROOM_GRID.h * 0.8;
         const half = 230;
         return (
@@ -76,10 +76,12 @@ function SpotCones({ from }: { from: number }) {
 }
 
 /**
- * P6 (bar 12): the showroom wall of 66 works fills by a diagonal wave; the counter plate at +¾b; from +2b the camera
- * pulls back (1 → 0.72, 1.25b, in-out) and the wall turns out to be one wall of the showroom drawn in line: a ceiling
- * grille and spots that switch on one by one, a ladder, canvas rolls, frames leaning with small works, kraft boxes,
- * an easel with a canvas, a plant, a frame swinging on the side wall. Frames relative to P6.
+ * P6 (bars 12–13): the showroom wall of 66 works fills by a diagonal wave; the counter plate at +¾b; from +2b the
+ * camera pulls back (1 → 0.72, 1.25b, in-out) and the wall turns out to be one wall of the showroom drawn in line —
+ * a ceiling rail with spots that switch on one by one, the grille, floor boards and a rug, frames on the side walls,
+ * a door, a ladder with a frame on it, canvas rolls, frames leaning with small works, kraft boxes, an easel with a
+ * canvas, a table, a plant. The room holds for almost three seconds while the camera drifts in a little.
+ * Frames relative to P6.
  */
 export function P6Showroom() {
   const frame = useCurrentFrame();
@@ -93,8 +95,9 @@ export function P6Showroom() {
   const walls = pencil(progress(frame, pullFrom + t.s(1), t.b(1.25), ease.out));
   const drawn = progress(frame, pullFrom + t.s(2), t.b(1.25), ease.linear);
   const works = progress(frame, pullFrom + t.b(0.75), t.b(0.5), ease.out);
+  const drift = 1 + 0.02 * progress(frame, pullFrom + t.b(1.25), t.b(4.75), ease.inOut);
   return (
-    <>
+    <AbsoluteFill style={{ scale: String(drift), transformOrigin: "960px 560px" }}>
       <div style={{ position: "absolute", inset: 0, scale: String(s), transformOrigin: "960px 540px" }}>
         <GridWall codes={promo.wall} layout={GRID_PROMO} step={2} settleDuration={t.bar(1)} parentScale={s} />
       </div>
@@ -122,6 +125,6 @@ export function P6Showroom() {
         </div>
       ) : null}
       <Plate from={t.b(0.75)} exit={pullFrom} />
-    </>
+    </AbsoluteFill>
   );
 }

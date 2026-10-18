@@ -175,7 +175,7 @@ export const plantB: LineArt = (() => {
   };
 })();
 
-// ─── P1: empty frames on the dark wall, moon and stars ───────────────────────────────────────
+// ─── P1: empty frames on the dark wall ──────────────────────────────────────────────────────
 
 /** Frame band around the picture: the outline's outer rect is the picture rect grown by this. */
 export const FRAME_BAND = 16;
@@ -226,48 +226,6 @@ export const lightFrames: LineArt = {
   parts: LIGHT_FRAMES_LAYOUT.map(hungFrame),
 };
 
-/** Four-point star (sparkle) with concave sides, starting at its top. */
-const sparkle = (cx: number, cy: number, r: number) => {
-  const k = r * 0.14;
-  return (
-    `M${cx} ${cy - r}Q${cx + k} ${cy - k} ${cx + r} ${cy}Q${cx + k} ${cy + k} ${cx} ${cy + r}` +
-    `Q${cx - k} ${cy + k} ${cx - r} ${cy}Q${cx - k} ${cy - k} ${cx} ${cy - r}Z`
-  );
-};
-
-/** Crescent: a disc bitten by a second circle offset up-right (as the site's theme toggle). */
-const crescent = (cx: number, cy: number, r: number) => {
-  // Bite circle: the toggle's mask (17.5, 6.5, r 7) against the core (12, 12, r 8.5).
-  const k = r / 8.5;
-  const bx = cx + 5.5 * k;
-  const by = cy - 5.5 * k;
-  const br = 7 * k;
-  // Intersections of the two circles.
-  const dx = bx - cx;
-  const dy = by - cy;
-  const d = Math.hypot(dx, dy);
-  const a = (r * r - br * br + d * d) / (2 * d);
-  const hh = Math.sqrt(r * r - a * a);
-  const mx = cx + (a * dx) / d;
-  const my = cy + (a * dy) / d;
-  const p1 = { x: mx + (hh * dy) / d, y: my - (hh * dx) / d };
-  const p2 = { x: mx - (hh * dy) / d, y: my + (hh * dx) / d };
-  // Outer arc the long way round (through the lower left), back along the bite.
-  return `M${fmt(p1)}A${r} ${r} 0 1 0 ${fmt(p2)}A${n1(br)} ${n1(br)} 0 0 1 ${fmt(p1)}Z`;
-};
-
-/**
- * Moon and three stars, box 260 × 200, upper right of P1: suggested place (1600, 40).
- * Parts: moon, then the stars largest to smallest.
- */
-export const moonStars: LineArt = {
-  w: 260,
-  h: 200,
-  roles: ["moon", "star", "star", "star"],
-  parts: [crescent(176, 104, 66), sparkle(56, 70, 22), sparkle(96, 156, 14), sparkle(24, 136, 10)],
-};
-
-export const MOON_STARS_AT = { x: 1600, y: 40 } as const;
 
 // ─── P6: showroom ────────────────────────────────────────────────────────────────────────────
 

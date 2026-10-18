@@ -11,7 +11,7 @@ import { ArtImage } from "../../primitives/ArtImage";
 import { DotCursor } from "../../primitives/DotCursor";
 import { prepareRoom, RoomStrokes } from "../../primitives/LineRoom";
 import { MaskRise } from "../../primitives/MaskRise";
-import { LABEL_CHIP, LABEL_LINE_TOP, MuseumLabel } from "../../primitives/MuseumLabel";
+import { chipCenter, chipWidth, LABEL_CHIP, LABEL_LINE_TOP, MuseumLabel } from "../../primitives/MuseumLabel";
 import { display } from "../../theme/fonts";
 import { ease, mix, progress } from "../../theme/easing";
 import { useTiming } from "../../theme/timing";
@@ -32,15 +32,13 @@ const SIZE_PX = [320, 360, 400];
  * the label and clicks the second option at +2b and the third at +2.75b, then leaves. Returns the chosen option
  * (fractional while it changes), the cursor and its click pulse.
  */
-function useChoice(h: number, label: { x: number; y: number }, line: "size" | "frame") {
+function useChoice(h: number, label: { x: number; y: number }, line: "size" | "frame", options: string[]) {
   const frame = useCurrentFrame();
   const t = useTiming();
   const clicks = [h + t.b(2), h + t.b(2.75)];
   const active = clicks.reduce((a, c) => a + progress(frame, c, t.s(1), ease.out), 0);
-  const chip = (i: number) => ({
-    x: label.x + i * (LABEL_CHIP.w + LABEL_CHIP.gap) + LABEL_CHIP.w / 2,
-    y: label.y + LABEL_LINE_TOP[line] + LABEL_CHIP.h / 2,
-  });
+  // The cursor clicks the chip's lower right, so its text stays readable under the dot.
+  const chip = (i: number) => ({ x: chipCenter(options, i, label.x) + chipWidth(options[i]) * 0.38, y: label.y + LABEL_LINE_TOP[line] + LABEL_CHIP.h * 0.85 });
   const away = { x: label.x + 420, y: label.y + 420 };
   const come = progress(frame, h + t.b(1.6), t.b(0.35), ease.menuIn);
   const hop = progress(frame, h + t.b(2.3), t.b(0.4), ease.inOut);
@@ -92,16 +90,17 @@ function Hall({ k }: { k: number }) {
   const room = useMemo(() => prepareRoom(PROMO_ROOMS[k], PROMO_ROOM.w), [k]);
   const kind = CHOICE[k];
   const label0 = hallLabel(0);
-  const choice = useChoice(h, label0, kind ?? "size");
-  const drawn = progress(frame, h + t.e(1), t.b(1.5), ease.linear);
   const sizes = kind === "size" ? sizesOf(hall.codes[0]) : [];
+  const options = kind === "size" ? sizes.map((z) => `${z.w}×${z.h}`) : FRAME_OPTIONS;
+  const choice = useChoice(h, label0, kind ?? "size", options);
+  const drawn = progress(frame, h + t.e(1), t.b(1.5), ease.linear);
   return (
     <div style={{ position: "absolute", left: hallX(k), top: 0, width: HALL.width, height: 1080 }}>
       <svg width={PROMO_ROOM.w} height={PROMO_ROOM.h} style={{ position: "absolute", left: 0, top: PROMO_ROOM.y, overflow: "visible" }}>
         <RoomStrokes room={room} drawn={drawn} beat={frame / t.b(1)} line={LINE} fine={FINE} />
       </svg>
       <div style={{ position: "absolute", left: 160, top: 64 }}>
-        <MaskRise from={h + t.b(0.75)} duration={t.b(1.5)} style={{ paddingBottom: 24 }}>
+        <MaskRise from={h + t.b(0.75)} duration={t.b(1.5)} innerStyle={{ paddingBottom: 24 }}>
           <div style={{ ...display(type.promo.large, 500, -0.05), color: color.ink }}>{copy.promo.halls[k]}</div>
         </MaskRise>
       </div>
@@ -126,7 +125,7 @@ function Hall({ k }: { k: number }) {
                 x={l.x}
                 y={l.y}
                 style={{ width: l.w }}
-                choice={{ line: "size", options: sizes.map((z) => `${z.w}×${z.h}`), active: choice.active }}
+                choice={{ line: "size", options, active: choice.active }}
                 price={formatPrice(sizes[k2].price)}
               />
             </div>

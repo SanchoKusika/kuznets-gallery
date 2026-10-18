@@ -93,7 +93,7 @@ export function P7Craft() {
       )}
 
       <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center" }}>
-        <MaskRise from={t.b(6.5)} duration={t.b(1.5)} style={{ paddingBottom: 10 }}>
+        <MaskRise from={t.b(6.5)} duration={t.b(1.5)} innerStyle={{ paddingBottom: 10 }}>
           <div style={{ ...display(type.promo.medium, 500, -0.04, 1), color: color.ink }}>{copy.promo.framingTitle}</div>
         </MaskRise>
       </div>

@@ -3,7 +3,7 @@ import { CameraMotionBlur } from "@remotion/motion-blur";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { useMemo } from "react";
 import { galleryElements, rope, SPOTS, STANCHIONS } from "../../lines/gallery";
-import { LIGHT_FRAMES_LAYOUT, lightFrames, MOON_STARS_AT, moonStars, plantA, plantB } from "../../lines/promo";
+import { LIGHT_FRAMES_LAYOUT, lightFrames, plantA, plantB } from "../../lines/promo";
 import { prepareRoom, RoomStrokes } from "../../primitives/LineRoom";
 import { art } from "../../data/art";
 import { promo } from "../../data/selection";
@@ -37,7 +37,7 @@ function Layer({ speed, children }: { speed: number; children: ReactNode }) {
 }
 
 /**
- * P1's gallery: frames and moon, the spots, the bench and the stanchions — drawn on in the dark (pencil), finished
+ * P1's gallery: frames, the spots, the bench and the stanchions — drawn on in the dark (pencil), finished
  * in the light. The ropes sag and sway a little.
  */
 function GalleryLines({ lineColor, paper, opacity, drawn }: { lineColor: string; paper: string; opacity: number; drawn: number }) {
@@ -45,14 +45,12 @@ function GalleryLines({ lineColor, paper, opacity, drawn }: { lineColor: string;
   const frame = useCurrentFrame();
   const gallery = useMemo(() => prepareRoom(galleryElements, 1920), []);
   const framesP = drawn >= 1 ? 1 : pencil(progress(frame, t.s(1), t.b(2), ease.out));
-  const moonP = drawn >= 1 ? 1 : pencil(progress(frame, t.b(1), t.b(1.5), ease.out));
   const roomP = drawn >= 1 ? 1 : progress(frame, t.e(1), t.b(2), ease.linear);
   const line = { color: lineColor, width: stroke.promo, opacity };
   const sag = (i: number) => 34 + 3 * Math.sin((2 * Math.PI * frame) / t.b(3) + i);
   return (
     <>
       <LineDrawing art={lightFrames} progress={framesP} x={0} y={0} {...line} />
-      <LineDrawing art={moonStars} progress={moonP} x={MOON_STARS_AT.x} y={MOON_STARS_AT.y} {...line} />
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, overflow: "visible", opacity }}>
         {roomP >= 0.6
           ? STANCHIONS.map(([a, b], i) => (

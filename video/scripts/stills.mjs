@@ -116,7 +116,7 @@ if (mode === "styleframes") {
   const frames =
     mode === "reels"
       ? [60, 160, 300, 400, 430, 500, 600, 700, 820, 900, 1000, 1060, 1150, 1250, 1380, REELS_LAST]
-      : [100, 250, 330, 450, 700, 850, 1000, 1100, 1200, 1350, 1500, 1650, 1720, 1800, 2000, 2150, 2250, 2350, 2500, 2700, PROMO_LAST];
+      : [100, 250, 330, 450, 680, 850, 1000, 1100, 1200, 1350, 1500, 1650, 1800, 1860, 1950, 2300, 2420, 2500, 2650, 2850, PROMO_LAST];
   const id = mode === "reels" ? "Reels" : "Promo";
   const files = frames.map((f) => ({ file: still(id, f, path.join(tmp, `${id}-${f}.png`)), caption: `${id} ${f}` }));
   const perRow = mode === "reels" ? 8 : 5;

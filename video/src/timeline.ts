@@ -4,7 +4,7 @@
 export type SceneSlot = { id: string; name: string; fromBar: number; bars: number };
 
 export const REELS_BARS = 10;
-export const PROMO_BARS = 20;
+export const PROMO_BARS = 21;
 
 export const REELS_SCENES: SceneSlot[] = [
   { id: "R1", name: "Хук", fromBar: 0, bars: 1 },
@@ -22,9 +22,10 @@ export const PROMO_SCENES: SceneSlot[] = [
   { id: "P3", name: "Четыре зала", fromBar: 4, bars: 4 },
   { id: "P4", name: "Волна", fromBar: 8, bars: 1 },
   { id: "P5", name: "По форме", fromBar: 9, bars: 2 },
-  { id: "P6", name: "Стена и шоурум", fromBar: 11, bars: 1 },
-  { id: "P7", name: "Ремесло", fromBar: 12, bars: 3 },
-  { id: "P8", name: "По вашей идее", fromBar: 15, bars: 2 },
-  { id: "P10", name: "Шторки и логотип", fromBar: 17, bars: 1 },
-  { id: "P11", name: "Финал", fromBar: 18, bars: 2 },
+  // P6 holds the showroom a bar longer than the brief (the owner: too much to see in under a second).
+  { id: "P6", name: "Стена и шоурум", fromBar: 11, bars: 2 },
+  { id: "P7", name: "Ремесло", fromBar: 13, bars: 3 },
+  { id: "P8", name: "По вашей идее", fromBar: 16, bars: 2 },
+  { id: "P10", name: "Шторки и логотип", fromBar: 18, bars: 1 },
+  { id: "P11", name: "Финал", fromBar: 19, bars: 2 },
 ];

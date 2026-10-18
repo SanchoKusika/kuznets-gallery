@@ -106,23 +106,6 @@ export function cropMarks(w: number, h: number, len = 36, gap = 14): LineArt {
   };
 }
 
-/* ── Check in a circle ───────────────────────────────────────────────────────────────────────── */
-
-/** Lucide `circle-check` drawn at d px: the circle (from the top, clockwise), then the tick. */
-export function checkCircle(d: number): LineArt {
-  const r = d / 2;
-  const u = d / 20; // Lucide's 24-unit icon has a 20-unit circle
-  return {
-    w: d,
-    h: d,
-    parts: [
-      `M${f(r)} 0A${f(r)} ${f(r)} 0 0 1 ${f(r)} ${d}A${f(r)} ${f(r)} 0 0 1 ${f(r)} 0`,
-      `M${f(r - 3 * u)} ${f(r)}L${f(r - u)} ${f(r + 2 * u)}L${f(r + 3 * u)} ${f(r - 2 * u)}`,
-    ],
-    roles: ["circle", "check"],
-  };
-}
-
 /* ── Kraft envelope ──────────────────────────────────────────────────────────────────────────── */
 
 /**

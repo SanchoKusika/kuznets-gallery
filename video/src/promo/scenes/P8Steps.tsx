@@ -4,7 +4,7 @@ import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { copy } from "../../data/copy";
 import { STEPS } from "../../data/site";
 import { promo } from "../../data/selection";
-import { archesSketch, checkCircle, cropMarks, envelope, envelopeSquares } from "../../lines/common";
+import { archesSketch, cropMarks, envelope, envelopeSquares } from "../../lines/common";
 import { PROMO_ROOM, PROMO_ROOMS } from "../../lines/promoRooms";
 import { ArtImage } from "../../primitives/ArtImage";
 import { LineDrawing, pencil } from "../../primitives/LinePath";
@@ -58,7 +58,10 @@ export function P8Steps() {
 
   const sketch = pencil(progress(frame, t.b(1), t.b(1), ease.out));
   const marks = pencil(progress(frame, t.b(2), t.e(1), ease.out));
-  const check = pencil(progress(frame, t.b(3), t.e(1), ease.out));
+  // Approval: a stamp-like badge pops in (0 → 1.12 → 1), then its tick is drawn.
+  const pop = progress(frame, t.b(3), t.e(1), ease.out);
+  const badge = pop * (1 + 0.12 * Math.sin(Math.PI * pop));
+  const tick = progress(frame, t.b(3) + t.s(1), t.s(1.5), ease.out);
   const head = progress(frame, t.b(4), t.b(0.75), ease.inOut);
   const headY = mix(BOX.y - 20, BOX.y + BOX.h + 20, head);
   const printed = Math.max(0, Math.min(BOX.h, headY - BOX.y));
@@ -78,7 +81,7 @@ export function P8Steps() {
   return (
     <AbsoluteFill>
       <div style={{ position: "absolute", left: 0, right: 0, top: 110, textAlign: "center" }}>
-        <MaskRise from={t.e(1)} duration={t.b(1.5)} exit={{ from: t.b(6), duration: t.e(1) }} style={{ paddingBottom: 10 }}>
+        <MaskRise from={t.e(1)} duration={t.b(1.5)} exit={{ from: t.b(6), duration: t.e(1) }} innerStyle={{ paddingBottom: 10 }}>
           <div style={{ ...display(type.promo.medium, 500, -0.04, 1), color: color.ink }}>{copy.promo.stepsTitle}</div>
         </MaskRise>
       </div>
@@ -123,9 +126,35 @@ export function P8Steps() {
               <div style={{ ...label(type.promo.label), color: color.ink3 }}>{copy.reels.sketchSize}</div>
             </div>
           ) : null}
-          <div style={{ position: "absolute", left: BOX.x + BOX.w - 70, top: BOX.y - 50, scale: String(1 + 0.2 * Math.sin(Math.PI * check)), opacity: clearMarks }}>
-            <LineDrawing art={checkCircle(120)} progress={check} x={0} y={0} color={color.accent} width={stroke.promo * 1.4} />
-          </div>
+          {badge > 0 ? (
+            <div
+              style={{
+                position: "absolute",
+                left: BOX.x + BOX.w - 58,
+                top: BOX.y - 52,
+                width: 110,
+                height: 110,
+                borderRadius: "50%",
+                background: color.accent,
+                scale: String(badge),
+                opacity: clearMarks,
+                boxShadow: "0 16px 30px -14px rgba(21,21,21,.4)",
+              }}
+            >
+              <svg width={110} height={110} viewBox="0 0 110 110" style={{ opacity: tick > 0 ? 1 : 0 }}>
+                <path
+                  d="M33 57L48 72L78 40"
+                  fill="none"
+                  stroke={color.paperRaised}
+                  strokeWidth={9}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  pathLength={1}
+                  strokeDasharray={`${tick} 1`}
+                />
+              </svg>
+            </div>
+          ) : null}
           <div style={{ position: "absolute", left: BOX.x, top: BOX.y, width: BOX.w, height: printed, overflow: "hidden", opacity: 1 - packed }}>
             <ArtImage code={code} width={BOX.w} height={BOX.h} shadow={head >= 1} />
           </div>

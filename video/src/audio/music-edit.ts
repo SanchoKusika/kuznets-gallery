@@ -29,13 +29,14 @@ export const REELS_EDIT: MusicSegment[] = [
 ];
 
 /**
- * Promo, 20 bars: 1–2 intro · 3–8 verse · 9–12 chorus (P4–P6) · 13–16 break (P7–P8) · 17 the build's last bar ·
- * 18 the hit (curtains, P10) · 19–20 tail (P11).
+ * Promo, 21 bars: 1–2 intro · 3–8 verse · 9–13 chorus (P4–P6; its last chord once more under the showroom) ·
+ * 14–17 break (P7–P8) · 18 the build's last bar · 19 the hit (curtains, P10) · 20–21 tail (P11).
  */
 export const PROMO_EDIT: MusicSegment[] = [
   { fromBar: 0, bars: 2 },
   { fromBar: 2, bars: 6 },
   { fromBar: 8, bars: 4 },
+  { fromBar: 11, bars: 1 },
   { fromBar: 12, bars: 4 },
   { fromBar: 17, bars: 1 },
   { fromBar: 18, bars: 1 },
@@ -44,4 +45,4 @@ export const PROMO_EDIT: MusicSegment[] = [
 
 /** Bars (1-based, of the video) where drums are ducked −12 dB when stems exist: the calm scenes. */
 export const REELS_CALM_BARS = [7];
-export const PROMO_CALM_BARS = [13, 14, 15, 16];
+export const PROMO_CALM_BARS = [14, 15, 16, 17];

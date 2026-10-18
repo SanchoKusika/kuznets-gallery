@@ -29,12 +29,12 @@ export function P2Hero() {
       </div>
       <div style={{ ...box, top: 302 }}>
         {/* Room for the descender of «р» inside the mask. */}
-        <MaskRise from={S.P2 + t.s(1)} duration={t.b(2)} exit={exit(1)} style={{ paddingBottom: 60, marginBottom: -60 }}>
+        <MaskRise from={S.P2 + t.s(1)} duration={t.b(2)} exit={exit(1)} style={{ marginBottom: -60 }} innerStyle={{ paddingBottom: 60 }}>
           <div style={{ ...display(type.promo.hero, 600, -0.075, 0.86), color: color.ink }}>{copy.promo.hero}</div>
         </MaskRise>
       </div>
       <div style={{ ...box, left: cx - 560, width: 1120, top: 636 }}>
-        <MaskRise from={S.P2 + t.b(1.5)} duration={t.b(1.5)} exit={exit(2)} style={{ paddingBottom: 12 }}>
+        <MaskRise from={S.P2 + t.b(1.5)} duration={t.b(1.5)} exit={exit(2)} innerStyle={{ paddingBottom: 12 }}>
           <div style={{ ...serif(type.promo.lede, 1.2), color: color.ink2 }}>{copy.promo.lede}</div>
         </MaskRise>
       </div>

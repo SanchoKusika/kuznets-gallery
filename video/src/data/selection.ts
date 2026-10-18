@@ -10,8 +10,8 @@ export type Circle = { cx: number; cy: number; r: number };
 export const CIRCLES: Record<string, Circle> = circlesJson;
 
 /** n works in a stable pseudo-random order, so series (three «Эко мандала», two «Икат») do not sit side by side. */
-const shuffled = (seed: string, n: number) =>
-  [...ALLOWED]
+const shuffled = (seed: string, n: number, except: readonly string[] = []) =>
+  ALLOWED.filter((a) => !except.includes(a.code))
     .sort((a, b) => random(`${seed}-${a.code}`) - random(`${seed}-${b.code}`))
     .slice(0, n)
     .map((a) => a.code);
@@ -52,31 +52,45 @@ export const reels = {
   custom: check("KZ-009"),
 };
 
-const PROMO_WALL = shuffled("promo-wall", 66);
 const PROMO_LEANING = check(["KZ-001", "KZ-108", "KZ-003", "KZ-154", "KZ-053", "KZ-171"] as const);
+const PROMO_LIGHT = check(["KZ-012", "KZ-070", "KZ-032", "KZ-166", "KZ-050"] as const);
+const PROMO_HALLS = [
+  { key: "home", codes: check(["KZ-011", "KZ-047", "KZ-035"] as const) },
+  { key: "kids", codes: check(["KZ-082", "KZ-086", "KZ-097"] as const) },
+  { key: "office", codes: check(["KZ-134", "KZ-129", "KZ-111"] as const) },
+  { key: "public", codes: check(["KZ-140", "KZ-143", "KZ-137"] as const) },
+] as const;
+/** P5: the last one (brief: KZ-162, a plane on the same blue sea as the yacht) is «Окно принцессы» KZ-002. */
+const PROMO_ARCH = check(["KZ-028", "KZ-112", "KZ-160", "KZ-002"] as const);
+const PROMO_SHOWROOM = check(["KZ-070", "KZ-051", "KZ-049"] as const);
+/** Works the Promo shows on their own somewhere: the P6 wall and the easel take none of them. */
+const PROMO_FEATURED: string[] = [
+  ...PROMO_LEANING,
+  ...PROMO_LIGHT,
+  ...PROMO_HALLS.flatMap((h) => h.codes),
+  ...CIRCLE_WORKS,
+  ...PROMO_ARCH,
+  ...PROMO_SHOWROOM,
+  "KZ-022",
+  "KZ-009",
+];
+const PROMO_WALL = shuffled("promo-wall", 66, PROMO_FEATURED);
 
 export const promo = {
   /** P2: canvases leaning on the wall under «картины», in pairs (back, front). */
   leaning: PROMO_LEANING,
   /** P1: in the empty frames once the light comes on. */
-  lightFrames: check(["KZ-012", "KZ-070", "KZ-032", "KZ-166", "KZ-050"] as const),
-  halls: [
-    { key: "home", codes: check(["KZ-011", "KZ-047", "KZ-035"] as const) },
-    { key: "kids", codes: check(["KZ-082", "KZ-086", "KZ-097"] as const) },
-    { key: "office", codes: check(["KZ-134", "KZ-129", "KZ-111"] as const) },
-    { key: "public", codes: check(["KZ-140", "KZ-143", "KZ-137"] as const) },
-  ] as const,
+  lightFrames: PROMO_LIGHT,
+  halls: PROMO_HALLS,
   /** P4: first 14 unique titles of the catalogue (without excluded works). */
   ribbonTitles: [...new Set(ALLOWED.map((a) => a.title))].slice(0, 14),
   circles: reels.circles,
-  /** P5: the last one (brief: KZ-162, a plane on the same blue sea as the yacht) is the domes of KZ-025. */
-  arch: check(["KZ-028", "KZ-112", "KZ-160", "KZ-025"] as const),
-  /** P6: 11 × 6 grid. */
+  arch: PROMO_ARCH,
+  /** P6: 11 × 6 grid of works not featured elsewhere in the Promo. */
   wall: PROMO_WALL,
-  /** P6: on the easel in the showroom — a portrait work not shown elsewhere in P2 or P6. */
-  easel: ALLOWED.find((a) => a.h > a.w * 1.15 && !PROMO_WALL.includes(a.code) && !(PROMO_LEANING as readonly string[]).includes(a.code))!.code,
-  showroom: check(["KZ-070", "KZ-051", "KZ-049"] as const),
-
+  /** P6: on the easel in the showroom — a portrait work shown nowhere else. */
+  easel: ALLOWED.find((a) => a.h > a.w * 1.15 && !PROMO_WALL.includes(a.code) && !PROMO_FEATURED.includes(a.code))!.code,
+  showroom: PROMO_SHOWROOM,
   /** P7 (brief: KZ-041 Адрас; the owner asked for a more striking work). */
   craft: check("KZ-022"),
   custom: check("KZ-009"),
