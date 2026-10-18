@@ -160,6 +160,8 @@ export function LogoBuild({ width, x, y, schedule, dotScale = 1, style }: Props)
       width={g.box.w}
       height={g.box.h}
       viewBox={`0 0 ${LOGO_SIZE.w} ${LOGO_SIZE.h}`}
+      // Traced contours keep the counters of O, A, R only under even-odd (inherited by every part).
+      fillRule="evenodd"
       style={{ position: "absolute", left: g.box.x0, top: g.box.y0, overflow: "visible", ...style }}
     >
       <defs>

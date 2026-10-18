@@ -8,6 +8,11 @@ export type SfxId =
   | "wire-creak"
   | "swing"
   | "pencil"
+  | "pencil-2"
+  | "room-draw-1"
+  | "room-draw-2"
+  | "room-draw-3"
+  | "room-draw-4"
   | "morph-swish"
   | "spin"
   | "ring"
@@ -35,6 +40,10 @@ export type Cue = { id: SfxId; at: number; gainDb: number; note?: string };
 const every = (id: SfxId, from: number, step: number, n: number, gainDb: number, note?: string): Cue[] =>
   Array.from({ length: n }, (_, i) => ({ id, at: from + i * step, gainDb, note }));
 
+/** Rooms drawn one after another, each with its own take of `room-draw` (from take `first` to 4). */
+const rooms = (from: number, step: number, gainDb: number, note: string, first = 1): Cue[] =>
+  Array.from({ length: 5 - first }, (_, i) => ({ id: `room-draw-${first + i}` as SfxId, at: from + i * step, gainDb, note }));
+
 export const REELS_CUES: Record<string, Cue[]> = {
   R1: [
     { id: "dot-whoosh", at: 0.25, gainDb: -6, note: "точка прыгает к гвоздю" },
@@ -44,9 +53,9 @@ export const REELS_CUES: Record<string, Cue[]> = {
   ],
   R2: [...every("swing", 0, 1, 4, -10, "качание рамы")],
   R3: [
-    { id: "pencil", at: 0, gainDb: -8, note: "нить становится полом, рисуется гостиная" },
+    { id: "room-draw-1", at: 0, gainDb: -10, note: "нить становится полом, рисуется гостиная" },
     ...every("spin", 2, 2, 3, -6, "холст разворачивается на гвозде"),
-    ...every("pencil", 2.25, 2, 3, -10, "рисуется следующая комната"),
+    ...rooms(2.25, 2, -12, "рисуется следующая комната", 2),
   ],
   R4: [
     ...every("ring", 0.5, 0.5, 7, -14, "смена работы в круге"),
@@ -79,7 +88,7 @@ export const PROMO_CUES: Record<string, Cue[]> = {
   ],
   P3: [
     ...every("swing", 0, 4, 4, -8, "перелёт к залу"),
-    ...every("pencil", 0.5, 4, 4, -12, "рисуется комната"),
+    ...rooms(0.5, 4, -14, "рисуется зал"),
     { id: "dot-whoosh", at: 2, gainDb: -8, note: "курсор на «Тихий Паттерн»" },
     { id: "dot-whoosh", at: 10, gainDb: -8, note: "курсор на «Воздушный шар»" },
   ],
@@ -93,7 +102,7 @@ export const PROMO_CUES: Record<string, Cue[]> = {
     { id: "grid-ticks", at: 0, gainDb: -10, note: "сетка" },
     { id: "plate-slide", at: 1, gainDb: -8, note: "плашка" },
     { id: "fill-whoosh", at: 2.25, gainDb: -8, note: "отъезд в шоурум" },
-    { id: "pencil", at: 2.5, gainDb: -12, note: "рисуется шоурум" },
+    { id: "room-draw-2", at: 2.5, gainDb: -14, note: "рисуется шоурум" },
   ],
   P7: [
     { id: "plate-slide", at: 1, gainDb: -10, note: "печатающая головка" },
@@ -104,12 +113,12 @@ export const PROMO_CUES: Record<string, Cue[]> = {
     { id: "glass-glint", at: 9, gainDb: -6, note: "блик по стеклу" },
   ],
   P8: [
-    { id: "pencil", at: 1, gainDb: -8, note: "эскиз" },
+    { id: "pencil-2", at: 1, gainDb: -8, note: "эскиз" },
     ...every("bead-light", 1, 1, 5, -6, "шаг загорается"),
     { id: "cropmark-tick", at: 2, gainDb: -8, note: "метки обреза" },
     { id: "plate-slide", at: 4, gainDb: -10, note: "проход печати" },
     { id: "envelope", at: 5, gainDb: -6, note: "крафт-конверт" },
-    { id: "pencil", at: 6, gainDb: -12, note: "комната с диваном" },
+    { id: "room-draw-1", at: 6, gainDb: -12, note: "комната с диваном" },
   ],
   P10: [
     { id: "curtain", at: 0, gainDb: -4, note: "шторки" },

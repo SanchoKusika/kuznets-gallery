@@ -1,12 +1,12 @@
 // Sound effects of both videos (brief 9.2), synthesised here — no samples, no licences. One file per cue id in
-// public/sfx/<id>.wav, mono content in a stereo file, peak at −1 dBFS; the level in the mix comes from
+// public/sfx/<id>.wav, a stereo file (mono content unless the effect pans), peak at −1 dBFS; the level in the mix comes from
 // src/audio/cues.ts (gain per cue) and the SFX bus in Soundtrack.tsx.
 //
 //   npm run sfx
 
 import fs from "node:fs";
 import path from "node:path";
-import { dbGain, env, filter, noise, pluck, RATE, reverb, rng, writeWav } from "./audio/dsp.mjs";
+import { bus, dbGain, env, filter, midiHz, mixInto, noise, pingPong, pluck, put, RATE, reverb, rng, writeWav } from "./audio/dsp.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 const dir = path.join(root, "public/sfx");
@@ -59,6 +59,79 @@ const thud = (f = 70, tau = 0.12) => add(mul(glide(0.5, (t) => f + 60 * Math.exp
 const knock = (f = 900, tau = 0.03) => add(...[1, 2.32, 4.25].map((k, j) => mul(sine(0.2, f * k), env(len(0.2), { attack: 0.0005, tau: tau / (j + 1) })).map((v) => v / (j + 1))));
 const bell = (f, s = 1.2) => add(...[1, 2.76, 5.4].map((k, j) => mul(sine(s, f * k), env(len(s), { attack: 0.001, tau: s / (2 + j * 2) })).map((v) => v * [1, 0.4, 0.15][j])));
 
+/**
+ * Graphite on paper, one stroke: the tip speeds up and slows down (`v`), and the sound is mostly grain — sparse
+ * clicks whose density follows the speed — with a little friction hiss, through the paper's resonances. Steady
+ * filtered noise (the old version) reads as a floor brush; the grain and the lifts between strokes read as a pencil.
+ */
+function graphiteStroke(s, r, { density = 520, hiss = 0.1, tone = 1 } = {}) {
+  const n = len(s);
+  const v = make(s, (t) => Math.sin(Math.PI * (t / s)) ** 0.7);
+  const grain = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    if (r() > (density * v[i]) / RATE) continue;
+    const a = (r() * 2 - 1) * r() ** 3; // mostly tiny ticks, now and then a crisp one
+    grain[i] += a;
+    if (i + 1 < n) grain[i + 1] -= a * 0.6;
+  }
+  const fric = mul(filter(noise(n, r), "bp", (i) => (2600 + 2400 * v[i]) * tone, 1.4), v).map((x) => x * hiss);
+  const dry = filter(add(grain, fric), "hp", 1200);
+  // Paper over a table: a few broad bumps; the stroke direction tilts them a little (`tone`).
+  const body = add(...[1800, 3400, 6000].map((f, k) => filter(Float32Array.from(dry), "bp", f * tone, 3).map((x) => x * [0.7, 1, 0.5][k])));
+  const out = filter(add(dry.map((x) => x * 0.6), body), "lp", 9000);
+  // The tip touching down.
+  return add(out, tick(2600 * tone, 0.003).map((x) => x * 0.05));
+}
+
+/** A run of strokes with lifts in between, tanh-tamed so the grain does not set the level alone. */
+function graphite(total, seed, opts = {}) {
+  const r = rng(seed);
+  const parts = [];
+  let at = 0;
+  let up = true;
+  while (at < total - 0.08) {
+    const s = Math.min(total - at, 0.06 + r() * 0.16);
+    const k = 0.5 + 0.5 * r();
+    parts.push(delay(graphiteStroke(s, r, { ...opts, tone: (opts.tone ?? 1) * (up ? 1.06 : 0.94) }), at).map((x) => x * k));
+    at += s + 0.02 + r() * 0.07;
+    up = !up;
+  }
+  return add(...parts).map((x) => Math.tanh(x * 1.2));
+}
+
+// C major pentatonic from C5: fits every chord of the track (Dm9 – G13 – Cmaj9 – Am9).
+const PENTA = [72, 74, 76, 79, 81, 84, 86, 88, 91, 93];
+/** A music-box tine: sine with a faint octave and twelfth, a tiny strike click, quick ring. */
+const tine = (m, s = 0.9) => {
+  const f = midiHz(m);
+  const x = add(...[1, 2, 3].map((k, j) => mul(sine(s, f * k), env(len(s), { attack: 0.0015, tau: [0.32, 0.12, 0.05][j] })).map((v) => v * [1, 0.18, 0.06][j])));
+  return add(x, tick(5200, 0.002).map((v) => v * 0.08));
+};
+
+/**
+ * A room drawn in a sweep from left to right: a light pencil run plus a rising music-box ripple panned the same way —
+ * the drawing coming to life. `notes` are steps of PENTA; each room has its own contour so repeats do not sound alike.
+ */
+function roomDraw(notes, seed, s = 0.9) {
+  const r = rng(seed);
+  const b = bus(s + 1.6);
+  const pencilRun = graphite(s, seed + 1, { density: 400 });
+  // The pencil follows the sweep across the room.
+  for (let k = 0; k < 4; k++) {
+    const a = len((s * k) / 4);
+    const piece = pencilRun.slice(a, len((s * (k + 1)) / 4));
+    put(b, a / RATE, piece, 0.42, -0.6 + (1.2 * k) / 3);
+  }
+  notes.forEach((step, k) => {
+    const at = (s * 0.92 * k) / (notes.length - 1) + (r() - 0.5) * 0.012;
+    const last = k === notes.length - 1;
+    put(b, Math.max(0, at), tine(PENTA[step], last ? 1.4 : 0.9), (0.42 + 0.22 * r()) * (last ? 1.15 : 1), -0.6 + (1.2 * k) / (notes.length - 1));
+  });
+  mixInto(b, reverb(b, { room: 0.78, damp: 0.45 }), 0.22);
+  mixInto(b, pingPong(b, 0.18, 0.3, 4200), 0.14);
+  return b;
+}
+
 const SFX = {
   // The dot hops off its rest towards the nail.
   "dot-whoosh": () => whoosh(0.5, 500, 3000),
@@ -68,12 +141,14 @@ const SFX = {
   "wire-creak": () => room(add(pluck(98, 1.2, rand, { damp: 0.2, bright: 0.9 }).map((v) => v * 0.8), pluck(147, 1.2, rand, { damp: 0.3, bright: 0.9 }).map((v) => v * 0.4), thud(60, 0.08).map((v) => v * 0.5)), 0.2),
   // A canvas swinging past: a soft air movement.
   swing: () => whoosh(0.45, 300, 900, 1),
-  // Pencil on paper: scratchy noise in strokes.
-  pencil: () => {
-    const s = 1.4;
-    const x = filter(filter(noise(len(s), rand), "bp", 3800, 0.8), "hp", 1500);
-    return mul(x, make(s, (t) => (0.35 + 0.65 * Math.abs(Math.sin(2 * Math.PI * 3.3 * t + Math.sin(7 * t)))) * Math.min(1, t / 0.05) * Math.min(1, (s - t) / 0.2)));
-  },
+  // Pencil sketching lines (frames, the arches): graphite strokes with lifts; two takes so repeats differ.
+  pencil: () => room(graphite(1.3, 31), 0.12, 0.4),
+  "pencil-2": () => room(graphite(1.1, 57, { tone: 0.92 }), 0.12, 0.4),
+  // Rooms drawn in a sweep: pencil + a rising music-box ripple, a contour per room.
+  "room-draw-1": () => roomDraw([0, 2, 1, 3, 4, 6, 5, 7], 101),
+  "room-draw-2": () => roomDraw([1, 2, 4, 3, 5, 6, 8], 202),
+  "room-draw-3": () => roomDraw([0, 1, 3, 2, 4, 5, 7, 9], 303),
+  "room-draw-4": () => roomDraw([2, 3, 5, 4, 6, 7, 9], 404),
   "morph-swish": () => whoosh(0.4, 900, 4500),
   // The canvas spins round on the nail: a quick rising-falling air sweep.
   spin: () => add(whoosh(0.55, 400, 2400, 1), delay(whoosh(0.3, 2400, 700, 1), 0.25).map((v) => v * 0.6)),
@@ -113,10 +188,11 @@ const SFX = {
 };
 
 for (const [id, fn] of Object.entries(SFX)) {
-  const x = ends(fn());
-  const peak = x.reduce((m, v) => Math.max(m, Math.abs(v)), 0) || 1;
-  const g = dbGain(-1) / peak;
-  const y = x.map((v) => v * g);
-  writeWav(path.join(dir, `${id}.wav`), { L: y, R: y });
+  // An effect is mono (a Float32Array) or a stereo bus {L, R} (the room sweep pans left → right).
+  const out = fn();
+  const ch = out instanceof Float32Array ? [ends(out)] : [ends(out.L), ends(out.R)];
+  const peak = Math.max(...ch.map((x) => x.reduce((m, v) => Math.max(m, Math.abs(v)), 0))) || 1;
+  const [L, R = L] = ch.map((x) => x.map((v) => (v * dbGain(-1)) / peak));
+  writeWav(path.join(dir, `${id}.wav`), { L, R });
 }
 console.log(`${Object.keys(SFX).length} effects → public/sfx/`);
