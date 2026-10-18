@@ -6,6 +6,7 @@
 //     the given images side by side at one size, for close looks.
 //
 // Frames first: npx remotion render Reels out/dev/<name> --sequence --frames=<a>-<b> --every-nth-frame=<k> --image-format=jpeg
+// (if a sound cue starts in the range, --every-nth-frame fails in Remotion's audio mixer with EINVAL: render every frame)
 
 import fs from "node:fs";
 import path from "node:path";

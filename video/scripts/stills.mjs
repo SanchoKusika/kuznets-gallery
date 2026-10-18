@@ -93,9 +93,15 @@ if (mode === "styleframes") {
   const dir = path.join(tmp, "loop");
   fs.rmSync(dir, { recursive: true, force: true });
   const range = (a, b, sub) => {
-    const args = ["remotion", "render", "Reels", path.join(dir, sub), "--sequence", `--frames=${a}-${b}`, "--every-nth-frame=2", "--image-format=jpeg", "--log=error"];
+    // Every frame, then every 2nd kept: --every-nth-frame fails in Remotion's audio mixer (EINVAL) when a cue starts
+    // in the range.
+    const args = ["remotion", "render", "Reels", path.join(dir, sub), "--sequence", `--frames=${a}-${b}`, "--image-format=jpeg", "--log=error"];
     execFileSync(npx, args, { cwd: root, stdio: "inherit", shell: process.platform === "win32" });
-    return fs.readdirSync(path.join(dir, sub)).sort().map((f) => path.join(dir, sub, f));
+    return fs
+      .readdirSync(path.join(dir, sub))
+      .sort()
+      .map((f) => path.join(dir, sub, f))
+      .filter((_, i) => i % 2 === 0);
   };
   const frames = [...range(REELS_LAST - 29, REELS_LAST, "a"), ...range(0, 29, "b")];
   frames.forEach((f, i) => fs.renameSync(f, path.join(dir, `${String(i).padStart(3, "0")}.jpeg`)));
