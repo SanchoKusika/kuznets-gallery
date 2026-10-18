@@ -1,15 +1,16 @@
-# Rules for agents working on the promo videos (read fully before coding)
+# Rules for working on the promo videos (read fully before coding)
 
-You are one of several agents building parts of one Remotion project in parallel. A director (the main session)
-owns the foundation, splits the work, assembles the compositions and reviews every frame. Stay inside your files.
+Since 18.10.2026 the main session builds everything itself, from the foundation to the final renders — no parallel
+agents (owner's decision). These are the project's working rules: Remotion version, determinism, the foundation's API,
+style and how to check the result.
 
 ## Project
 
 - Repo: `C:\Users\Sancho\Documents\Projects\kuznets-gallery`. Video project: `video/` (own package.json).
-- Brief: `VIDEO_BRIEF.md` in the repo root — read section 0, 5 (art direction) and the sections named in your task.
-  Creative decisions there are final unless the director's task says otherwise (owner's changes and accepted
+- Brief: `VIDEO_BRIEF.md` in the repo root — read section 0, 5 (art direction) and the sections of the scenes at hand.
+  Creative decisions there are final unless the owner says otherwise (owner's changes and accepted
   deviations are listed in the Obsidian note `C:\Users\Sancho\Documents\Obsidian Storage\Проекты\Kuznets Gallery\12 Промо-видео.md`);
-  if something is technically impossible pick the closest option and say so in your report.
+  if something is technically impossible pick the closest option and tell the owner at the next stop.
 - Remotion **4.0.532** (exact). The Remotion skills are written for 4.0.536: **do not use** `Interactive.create`,
   `Track`, `Interactive.*` wrappers or `effects=` props — they do not exist in 4.0.532. Use `AbsoluteFill`, `Sequence`,
   `Series`, `Img`, `staticFile`, `interpolate`, `spring`, `Easing`, `random`, `useCurrentFrame`, `useVideoConfig`,
@@ -23,7 +24,7 @@ No `Math.random`, `Date`, CSS transitions/animations, `requestAnimationFrame`, r
 function of `useCurrentFrame()`. Randomness: `random(seed)` from remotion. Accumulating physics: precompute an array
 for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
 
-## Foundation you can use (do not edit these files unless your task says so)
+## Foundation (shared by both videos — a change here affects every scene that uses it)
 
 - `src/theme/tokens.ts` — `color` (paper, paper2, paper3, paperRaised, ink…ink4, accent, onAccent, logoDot, logoWave,
   logoInk, logoGrey, avatarLeft/Right/Line), `dark`, `shadow.float(k)`, `stroke` ({reels: 3, promo: 2.5}), `type`
@@ -53,9 +54,6 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
   `LogoBuild` (+ `logoSchedule`, `logoGeometry`), `AvatarOutro`/`CollapseToDot`, `ReviewStack`.
 - Line drawings: `src/lines/reels.ts`, `src/lines/promo.ts`, `src/lines/common.ts`; type `LineArt` in `src/lines/types.ts`.
 
-If you need a change in a foundation file, do not edit it — describe the change in your report (or, if it is a small
-thing you cannot work around, make a local variant in your own file).
-
 ## Style
 
 - TypeScript, 2 spaces, double quotes, semicolons, lines ≤ ~140 chars, short English comments that explain *why*.
@@ -66,34 +64,23 @@ thing you cannot work around, make a local variant in your own file).
 - Colours only from `tokens.ts`. Lines: `stroke.reels` (3 px) / `stroke.promo` (2.5 px), round caps and joins, no fills
   except paper where something must cover the background.
 
-## Scenes (several agents at once)
+## Scenes
 
-- A composition root (`src/reels/Reels.tsx`, `src/promo/Promo.tsx`) is owned by the director: the wall, Grain,
-  Soundtrack and SafeZone are mounted there once — **do not** add them in your act. Each act is one component in its
-  own `<Sequence>`; your frames are relative to your act's start. Nested `<Sequence name="R2 …">` per scene inside the
-  act are welcome (they show in the Studio timeline).
+- A composition root (`src/reels/Reels.tsx`, `src/promo/Promo.tsx`) mounts the wall, Grain, Soundtrack and SafeZone
+  once — not in the acts. Each act is one component in its own `<Sequence>`; its frames are relative to the act's
+  start. Nested `<Sequence name="R2 …">` per scene inside the act show in the Studio timeline.
 - Positions shared between acts live in a layout module (`src/reels/layout.ts`; Promo gets its own). Import them —
-  never copy the numbers. Only the act named as the owner of a value may change it.
-- Other agents edit other files of the same project at the same time. If a bundle fails because of someone else's
-  file, wait a minute and retry; `tsc` errors in files that are not yours are not your problem. Always write whole,
-  compiling files. Do not edit files outside your list.
+  never copy the numbers.
 
-## Checking your work
+## Checking the work
 
-- Typecheck: `npx tsc --noEmit -p .` in `video/` must pass for your files; `npx eslint <your files>` clean.
+- `npm run lint` in `video/` (eslint + tsc) must pass.
 - Look at it through the real composition (absolute frames; 1 bar = 144 frames at 60 fps):
   `npx remotion still Reels out/dev/<you>/f<frame>.png --frame=<frame>`; several frames:
   `npx remotion render Reels out/dev/<you>/seq --sequence --frames=<a>-<b> --every-nth-frame=<k> --image-format=jpeg`,
   then `node scripts/sheet.mjs out/dev/<you>/seq out/dev/<you>/sheet.jpg 12 160` and view the JPG with the Read tool
   (`node scripts/sheet.mjs --files <out> <tileW> <cols> <files…>` puts stills side by side for close looks).
-  Use your own folder under `out/dev/`. Check every beat of your act and the frames around its hand-offs.
-  Iterate until it looks right — you are judged on the visual result.
+  Check every beat of the act and the frames around its hand-offs. Iterate until it looks right.
 - `ArtImage` must print no scale warnings. Reels safe zone: all text and the logo inside x 65–1015, y 270–1250
   (check with `--props=<file.json>` containing `{"showGuides":true}` — inline JSON loses its quotes on Windows).
-- Remotion Studio runs on http://localhost:3100 for the owner — do not start or stop servers. Do not edit
-  `src/Root.tsx`, do not commit.
-
-## Report (your final message)
-
-Short: files created; exported API (signatures + one-line usage); frames/stills you checked; deviations from the
-brief and why; requests for foundation changes. No code dumps.
+- Remotion Studio runs on http://localhost:3100 for the owner (`npm run studio` in the background if it is down).
