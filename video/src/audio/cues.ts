@@ -21,7 +21,6 @@ export type SfxId =
   | "gradient-swell"
   | "collapse"
   | "switch-click"
-  | "room-tone"
   | "whip"
   | "curtain"
   | "staple"
@@ -70,15 +69,19 @@ export const REELS_CUES: Record<string, Cue[]> = {
 
 export const PROMO_CUES: Record<string, Cue[]> = {
   P1: [
-    { id: "dot-whoosh", at: 2.5, gainDb: -10, note: "загорается точка" },
+    { id: "pencil", at: 0, gainDb: -12, note: "в темноте рисуются рамы" },
+    { id: "dot-pop", at: 2.5, gainDb: -8, note: "загорается точка" },
     { id: "switch-click", at: 4, gainDb: -4, note: "свет: круг из точки" },
-    { id: "room-tone", at: 4, gainDb: -18, note: "тон зала" },
   ],
-  P2: [{ id: "paper-card", at: 0.25, gainDb: -10, note: "«картины»" }],
+  P2: [
+    { id: "swing", at: 0, gainDb: -8, note: "камера уезжает от рам" },
+    { id: "paper-card", at: 0.25, gainDb: -10, note: "«картины»" },
+  ],
   P3: [
-    ...every("morph-swish", 0, 4, 4, -10, "перелёт к залу"),
-    { id: "dot-whoosh", at: 2, gainDb: -10, note: "курсор на «Тихий Паттерн»" },
-    { id: "dot-whoosh", at: 10, gainDb: -10, note: "курсор на «Воздушный шар»" },
+    ...every("swing", 0, 4, 4, -8, "перелёт к залу"),
+    ...every("pencil", 0.5, 4, 4, -12, "рисуется комната"),
+    { id: "dot-whoosh", at: 2, gainDb: -8, note: "курсор на «Тихий Паттерн»" },
+    { id: "dot-whoosh", at: 10, gainDb: -8, note: "курсор на «Воздушный шар»" },
   ],
   P4: [{ id: "whip", at: 2, gainDb: -4, note: "рывок камеры за лентой" }],
   P5: [
@@ -89,9 +92,11 @@ export const PROMO_CUES: Record<string, Cue[]> = {
   P6: [
     { id: "grid-ticks", at: 0, gainDb: -10, note: "сетка" },
     { id: "plate-slide", at: 1, gainDb: -8, note: "плашка" },
-    { id: "room-tone", at: 2.5, gainDb: -18, note: "шоурум" },
+    { id: "fill-whoosh", at: 2.25, gainDb: -8, note: "отъезд в шоурум" },
+    { id: "pencil", at: 2.5, gainDb: -12, note: "рисуется шоурум" },
   ],
   P7: [
+    { id: "plate-slide", at: 1, gainDb: -10, note: "печатающая головка" },
     { id: "canvas-thump", at: 3, gainDb: -8, note: "холст поворачивается тылом" },
     ...every("staple", 4, 0.5, 3, -4, "скоба"),
     { id: "canvas-thump", at: 5.5, gainDb: -10, note: "обратно лицом" },
@@ -102,7 +107,9 @@ export const PROMO_CUES: Record<string, Cue[]> = {
     { id: "pencil", at: 1, gainDb: -8, note: "эскиз" },
     ...every("bead-light", 1, 1, 5, -6, "шаг загорается"),
     { id: "cropmark-tick", at: 2, gainDb: -8, note: "метки обреза" },
+    { id: "plate-slide", at: 4, gainDb: -10, note: "проход печати" },
     { id: "envelope", at: 5, gainDb: -6, note: "крафт-конверт" },
+    { id: "pencil", at: 6, gainDb: -12, note: "комната с диваном" },
   ],
   P10: [
     { id: "curtain", at: 0, gainDb: -4, note: "шторки" },

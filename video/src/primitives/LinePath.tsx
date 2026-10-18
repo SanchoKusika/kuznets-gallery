@@ -125,6 +125,12 @@ const morphD = (plan: ReturnType<typeof morphPlan>, t: number) =>
     )
     .join("");
 
+/** Morph of two single shapes as a function of t (0 → `a`, 1 → `b`): for clip paths and outlines that move together. */
+export function shapeMorph(a: string, b: string) {
+  const plan = morphPlan(a, b);
+  return (t: number) => (t <= 0 ? a : t >= 1 ? b : morphD(plan, t));
+}
+
 type MorphProps = Stroke & {
   from: LineArt;
   to: LineArt;

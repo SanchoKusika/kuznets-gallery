@@ -5,8 +5,8 @@
 //   node scripts/sheet.mjs --files <out.jpg> <tileWidth> <cols> <file> <file> …
 //     the given images side by side at one size, for close looks.
 //
-// Frames first: npx remotion render Reels out/dev/<name> --sequence --frames=<a>-<b> --every-nth-frame=<k> --image-format=jpeg
-// (if a sound cue starts in the range, --every-nth-frame fails in Remotion's audio mixer with EINVAL: render every frame)
+// Frames first: REMOTION_SILENT=1 npx remotion render Reels out/dev/<name> --sequence --frames=<a>-<b> --every-nth-frame=<k> --image-format=jpeg
+// (REMOTION_SILENT drops the soundtrack: with sounds in the range --every-nth-frame fails in the audio mixer, EINVAL)
 
 import fs from "node:fs";
 import path from "node:path";

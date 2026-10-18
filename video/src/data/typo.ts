@@ -1,7 +1,7 @@
 // Russian typography for on-screen copy (brief 5.2): non-breaking space after short words and
 // before a dash, prices with non-breaking thousands, word forms for counts.
 
-const NBSP = "\u00A0";
+export const NBSP ="\u00A0";
 const SHORT = ["в", "и", "на", "по", "от", "до", "а", "с", "к", "о", "у", "не", "за", "из", "для"];
 const shortRe = new RegExp(`(^|[\\s«(])(${SHORT.join("|")}) `, "giu");
 

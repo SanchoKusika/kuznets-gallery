@@ -1,7 +1,7 @@
 // All on-screen copy of both videos (brief 9.3). Typography (non-breaking spaces) is applied here.
 
 import { CLIENTS, CONTACTS } from "./site";
-import { companiesWord, typo, worksWord } from "./typo";
+import { companiesWord, NBSP, typo, worksWord } from "./typo";
 import { WORKS_COUNT } from "./art";
 
 /** «{n} авторских работ» with the right word form; n comes from the counter. */
@@ -19,7 +19,7 @@ export const copy = {
     ctaLine1: typo("авторские картины в наличии и на заказ"),
     ctaLine2: typo("от 90\u00A0000\u00A0сум · доставка по Узбекистану"),
     /** The pill of the CTA: both phones of the gallery (the owner chose them over «заявка — в директ»). */
-    ctaPhones: CONTACTS.phones.map((p) => p.label.replace(/ /g, " ")),
+    ctaPhones: CONTACTS.phones.map((p) => p.label.replace(/ /g, NBSP)),
     ctaSite: "kuznets.uz",
     /** Size caption of the sketch in R6. */
     sketchSize: "85\u00A0×\u00A050\u00A0см",
@@ -44,6 +44,7 @@ export const copy = {
       [`${WORKS_COUNT}\u00A0${worksWord(WORKS_COUNT)}`, "в коллекции"],
       ["Узбекистан", "доставка по стране"],
     ] as const,
-    contacts: `kuznets.uz · ${CONTACTS.phones[0].label.replace(/ /g, "\u00A0")} · ${CONTACTS.instagram.handle}`,
+    /** Both phones, as in the Reels CTA. */
+    contacts: ["kuznets.uz", ...CONTACTS.phones.map((p) => p.label.replace(/ /g, NBSP)), CONTACTS.instagram.handle].join(" · "),
   },
 } as const;

@@ -102,7 +102,6 @@ const SFX = {
   collapse: () => add(whoosh(0.5, 3000, 300, 0.7), delay(tick(1800, 0.006), 0.46)),
   // Promo.
   "switch-click": () => room(add(tick(2400, 0.005), delay(tick(1600, 0.008), 0.03)), 0.2),
-  "room-tone": () => filter(noise(len(4), rand), "lp", 400).map((v, i, a) => v * 0.4 * Math.min(1, i / RATE / 1, (a.length - i) / RATE / 1)),
   whip: () => whoosh(0.35, 600, 6000, 2),
   curtain: () => add(whoosh(0.5, 400, 2500), delay(whoosh(0.45, 500, 3000), 0.07).map((v) => v * 0.7), delay(whoosh(0.4, 600, 3500), 0.14).map((v) => v * 0.5)),
   staple: () => add(thud(160, 0.03), tick(3000, 0.004), delay(knock(1300, 0.015), 0.012).map((v) => v * 0.5)),

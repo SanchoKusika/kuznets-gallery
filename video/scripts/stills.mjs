@@ -9,14 +9,15 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
-import { REELS_BARS } from "../src/timeline.ts";
+import { PROMO_BARS, REELS_BARS } from "../src/timeline.ts";
 
 const root = path.resolve(import.meta.dirname, "..");
 const qa = path.join(root, "out/qa");
 const tmp = path.join(root, "out/stills");
 const BPM = Number(fs.readFileSync(path.join(root, "src/theme/timing.ts"), "utf8").match(/BPM = (\d+(?:\.\d+)?)/)[1]);
-/** Last frame of the Reels at 60 fps. */
+/** Last frames of the videos at 60 fps. */
 const REELS_LAST = Math.round((REELS_BARS * 4 * 60 * 60) / BPM) - 1;
+const PROMO_LAST = Math.round((PROMO_BARS * 4 * 60 * 60) / BPM) - 1;
 fs.mkdirSync(qa, { recursive: true });
 fs.mkdirSync(tmp, { recursive: true });
 
@@ -115,7 +116,7 @@ if (mode === "styleframes") {
   const frames =
     mode === "reels"
       ? [60, 160, 300, 400, 430, 500, 600, 700, 820, 900, 1000, 1060, 1150, 1250, 1380, REELS_LAST]
-      : [100, 250, 400, 650, 900, 1100, 1200, 1350, 1500, 1650, 1800, 2000, 2150, 2300, 2500, 2700, 2800, 3000, 3167];
+      : [100, 250, 330, 450, 700, 850, 1000, 1100, 1200, 1350, 1500, 1650, 1720, 1800, 2000, 2150, 2250, 2350, 2500, 2700, PROMO_LAST];
   const id = mode === "reels" ? "Reels" : "Promo";
   const files = frames.map((f) => ({ file: still(id, f, path.join(tmp, `${id}-${f}.png`)), caption: `${id} ${f}` }));
   const perRow = mode === "reels" ? 8 : 5;

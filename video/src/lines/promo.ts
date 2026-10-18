@@ -63,118 +63,6 @@ export const hallLabel = (slot: number, workW: number = HALL.work.w) => {
   return { x, y: s.cy + HALL.label.dy, w: Math.min(HALL.label.w, s.cx + 540 - workW / 2 - HALL.label.dx - x) };
 };
 
-const FY = HALL.interior.floorY;
-const floorLine = `M0 ${FY}H${HALL.interior.w}`;
-/** Flat rug / mat on the floor: a thin trapezoid profile. */
-const rug = (x0: number, x1: number, t = 9) => `M${x0} ${FY}L${x0 + 12} ${FY - t}H${x1 - 12}L${x1} ${FY}`;
-
-// Four parts in the same roles in every interior, so part i morphs into part i:
-//   0 floor (starts at the left edge — the thread runs into it), 1 the big piece (centre),
-//   2 object on the left, 3 object on the right.
-const ROLES = ["floor", "furniture", "object left", "object right"];
-
-/** «для дома»: sofa, floor lamp, side table with a sprig, rug. */
-export const promoHome: LineArt = {
-  w: 1920,
-  h: 300,
-  roles: ROLES,
-  parts: [
-    floorLine + rug(560, 1180),
-    // Sofa: arms, back, cushions, base, legs, a throw cushion.
-    rr(600, 142, 50, 93, 16) +
-      rr(1090, 142, 50, 93, 16) +
-      "M650 176V114Q650 100 664 100H1076Q1090 100 1090 114V176" +
-      rr(650, 176, 220, 30, 6) +
-      rr(870, 176, 220, 30, 6) +
-      "M650 235H1090M624 235V253M1116 235V253" +
-      "M676 132Q710 140 744 130Q738 153 746 176Q710 168 674 176Q682 153 676 132Z",
-    // Floor lamp.
-    "M472 262Q500 248 528 262M500 254V64M462 64L478 10H522L538 64Z",
-    // Side table, vase and a sprig.
-    "M1205 196H1295M1250 196V258M1228 262Q1250 252 1272 262" +
-      "M1243 196C1232 186 1234 170 1244 164V152H1256V164C1266 170 1268 186 1257 196" +
-      "M1250 152Q1246 124 1230 106M1250 152Q1256 128 1274 116M1250 152V108",
-  ],
-};
-
-/** «для детской»: bed, wall shelf with a teddy and a rocket, toy blocks and a ball. */
-export const promoKids: LineArt = {
-  w: 1920,
-  h: 300,
-  roles: ROLES,
-  parts: [
-    floorLine + rug(630, 1110),
-    // Bed: headboard, footboard, mattress, pillow, blanket.
-    "M650 253V122A22 22 0 0 1 694 122V253" +
-      "M1060 253V172A20 20 0 0 1 1100 172V253" +
-      "M694 196H808M694 232H1060" +
-      rr(706, 166, 96, 30, 12) +
-      "M808 188Q934 176 1060 186M808 188Q802 212 810 232",
-    // Shelf with a teddy and a rocket.
-    "M372 74H572M392 74V90L410 74M552 74V90L534 74" +
-      "M420 74Q416 52 438 50Q460 52 456 74" +
-      `${circle(438, 36, 13)}${circle(427, 24, 5)}${circle(449, 24, 5)}` +
-      "M506 74V40Q516 14 526 40V74M506 60L496 74M526 60L536 74" +
-      circle(516, 44, 4),
-    // Blocks and a ball.
-    rr(1166, 222, 40, 40, 3) + rr(1210, 222, 40, 40, 3) + rr(1188, 182, 40, 40, 3) + circle(1304, 244, 18) + "M1286 244Q1304 232 1322 244",
-  ],
-};
-
-/** «для офиса»: desk with laptop and drawers, office armchair, desk lamp. */
-export const promoOffice: LineArt = {
-  w: 1920,
-  h: 300,
-  roles: ROLES,
-  parts: [
-    floorLine + rug(540, 760),
-    // Desk, drawers, laptop.
-    rr(780, 134, 470, 14, 3) +
-      "M804 148V262M1226 148V262" +
-      rr(1086, 148, 118, 72, 3) +
-      "M1130 172H1160M1130 198H1160M1086 184H1204" +
-      rr(890, 62, 144, 66, 6) +
-      rr(872, 128, 180, 6, 2),
-    // Armchair: back, seat, arms, stem, star base, casters.
-    rr(602, 52, 96, 92, 20) +
-      "M650 144V156" +
-      rr(578, 156, 144, 22, 10) +
-      "M650 178V224M650 224L600 246M650 224L700 246M650 224V248" +
-      `${circle(598, 252, 6)}${circle(702, 252, 6)}${circle(650, 254, 6)}`,
-    // Desk lamp: base, arm, shade, bulb.
-    rr(1128, 124, 44, 10, 4) + "M1150 124L1124 80L1166 46" + "M1156 36L1176 28L1206 70Q1190 82 1170 80Z",
-  ],
-};
-
-/**
- * «для общественных мест»: bar counter with bottles, three stools, three pendant lamps. The lamps
- * hang on short cords from the top of the box (screen y 700, Lucide «lamp-ceiling» style) rather
- * than from the frame top: a cord from y 0 would cross the hall title, the works and the labels.
- */
-export const promoPublic: LineArt = {
-  w: 1920,
-  h: 300,
-  roles: ROLES,
-  parts: [
-    floorLine,
-    // Counter top, panel edges, bottles and a glass on the counter.
-    rr(560, 118, 760, 16, 4) +
-      "M592 134V262M1288 134V262" +
-      "M1196 118V88Q1196 80 1202 76V62H1210V76Q1216 80 1216 88V118" +
-      "M1232 118V96Q1232 90 1238 86V76H1244V86Q1250 90 1250 96V118" +
-      "M1262 92L1266 118H1280L1284 92",
-    // Stools.
-    [740, 940, 1140]
-      .map((x) => `${rr(x - 34, 168, 68, 12, 6)}M${x - 22} 180L${x - 32} 262M${x + 22} 180L${x + 32} 262M${x - 27} 222H${x + 27}`)
-      .join(""),
-    // Pendant lamps.
-    [740, 940, 1140].map((x) => `M${x} 0V34M${x - 32} 66A32 32 0 0 1 ${x + 32} 66Z M${x - 9} 66A9 9 0 0 0 ${x + 9} 66`).join(""),
-  ],
-};
-
-/** Hall order of P3, same as selection.promo.halls. */
-export const PROMO_INTERIORS = [promoHome, promoKids, promoOffice, promoPublic] as const;
-
 // ─── Foreground plants (P2–P3, 1.4× parallax) ───────────────────────────────────────────────
 
 /** Affine placement of a local (u along, v across) point. */
@@ -516,7 +404,5 @@ export function circleOutline(r: number, x = 0, y = 0) {
   );
 }
 
-/** P5 sizes and the morph pair as LineArt, both centred on the frame (box 1920 × 1080 at 0, 0). */
+/** P5: the circle of the montage and the arch it morphs into, centred on the frame. */
 export const ARCH = { w: 380, h: 640, circleR: 240, cx: 960, cy: 540 } as const;
-export const p5Circle: LineArt = { w: 1920, h: 1080, parts: [circleOutline(ARCH.circleR, ARCH.cx - ARCH.circleR, ARCH.cy - ARCH.circleR)] };
-export const p5Arch: LineArt = { w: 1920, h: 1080, parts: [archOutline(ARCH.w, ARCH.h, ARCH.cx - ARCH.w / 2, ARCH.cy - ARCH.h / 2)] };

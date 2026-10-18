@@ -80,9 +80,10 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
 
 - `npm run lint` in `video/` (eslint + tsc) must pass.
 - Look at it through the real composition (absolute frames; 1 bar = 144 frames at 60 fps):
-  `npx remotion still Reels out/dev/<you>/f<frame>.png --frame=<frame>`; several frames:
-  `npx remotion render Reels out/dev/<you>/seq --sequence --frames=<a>-<b> --every-nth-frame=<k> --image-format=jpeg`,
-  then `node scripts/sheet.mjs out/dev/<you>/seq out/dev/<you>/sheet.jpg 12 160` and view the JPG with the Read tool
+  `npx remotion still Reels out/dev/f<frame>.png --frame=<frame>`; several frames:
+  `REMOTION_SILENT=1 npx remotion render Reels out/dev/seq --sequence --frames=<a>-<b> --every-nth-frame=<k> --image-format=jpeg`
+  (without the soundtrack: with a sound in the range `--every-nth-frame` fails in the audio mixer),
+  then `node scripts/sheet.mjs out/dev/seq out/dev/sheet.jpg 12 160` and view the JPG with the Read tool
   (`node scripts/sheet.mjs --files <out> <tileW> <cols> <files…>` puts stills side by side for close looks).
   Check every beat of the act and the frames around its hand-offs. Iterate until it looks right.
 - `ArtImage` must print no scale warnings. Reels safe zone: all text and the logo inside x 65–1015, y 270–1250

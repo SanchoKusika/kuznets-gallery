@@ -32,6 +32,9 @@ export function Soundtrack({ video }: { video: keyof typeof VIDEOS }) {
   const files = useMemo(() => new Set(getStaticFiles().map((f) => f.name.split("\\").join("/"))), []);
   const stems = Object.values(MUSIC.stems).every((f) => files.has(f));
   const music = files.has(MUSIC.file);
+  // Contact sheets of frames (scripts/sheet.mjs): `--every-nth-frame` fails in the audio mixer when a sound starts
+  // in the range, so those renders go without the soundtrack.
+  if (process.env.REMOTION_SILENT) return null;
 
   return (
     <>

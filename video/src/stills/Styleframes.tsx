@@ -9,8 +9,9 @@ import { Canvas3D } from "../effects/Canvas3D";
 import { BagetFrame, GlassFrame } from "../effects/Framing";
 import { ArtImage } from "../primitives/ArtImage";
 import { DotCursor } from "../primitives/DotCursor";
-import { LineDrawing } from "../primitives/LinePath";
-import { HALL, hallLabel, hallWorkRect, promoHome } from "../lines/promo";
+import { hallLabel, hallWorkRect } from "../lines/promo";
+import { PROMO_ROOM, PROMO_ROOMS } from "../lines/promoRooms";
+import { prepareRoom, RoomStrokes } from "../primitives/LineRoom";
 import { Nail, PictureWire } from "../primitives/PictureWire";
 import { ArtFrame } from "../primitives/ArtFrame";
 import { Chip, Pill } from "../primitives/Chip";
@@ -113,7 +114,12 @@ export function SfPromoHall() {
   return (
     <AbsoluteFill>
       <Wall />
-      <LineDrawing art={promoHome} progress={1} x={HALL.interior.x} y={HALL.interior.y} width={stroke.promo} />
+      <svg width={PROMO_ROOM.w} height={1080} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+        <path d={`M0 ${PROMO_ROOM.y + PROMO_ROOM.floor}H1920`} stroke={color.ink} strokeWidth={stroke.promo} />
+        <g transform={`translate(0 ${PROMO_ROOM.y})`}>
+          <RoomStrokes room={prepareRoom(PROMO_ROOMS[0], PROMO_ROOM.w)} drawn={1} beat={0} line={{ color: color.ink, width: stroke.promo }} fine={{ color: color.ink3, width: stroke.promo * 0.7 }} />
+        </g>
+      </svg>
       <div style={{ position: "absolute", left: 160, top: 64, ...display(96, 500, -0.05), color: color.ink }}>{copy.promo.halls[0]}</div>
       {hall.codes.map((code, i) => {
         const r = hallWorkRect(i);

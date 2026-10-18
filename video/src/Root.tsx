@@ -1,5 +1,5 @@
 import { Composition, Folder, Still } from "remotion";
-import { Promo, promoSchema } from "./promo/Promo";
+import { Promo } from "./promo/Promo";
 import { Reels, reelsSchema } from "./reels/Reels";
 import { ReelsCover } from "./reels/ReelsCover";
 import { barAt } from "./theme/timing";
@@ -22,25 +22,21 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="Promo"
         component={Promo}
-        schema={promoSchema}
         width={1920}
         height={1080}
         fps={60}
         durationInFrames={barAt(PROMO_BARS, 60)}
-        defaultProps={{ useShowroomFootage: false }}
       />
       <Folder name="Extra">
         <Still id="ReelsCover" component={ReelsCover} width={1080} height={1920} />
         <Composition
           id="Promo50"
           component={Promo}
-          schema={promoSchema}
           width={1920}
           height={1080}
           fps={50}
           durationInFrames={barAt(PROMO_BARS, 50)}
-          defaultProps={{ useShowroomFootage: false }}
-        />
+          />
       </Folder>
       <Folder name="Styleframes">
         <Composition id="Sf1ReelsHook" component={SfReelsHook} width={1080} height={1920} fps={60} durationInFrames={1} />

@@ -27,7 +27,8 @@ export function MuseumLabel({ code, from, step, x, y, style }: { code: string; f
       {lines.map((l, i) => {
         const p = progress(frame, from + i * step, step * 4, ease.out);
         return (
-          <div key={i} style={{ ...l.css, lineHeight: 1.25, opacity: p, translate: `0 ${(1 - p) * 10}px`, whiteSpace: "nowrap" }}>
+          // A long title wraps within the column; the short lines never do.
+          <div key={i} style={{ ...l.css, lineHeight: 1.25, opacity: p, translate: `0 ${(1 - p) * 10}px`, whiteSpace: i === 0 ? "normal" : "nowrap" }}>
             {l.text}
           </div>
         );
