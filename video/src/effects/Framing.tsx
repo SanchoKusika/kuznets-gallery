@@ -69,9 +69,12 @@ export function GlassFrame({
   frame = 12,
   mat = 46,
   glint = 0,
+  tone = { frame: color.paper3, mat: color.paperRaised },
   style,
 }: {
   code: string;
+  /** Frame and mat colours (the short reels use white instead of the paper tones). */
+  tone?: { frame: string; mat: string };
   /** Outer size. */
   w: number;
   h: number;
@@ -90,12 +93,12 @@ export function GlassFrame({
         position: "relative",
         width: w,
         height: h,
-        background: color.paper3,
+        background: tone.frame,
         boxShadow: `${shadow.float(w / 600)}, inset 0 0 0 1.5px ${color.ink2}`,
         ...style,
       }}
     >
-      <div style={{ position: "absolute", inset: frame, background: color.paperRaised, boxShadow: `inset 0 0 0 1px rgba(21,21,21,.18)` }} />
+      <div style={{ position: "absolute", inset: frame, background: tone.mat, boxShadow: `inset 0 0 0 1px rgba(21,21,21,.18)` }} />
       <div style={{ position: "absolute", left: frame + mat, top: frame + mat, boxShadow: "inset 0 0 0 1px rgba(21,21,21,.12)" }}>
         <ArtImage code={code} width={iw} height={ih} />
       </div>

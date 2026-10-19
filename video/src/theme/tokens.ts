@@ -52,3 +52,12 @@ export const ART_SCALE_LIMIT_FAST = 1.25;
 export const REELS_SAFE = { x0: 65, x1: 1015, y0: 270, y1: 1250 } as const;
 /** Promo: text at least this far from the edges. */
 export const PROMO_MARGIN = 96;
+
+/** The short reels (Ad, Showreel): bold light mode — white, not paper; the paint uses the accent, ink and the logo's yellow. */
+export const bold = {
+  bg: "#FFFFFF",
+  ink: "#111111",
+  accent: color.accent,
+  yellow: color.logoWave,
+  dot: color.logoDot,
+} as const;

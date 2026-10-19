@@ -3,7 +3,7 @@ import { loadFont as loadPiazzolla } from "@remotion/google-fonts/Piazzolla";
 import type { CSSProperties } from "react";
 
 // Loaded at module level: rendering waits for the files (delayRender inside loadFont).
-const onest = loadOnest("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin", "cyrillic"] });
+const onest = loadOnest("normal", { weights: ["400", "500", "600", "700", "800"], subsets: ["latin", "cyrillic"] });
 const piazzolla = loadPiazzolla("italic", { weights: ["300"], subsets: ["latin", "cyrillic"] });
 
 export const fonts = { sans: onest.fontFamily, serif: piazzolla.fontFamily } as const;

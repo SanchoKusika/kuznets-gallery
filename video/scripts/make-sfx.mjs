@@ -175,6 +175,17 @@ const SFX = {
   },
   // Everything collapses into the dot: a reverse whoosh into a click.
   collapse: () => add(whoosh(0.5, 3000, 300, 0.7), delay(tick(1800, 0.006), 0.46)),
+  // Short reels: a loaded brush swept across (wet, mid-range, no graphite grain), …
+  "paint-swipe": () => {
+    const s = 0.32;
+    const body = mul(filter(filter(noise(len(s), rand), "bp", (i) => 900 + 1700 * Math.sin((Math.PI * i) / len(s)), 0.9), "lp", 4200), make(s, (t) => Math.sin(Math.PI * Math.min(1, t / s)) ** 1.2));
+    const squish = mul(filter(noise(len(s), rand), "lp", 500), make(s, (t) => Math.exp(-t / 0.08) * Math.min(1, t / 0.01)));
+    return room(add(body, squish.map((v) => v * 1.4)), 0.12, 0.4);
+  },
+  // … a splash of paint landing, …
+  "paint-splat": () => add(thud(130, 0.04).map((v) => v * 0.7), mul(filter(noise(len(0.25), rand), "bp", 1400, 0.7), env(len(0.25), { attack: 0.002, tau: 0.05 })), ...[0.05, 0.09, 0.14].map((d, k) => delay(tick(3000 + k * 700, 0.003), d).map((v) => v * 0.25))),
+  // … and a letter slamming down.
+  slam: () => add(thud(70, 0.09), tick(2200, 0.004).map((v) => v * 0.6), mul(filter(noise(len(0.15), rand), "hp", 3000), env(len(0.15), { attack: 0.001, tau: 0.02 })).map((v) => v * 0.4)),
   // Promo.
   "switch-click": () => room(add(tick(2400, 0.005), delay(tick(1600, 0.008), 0.03)), 0.2),
   whip: () => whoosh(0.35, 600, 6000, 2),

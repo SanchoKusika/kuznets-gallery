@@ -36,6 +36,8 @@
     "studio": "remotion studio",
     "render:reels": "remotion render Reels out/kuznets-reels-1080x1920-60fps.mp4",
     "render:promo": "remotion render Promo out/kuznets-promo-1920x1080-60fps.mp4",
+    "render:ad": "remotion render Ad out/kuznets-ad-1080x1920-60fps.mp4",
+    "render:showreel": "remotion render Showreel out/kuznets-showreel-1080x1920-60fps.mp4",
     "render:cover": "remotion still ReelsCover out/reels-cover.png",
     "stills": "node scripts/stills.mjs",
     "prepare:art": "node scripts/prepare-art.mjs",
@@ -45,6 +47,8 @@
     "music": "node scripts/make-music.mjs",
     "sfx": "node scripts/make-sfx.mjs",
     "cues": "node scripts/cues.mjs",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "palette": "node scripts/palette.mjs",
+    "music:reels": "node scripts/make-reels-music.mjs"
   }
 }

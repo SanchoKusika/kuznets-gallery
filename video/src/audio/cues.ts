@@ -33,7 +33,10 @@ export type SfxId =
   | "glass-glint"
   | "bead-light"
   | "envelope"
-  | "paper-card";
+  | "paper-card"
+  | "paint-swipe"
+  | "paint-splat"
+  | "slam";
 
 export type Cue = { id: SfxId; at: number; gainDb: number; note?: string };
 
