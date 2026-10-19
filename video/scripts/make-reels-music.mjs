@@ -1,13 +1,15 @@
-// Music of the two short reels, composed and synthesised here like the main track (no samples, no licences),
-// 120 BPM, 15 s each, cut to their scenes beat by beat:
+// Music of the short reels, composed and synthesised here like the main track (no samples, no licences), 120 BPM,
+// cut to their scenes beat by beat:
 //
-//   npm run music:reels   → public/audio/ad.wav, public/audio/showreel.wav (48 kHz, 16-bit, ≈ −14 LUFS)
+//   npm run music:reels   → public/audio/room.wav (17 s), public/audio/showreel.wav (15 s) (48 kHz, 16-bit, ≈ −14 LUFS)
 //
-// Ad — bright house in C: Fmaj7 · G6 · Em7 · Am9 · Fmaj7 · G6 | Cmaj9 on the logo. A breakdown with a riser under the
-// custom work (beats 16–19), the drop on the montage (19), the final hit on the logo (24).
+// Room — a waltz-time bar (3 beats) per room, each with its own sound world: a clock in the dull intro, then the drop
+// on the first painting; marimba and shakers (jungle), rain (London), everything under water with a semitone
+// shark bass, no drums and a theremin (space), a frame drum and a plucked line in Phrygian dominant (desert), a
+// whistle (sky), cosy keys (tea); stabs on the montage, the hook on the choice, the final chord on the logo.
 // Showreel — harder, darker: Am9 · Fmaj7 · Cmaj9 · G6 · Am9 · Fmaj7 · G6 | Cmaj9; every chapter changes the groove
 // (pulse, drive, breakbeat, half-time, full drive, gated stutter), the final hit on the logo (25).
-// Scene starts in beats are those of src/ad/layout.ts and src/showreel/layout.ts.
+// Scene starts in beats are those of src/room/layout.ts and src/showreel/layout.ts.
 
 import path from "node:path";
 import { bus, dbGain, env, filter, filterBus, limit, lufs, midiHz, mixInto, pingPong, put, RATE, reverb, rng, shape, truePeak, writeWav } from "./audio/dsp.mjs";
@@ -17,11 +19,11 @@ const root = path.resolve(import.meta.dirname, "..");
 const BPM = 120;
 const BEAT = 60 / BPM;
 const S16 = BEAT / 4;
-const LENGTH = 15;
 /** Seconds at beat b (fractions allowed). */
 const at = (b) => b * BEAT;
 
 const CH = {
+  E7b9: { keys: [52, 56, 59, 62, 65], root: 40 },
   Fmaj7: { keys: [53, 57, 60, 64], root: 41 },
   G6: { keys: [55, 59, 62, 64], root: 43 },
   Em7: { keys: [52, 55, 59, 62], root: 40 },
@@ -68,7 +70,8 @@ function sub(m, seconds) {
   return out;
 }
 
-function makeTrack(name, seed, arrange) {
+/** Renders one track of `LENGTH` s; `post(master)` may process the full mix before the master (the underwater filter). */
+function makeTrack(name, seed, LENGTH, arrange, post) {
   const rand = rng(seed);
   const ins = instruments(rand);
   const b = { drums: bus(LENGTH + 2), bass: bus(LENGTH + 2), keys: bus(LENGTH + 2), hook: bus(LENGTH + 2), pads: bus(LENGTH + 2), fx: bus(LENGTH + 2), kicks: [] };
@@ -108,6 +111,7 @@ function makeTrack(name, seed, arrange) {
   mixInto(send, b.fx, 0.4);
   mixInto(master, reverb(send, { room: 0.82, damp: 0.4 }), 0.5);
   mixInto(master, pingPong(b.hook, BEAT * 0.75, 0.35), 0.3);
+  post?.(master);
   for (const x of [master.L, master.R]) for (let i = 0; i < x.length; i++) x[i] = Math.tanh(x[i] * 1.1) / 1.1;
   // Exactly the video's length; the last chord rings out under a short fade.
   const out = { L: master.L.slice(0, LENGTH * RATE), R: master.R.slice(0, LENGTH * RATE) };
@@ -149,58 +153,9 @@ function kit(B) {
 
 const GROOVE = [[0, 0, 3], [3, 0, 1], [6, 12, 1], [8, 0, 2], [10, 7, 1], [11, 0, 1], [14, 12, 1]];
 
-/* ── Ad ─────────────────────────────────────────────────────────────────────────────────────────────────── */
-
-makeTrack("ad", 120, (B) => {
-  const k = kit(B);
-  const bars = ["Fmaj7", "G6", "Em7", "Am9", "Fmaj7", "G6"];
-  // Drums: four on the floor except the breakdown (16–19); claps on 2 and 4; 16th hats, open hats once it is full.
-  for (let beat = 0; beat < 24; beat++) {
-    const down = beat >= 16 && beat < 19;
-    if (!down) k.kick(beat);
-    if (!down && beat % 2 === 1) k.clap(beat, beat >= 4 ? 0.42 : 0.34);
-    for (let q = 0; q < 4; q++) {
-      if (down && q % 2) continue;
-      k.hat(beat + q / 4, (q === 2 ? 0.26 : q % 2 ? 0.13 : 0.08) * (down ? 0.6 : 1));
-      k.shaker(beat + q / 4, q % 2 ? 0.14 : 0.08);
-    }
-    if (!down && beat >= 4) k.open(beat + 0.5);
-  }
-  // The montage's eighth cuts: a clap roll into the logo.
-  for (const q of [22.5, 23, 23.25, 23.5, 23.75]) k.clap(q, 0.22 + 0.25 * (q - 22.5));
-  bars.forEach((c, bar) => {
-    const b0 = bar * 4;
-    const r = CH[c].root;
-    // Bass groove, long notes in the breakdown.
-    if (bar === 4) k.bass(r, b0, 3 * BEAT, 0.85, 0.5);
-    else for (const [q, iv, len] of GROOVE) k.bass(r + iv, b0 + q / 4, len * S16 * 0.9, q === 0 ? 1 : 0.8);
-    // Keys: the first bar opens as a held chord, then off-beat stabs; held again in the breakdown.
-    if (bar === 0 || bar === 4) k.chord(c, b0, 4 * BEAT * 0.95, 0.6, 0.32);
-    else for (const [q, len, v] of [[0, 2, 0.8], [2, 1, 0.55], [6, 1, 0.6], [10, 1, 0.6], [14, 1.5, 0.55]]) k.chord(c, b0 + q / 4, len * S16, v);
-    // Hook over the wall, the rooms and the montage.
-    if (bar === 1 || bar === 2 || bar === 5) for (const [q, m, len] of HOOK[c]) k.hookNote(m, b0 + q / 4, len * S16, 0.32);
-    if (bar === 4) k.pad(c, b0, 3 * BEAT, 0.6);
-  });
-  // The montage starts on beat 19 with the groove of bar 5 pulled forward by one beat.
-  k.bass(CH.Fmaj7.root, 19, BEAT * 0.9);
-  k.chord("G6", 19, S16 * 2, 0.8);
-  // The first bar's filter opens over the first beat (the dot lands on beat 1).
-  shape(B.keys, (t) => (t < at(1) ? 0.35 + 0.65 * (t / at(1)) : 1));
-  k.riser(16, 3 * BEAT - S16, 0.55);
-  k.impact(19, 0.4);
-  // The logo: the hit, Cmaj9 ringing, the beads as a rising arpeggio.
-  k.impact(24, 0.6);
-  k.kick(24, 1);
-  k.bass(CH.Cmaj9.root, 24, 4 * BEAT, 1, 0.6);
-  k.chord("Cmaj9", 24, 5 * BEAT, 0.75, 0.3);
-  k.pad("Cmaj9", 24, 5 * BEAT, 0.55);
-  [76, 79, 83, 86].forEach((m, i) => k.hookNote(m, 24.5 + i * 0.5, S16 * 3, 0.24, i % 2 ? 0.4 : -0.4));
-  k.hookNote(84, 26, BEAT * 2, 0.26);
-});
-
 /* ── Showreel ───────────────────────────────────────────────────────────────────────────────────────────── */
 
-makeTrack("showreel", 26, (B) => {
+makeTrack("showreel", 26, 15, (B) => {
   const k = kit(B);
   const { rand } = B;
   const bars = ["Am9", "Fmaj7", "Cmaj9", "G6", "Am9", "Fmaj7", "G6"];
@@ -267,3 +222,117 @@ makeTrack("showreel", 26, (B) => {
   [79, 83, 86].forEach((m, i) => k.hookNote(m, 25.25 + i * 0.25, S16 * 3, 0.22, i - 1));
   k.hookNote(88, 26.25, BEAT * 2, 0.24);
 });
+
+/* ── Room ───────────────────────────────────────────────────────────────────────────────────────────────── */
+
+/** A sine with vibrato gliding between notes (theremin, whistle): [beat, midi] points, held to `end`. */
+function glideVoice(points, end, vib = 0.25, bright = 0) {
+  const n = Math.ceil(at(end - points[0][0]) * RATE);
+  const out = new Float32Array(n);
+  let ph = 0;
+  for (let i = 0; i < n; i++) {
+    const b = points[0][0] + i / RATE / BEAT;
+    let m = points[0][1];
+    for (let k = 0; k < points.length - 1; k++) {
+      const [b0, m0] = points[k];
+      const [b1, m1] = points[k + 1];
+      if (b >= b0) m = b < b1 ? m0 + (m1 - m0) * Math.min(1, ((b - b0) / Math.min(0.35, b1 - b0)) ** 0.7) : m1;
+    }
+    const f = midiHz(m + vib * Math.sin(2 * Math.PI * 5.5 * (i / RATE)));
+    ph += (2 * Math.PI * f) / RATE;
+    const t = i / RATE;
+    const e = Math.min(1, t / 0.06) * Math.min(1, (n - i) / RATE / 0.2);
+    out[i] = (Math.sin(ph) + bright * 0.25 * Math.sin(2 * ph)) * e;
+  }
+  return out;
+}
+
+makeTrack(
+  "room",
+  73,
+  17,
+  (B) => {
+    const k = kit(B);
+    const { ins, rand } = B;
+    /** One room: a bar of three beats (waltz time, so every room is one bar). */
+    const bar = (b0, chord, opts = {}) => {
+      const { kick = true, clap = true, hats = true, shaker = false, bass = true, keys = "stabs" } = opts;
+      const c = CH[chord];
+      if (kick) [0, 1.5].forEach((o) => k.kick(b0 + o, o ? 0.75 : 0.95));
+      if (clap) k.clap(b0 + 2, 0.4);
+      if (hats) for (let q = 0; q < 6; q++) k.hat(b0 + q / 2, q % 2 ? 0.2 : 0.1);
+      if (shaker) for (let q = 0; q < 12; q++) k.shaker(b0 + q / 4, q % 2 ? 0.2 : 0.1);
+      if (bass) [[0, 0, 1.2], [1.5, 7, 0.6], [2.5, 12, 0.4]].forEach(([o, iv, len]) => k.bass(c.root + iv, b0 + o, len * BEAT, o ? 0.8 : 1));
+      if (keys === "stabs") [[0.5, 0.4], [1, 0.3], [2.5, 0.4]].forEach(([o, len]) => k.chord(chord, b0 + o, len * BEAT, 0.65));
+      if (keys === "hold") k.chord(chord, b0, 2.9 * BEAT, 0.6, 0.28);
+    };
+    // Intro: only a low, tired chord under the clock.
+    k.pad("Cmaj9", 0, 2.4 * BEAT, 0.25);
+    k.riser(2.2, 0.8 * BEAT, 0.35);
+    // 1 Jungle — the drop: marimba arpeggio, loud shakers, birds (SFX).
+    k.impact(3, 0.45);
+    bar(3, "Cmaj9", { shaker: true });
+    [72, 76, 79, 83, 84, 83, 79, 76].forEach((m, i) => k.hookNote(m, 3 + i * 0.375, S16 * 1.5, 0.3, i % 2 ? 0.3 : -0.3));
+    // 2 Rain — kick on one only, no hats (the rain is the hats).
+    bar(6, "Am9", { hats: false, keys: "hold" });
+    const rainLen = Math.ceil(at(3) * RATE);
+    const rainBed = Float32Array.from({ length: rainLen }, (_, i) => (rand() * 2 - 1) * Math.min(1, i / RATE / 0.1) * Math.min(1, (rainLen - i) / RATE / 0.15));
+    put(B.fx, at(6), filter(rainBed, "bp", 3800, 0.5), 0.22, 0);
+    // 3 Water — under water (the post filter), and the shark: semitone pulses speeding up.
+    bar(9, "Fmaj7", { hats: false });
+    [9.9, 10.4, 10.8, 11.1, 11.35, 11.55, 11.72, 11.86].forEach((b, i) => k.bass(i % 2 ? 41 : 40, b, 0.22 * BEAT, 1, 0.75));
+    // 4 Space — no drums: a big pad and a theremin.
+    k.pad("Em7", 12, 3 * BEAT, 0.7);
+    put(B.hook, at(12.25), glideVoice([[12.25, 71], [12.9, 76], [13.6, 79], [14.3, 78], [14.8, 78]], 14.95, 0.35), 0.28, 0.1);
+    put(B.bass, at(12), ins.bass(40, 2.9 * BEAT, 0.8), 0.45);
+    // 5 Desert — a frame drum (dum on 1, teks) and a plucked line in E Phrygian dominant.
+    k.impact(15, 0.3);
+    [0, 1.5].forEach((o) => k.kick(15 + o, 0.8));
+    [0.5, 1, 2, 2.5, 2.75].forEach((o) => put(B.drums, at(15 + o), ins.rim(), 0.35, o % 1 ? 0.3 : -0.3));
+    k.bass(40, 15, 2.8 * BEAT, 0.9, 0.55);
+    [[0, 64], [0.5, 65], [0.75, 68], [1, 69], [1.5, 71], [2, 72], [2.25, 71], [2.5, 68]].forEach(([o, m]) => k.hookNote(m, 15 + o, S16 * 1.6, 0.34, -0.1));
+    k.chord("E7b9", 15, 0.4 * BEAT, 0.6, 0.18);
+    // 6 Sky — light: kick, a whistle melody, held keys.
+    bar(18, "G6", { clap: false, keys: "hold" });
+    put(B.hook, at(18.25), glideVoice([[18.25, 79], [18.75, 81], [19.25, 83], [19.75, 86], [20.4, 84], [20.8, 84]], 20.95, 0.18, 0.3), 0.22, 0.25);
+    // 7 Tea — cosy: held keys, a soft shaker, a long bass.
+    k.chord("Cmaj9", 21, 2.9 * BEAT, 0.6, 0.3);
+    for (let q = 0; q < 12; q++) k.shaker(21 + q / 4, q % 2 ? 0.12 : 0.06);
+    [0, 1.5].forEach((o) => k.kick(21 + o, 0.55));
+    k.bass(36, 21, 2.8 * BEAT, 0.9, 0.5);
+    [76, 79, 83].forEach((m, i) => k.hookNote(m, 21.5 + i * 0.5, S16 * 2, 0.2, 0));
+    // Montage — a stab on every painting, kick on every beat, a riser into the choice.
+    const montage = ["Am9", "Fmaj7", "G6"];
+    for (let i = 0; i < 12; i++) put(B.keys, at(24 + i / 4), sawStab(CH[montage[Math.floor(i / 4)]].keys.map((m) => m + 12), S16 * 0.8, rand, 1.2), 0.24, 0);
+    montage.forEach((c, i) => {
+      k.kick(24 + i);
+      k.bass(CH[c].root, 24 + i, 0.9 * BEAT);
+    });
+    k.clap(25, 0.4);
+    k.clap(26, 0.4);
+    k.riser(25, 2 * BEAT - S16, 0.5);
+    // Choice — the hook over Fmaj7.
+    k.impact(27, 0.4);
+    bar(27, "Fmaj7");
+    [[0, 72], [0.5, 76], [1, 77], [1.5, 79], [2, 81], [2.5, 79]].forEach(([o, m]) => k.hookNote(m, 27 + o, S16 * 1.6, 0.3, 0.1));
+    // Logo — the hit, Cmaj9 ringing, the beads and the dot as notes.
+    k.impact(30, 0.6);
+    k.kick(30, 1);
+    k.bass(36, 30, 4 * BEAT, 1, 0.6);
+    k.chord("Cmaj9", 30, 5 * BEAT, 0.75, 0.3);
+    k.pad("Cmaj9", 30, 5 * BEAT, 0.55);
+    [76, 79, 83].forEach((m, i) => k.hookNote(m, 30.5 + i * 0.25, S16 * 3, 0.24, i - 1));
+    k.hookNote(84, 31.5, BEAT * 2, 0.26);
+  },
+  (master) => {
+    // Under water from beat 9 to 12: the whole mix behind a lowpass that closes in and opens out.
+    const cut = (i) => {
+      const b = i / RATE / BEAT;
+      if (b < 9 || b > 12.1) return 18000;
+      const w = Math.min(Math.min(1, (b - 9) / 0.25), Math.min(1, Math.max(0, (12.1 - b) / 0.15)));
+      return 18000 * (1 - w) + 650 * w;
+    };
+    filter(master.L, "lp", cut, 0.9);
+    filter(master.R, "lp", cut, 0.9);
+  },
+);

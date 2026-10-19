@@ -186,6 +186,40 @@ const SFX = {
   "paint-splat": () => add(thud(130, 0.04).map((v) => v * 0.7), mul(filter(noise(len(0.25), rand), "bp", 1400, 0.7), env(len(0.25), { attack: 0.002, tau: 0.05 })), ...[0.05, 0.09, 0.14].map((d, k) => delay(tick(3000 + k * 700, 0.003), d).map((v) => v * 0.25))),
   // … and a letter slamming down.
   slam: () => add(thud(70, 0.09), tick(2200, 0.004).map((v) => v * 0.6), mul(filter(noise(len(0.15), rand), "hp", 3000), env(len(0.15), { attack: 0.001, tau: 0.02 })).map((v) => v * 0.4)),
+  // The Room reel: a wall clock in the dull intro (tick, a lower tock), …
+  "clock-tick": () => add(knock(2600, 0.012), delay(knock(1900, 0.012), 0.5).map((v) => v * 0.8)),
+  // … thunder (a crack, then a long rolling rumble), …
+  thunder: () => {
+    const s = 2.6;
+    const crack = mul(filter(noise(len(s), rand), "hp", 1800), env(len(s), { attack: 0.001, tau: 0.06 }));
+    const roll = mul(filter(noise(len(s), rand), "lp", (i) => 200 + 260 * Math.sin((i / RATE) * 7) ** 2, 0.8), make(s, (t) => Math.min(1, t / 0.08) * Math.exp(-t / 0.9) * (0.7 + 0.3 * Math.sin(t * 11))));
+    return room(add(crack.map((v) => v * 0.6), roll.map((v) => v * 2.2)), 0.35, 0.85);
+  },
+  // … the room flooding (a big splash), bubbles, …
+  splash: () => room(add(mul(filter(noise(len(0.9), rand), "bp", (i) => 2400 - 1800 * (i / len(0.9)), 0.6), make(0.9, (t) => Math.min(1, t / 0.02) * Math.exp(-t / 0.25))), thud(90, 0.12).map((v) => v * 0.6)), 0.3),
+  bubbles: () => add(...Array.from({ length: 9 }, (_, k) => delay(mul(glide(0.12, (t) => 500 + k * 90 + 2600 * t), env(len(0.12), { attack: 0.003, tau: 0.03 })), k * 0.07 + (k % 3) * 0.02).map((v) => v * (0.5 + 0.5 * ((k * 7) % 3) / 2)))),
+  // … desert wind, …
+  wind: () => {
+    const s = 2.2;
+    return mul(sweptNoise(s, (t) => 500 + 700 * Math.sin(t * 2.3) ** 2, 2.2), make(s, (t) => Math.sin(Math.PI * Math.min(1, t / s)) ** 0.8));
+  },
+  // … a kettle whistling up, …
+  kettle: () => {
+    const s = 1.2;
+    const tone = mul(glide(s, (t) => 1500 + 900 * Math.min(1, t / 0.5) + 30 * Math.sin(t * 40)), make(s, (t) => Math.min(1, t / 0.35) * Math.min(1, (s - t) / 0.25) * 0.5));
+    const breath = mul(filter(noise(len(s), rand), "bp", 2400, 1.5), make(s, (t) => Math.min(1, t / 0.2) * 0.4 * Math.min(1, (s - t) / 0.25)));
+    return room(add(tone, breath), 0.2);
+  },
+  // … and birds in the jungle (quick FM chirps).
+  birds: () =>
+    room(
+      add(
+        ...[0, 0.13, 0.22, 0.5, 0.58, 0.9].map((d, k) =>
+          delay(mul(glide(0.09, (t) => 2600 + 1400 * Math.sin((t / 0.09) * Math.PI) + k * 120), env(len(0.09), { attack: 0.004, tau: 0.04 })), d).map((v) => v * (k % 2 ? 0.7 : 1)),
+        ),
+      ),
+      0.3,
+    ),
   // Promo.
   "switch-click": () => room(add(tick(2400, 0.005), delay(tick(1600, 0.008), 0.03)), 0.2),
   whip: () => whoosh(0.35, 600, 6000, 2),

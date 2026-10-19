@@ -33,7 +33,7 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
   `progress(frame, from, duration, easing = ease.out)` → clamped 0..1, `mix(a, b, t)`.
 - `src/theme/timing.ts` — `useTiming()` → `{ fps, b(n), e(n), s(n), bar(n) }` frames for n beats / eighths /
   sixteenths / bars (100 BPM: 1 beat = 36 frames at 60 fps). **Never hardcode frames or seconds**: all durations come
-  from these (the 50 fps Promo master and a BPM change must work). The short reels (Ad, Showreel) run at 120 BPM: their roots wrap
+  from these (the 50 fps Promo master and a BPM change must work). The short reels (Room, Showreel) run at 120 BPM: their roots wrap
   everything in `<BpmContext.Provider value={…}>`, so `useTiming()` inside them counts their own beats.
 - `src/theme/fonts.ts` — `fonts.sans` (Onest), `fonts.serif` (Piazzolla Italic 300); style helpers
   `display(size, weight, trackingEm, lh)`, `label(size)`, `serif(size)`, `text(size, weight)`, `tabular`.
@@ -56,9 +56,8 @@ for all frames with `useMemo` (fixed 1/60 s step) and sample it by time.
   `LogoBuild` (+ `logoSchedule`, `logoGeometry`), `AvatarOutro`/`CollapseToDot`.
 - Line drawings: `src/lines/interiors.ts` (Reels rooms: elements drawn in a sweep, with idle `motion`), `src/lines/promo.ts`,
   `src/lines/common.ts`; type `LineArt` in `src/lines/types.ts`.
-- Short reels: `src/ad/` and `src/showreel/` (scene starts in beats in their `layout.ts`); paint — `primitives/Brush.tsx`,
-  liquid type — `primitives/MorphText.tsx` (mount `MorphFilter` once), morphable masks — `showreel/masks.ts`; sound —
-  `npm run music:reels` and `src/audio/shortCues.ts`.
+- Short reels: `src/room/` («одна картина меняет всю комнату») and `src/showreel/` (scene starts in beats in their `layout.ts`);
+  morphable masks — `showreel/masks.ts`; sound — `npm run music:reels` and `src/audio/shortCues.ts`.
 - Sound: `npm run music` (`scripts/make-music.mjs`) and `npm run sfx` (`scripts/make-sfx.mjs`) synthesise the track and the
   effects (`scripts/audio/dsp.mjs`); cues in `src/audio/cues.ts`, the bar edit in `src/audio/music-edit.ts`.
 

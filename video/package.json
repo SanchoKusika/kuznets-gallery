@@ -36,7 +36,7 @@
     "studio": "remotion studio",
     "render:reels": "remotion render Reels out/kuznets-reels-1080x1920-60fps.mp4",
     "render:promo": "remotion render Promo out/kuznets-promo-1920x1080-60fps.mp4",
-    "render:ad": "remotion render Ad out/kuznets-ad-1080x1920-60fps.mp4",
+    "render:room": "remotion render Room out/kuznets-room-1080x1920-60fps.mp4",
     "render:showreel": "remotion render Showreel out/kuznets-showreel-1080x1920-60fps.mp4",
     "render:cover": "remotion still ReelsCover out/reels-cover.png",
     "stills": "node scripts/stills.mjs",

@@ -1,59 +1,14 @@
 import type { SfxId } from "./cues";
 
 // Sound of the short reels: the track (scripts/make-reels-music.mjs) and the effects, each at a beat of the reel
-// (absolute, 120 BPM) with a gain in dB relative to the SFX bus. Scene starts: src/ad/layout.ts, src/showreel/layout.ts.
+// (absolute, 120 BPM) with a gain in dB relative to the SFX bus. Scene starts: the reels' layout.ts.
 
 export type ShortCue = { id: SfxId; beat: number; gainDb: number; note?: string };
 
 const many = (id: SfxId, beats: number[], gainDb: number, note?: string): ShortCue[] => beats.map((beat) => ({ id, beat, gainDb, note }));
 
-export const AD_MUSIC = "audio/ad.wav";
 export const SHOWREEL_MUSIC = "audio/showreel.wav";
-
-export const AD_CUES: ShortCue[] = [
-  // A1
-  { id: "dot-whoosh", beat: 0.5, gainDb: -10, note: "точка падает" },
-  { id: "dot-pop", beat: 1, gainDb: -4, note: "точка приземляется" },
-  { id: "fill-whoosh", beat: 1.25, gainDb: -10, note: "точка раскрывается в картину" },
-  { id: "paint-swipe", beat: 2, gainDb: -2, note: "зачёркивает «пустая»" },
-  { id: "morph-swish", beat: 2.45, gainDb: -12, note: "«пустая» → «яркая»" },
-  { id: "paint-swipe", beat: 2.55, gainDb: -10, note: "жёлтая подложка" },
-  ...many("dot-pop", [3, 3.25, 3.5], -14, "маленькие картины"),
-  { id: "paint-splat", beat: 3.25, gainDb: -8, note: "клякса на картине" },
-  { id: "paint-swipe", beat: 3.5, gainDb: -12, note: "белый мазок" },
-  // A2
-  { id: "swing", beat: 4, gainDb: -10, note: "стена слетается" },
-  { id: "grid-ticks", beat: 4.1, gainDb: -12, note: "плитки" },
-  { id: "paint-swipe", beat: 5.5, gainDb: -12, note: "подложка «авторских»" },
-  { id: "pencil-2", beat: 5.5, gainDb: -12, note: "кольцо вокруг 159" },
-  { id: "plate-slide", beat: 6, gainDb: -6, note: "колонки съезжают" },
-  { id: "whip", beat: 7, gainDb: -6, note: "наезд в плитку" },
-  // A3
-  { id: "paint-swipe", beat: 8.1, gainDb: -14, note: "сердце" },
-  ...many("paint-swipe", [8.75, 9.75, 10.75], -6, "картина закрашивается следующей"),
-  ...many("morph-swish", [8.9, 9.9, 10.9], -14, "слово комнаты"),
-  // A4
-  { id: "paint-swipe", beat: 12, gainDb: -6, note: "KZ-024" },
-  { id: "spin", beat: 12.5, gainDb: -8, note: "холст в 3D" },
-  ...many("frame-click", [13.4, 13.5, 13.6, 13.7], -8, "планки багета"),
-  { id: "swing", beat: 13.75, gainDb: -8, note: "переворот" },
-  { id: "glass-glint", beat: 14.5, gainDb: -6, note: "блик" },
-  { id: "whip", beat: 15.5, gainDb: -8, note: "уходит вверх" },
-  // A5
-  { id: "pencil", beat: 16, gainDb: -6, note: "эскиз арок" },
-  { id: "paint-swipe", beat: 17, gainDb: -4, note: "краска приносит картину" },
-  { id: "morph-swish", beat: 17.5, gainDb: -12, note: "«нарисуем.»" },
-  { id: "paint-swipe", beat: 18.05, gainDb: -12, note: "подложка «за 3–7 дней»" },
-  // A6
-  ...many("paper-card", [19, 19.5, 20, 20.5, 21, 21.5, 22, 22.5, 23, 23.5], -14, "кадр монтажа"),
-  ...many("paint-splat", [19.6, 20.6, 21.6, 22.6, 23.6], -14, "клякса"),
-  // A7
-  { id: "collapse", beat: 24, gainDb: -6, note: "картина в точку" },
-  ...many("bead-drop", [24.5, 24.75, 25], -8, "бусины"),
-  { id: "paint-swipe", beat: 26, gainDb: -10, note: "жёлтый мазок" },
-  { id: "switch-click", beat: 26.15, gainDb: -10, note: "kuznets.uz" },
-  { id: "ring", beat: 26.5, gainDb: -14, note: "вдох точки" },
-];
+export const ROOM_MUSIC = "audio/room.wav";
 
 export const SHOWREEL_CUES: ShortCue[] = [
   // S1
@@ -92,4 +47,46 @@ export const SHOWREEL_CUES: ShortCue[] = [
   { id: "dot-pop", beat: 26.25, gainDb: -4, note: "точка логотипа" },
   { id: "ring", beat: 26.35, gainDb: -10, note: "кольца" },
   { id: "switch-click", beat: 27, gainDb: -12, note: "kuznets.uz" },
+];
+
+/** «Одна картина меняет всю комнату» (src/room/layout.ts): rooms start on beats 3, 6, … 21. */
+export const ROOM_CUES: ShortCue[] = [
+  ...many("clock-tick", [0, 2], -6, "часы в скучной комнате"),
+  { id: "dot-whoosh", beat: 2.5, gainDb: -8, note: "картина падает" },
+  { id: "canvas-thump", beat: 2.83, gainDb: -4, note: "картина на гвозде" },
+  { id: "nail-tap", beat: 2.83, gainDb: -10 },
+  ...many("spin", [5.8, 8.8, 11.8, 14.8, 17.8, 20.8], -12, "картина переворачивается"),
+  ...many("fill-whoosh", [3, 6, 9, 12, 15, 18, 21], -8, "мир разливается из картины"),
+  // Jungle
+  { id: "swing", beat: 3, gainDb: -10, note: "листья" },
+  { id: "birds", beat: 3.3, gainDb: -6, note: "попугай" },
+  { id: "birds", beat: 4.4, gainDb: -12 },
+  // Rain
+  { id: "dot-pop", beat: 6.35, gainDb: -8, note: "зонт" },
+  { id: "thunder", beat: 7.4, gainDb: -2, note: "молния" },
+  // Water
+  { id: "splash", beat: 9, gainDb: -2, note: "комнату заливает" },
+  ...many("bubbles", [9.6, 10.8], -8, "пузыри"),
+  // Space
+  { id: "glass-glint", beat: 12.1, gainDb: -8, note: "звёзды" },
+  { id: "whip", beat: 13.4, gainDb: -10, note: "комета" },
+  // Desert
+  { id: "wind", beat: 15, gainDb: -6, note: "ветер" },
+  { id: "dot-pop", beat: 15.15, gainDb: -10, note: "кактус" },
+  { id: "swing", beat: 16.1, gainDb: -8, note: "перекати-поле" },
+  // Sky
+  { id: "dot-pop", beat: 18.1, gainDb: -12, note: "шарики" },
+  { id: "swing", beat: 18.25, gainDb: -10, note: "абажур улетает" },
+  // Tea
+  { id: "kettle", beat: 21, gainDb: -6, note: "чайник" },
+  ...many("dot-pop", [21.1, 21.2, 21.3, 21.4, 21.5], -14, "дастархан"),
+  // Montage, choice, logo
+  ...many("paper-card", Array.from({ length: 12 }, (_, i) => 24 + i / 4), -14, "картина"),
+  { id: "slam", beat: 27, gainDb: -8, note: "какая твоя?" },
+  { id: "slam", beat: 27.25, gainDb: -10 },
+  ...many("dot-pop", Array.from({ length: 7 }, (_, i) => 27.15 + i * 0.067), -16, "плитки"),
+  { id: "fill-whoosh", beat: 30, gainDb: -8, note: "логотип" },
+  ...many("bead-drop", [30.5, 30.75, 31], -8, "бусины"),
+  { id: "dot-pop", beat: 31.5, gainDb: -4, note: "точка" },
+  { id: "switch-click", beat: 32, gainDb: -10, note: "kuznets.uz" },
 ];

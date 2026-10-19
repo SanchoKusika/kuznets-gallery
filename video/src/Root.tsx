@@ -1,6 +1,6 @@
 import { Composition, Folder, Still } from "remotion";
-import { Ad, adFrames } from "./ad/Ad";
 import { Promo } from "./promo/Promo";
+import { RoomReel, roomFrames } from "./room/RoomReel";
 import { Showreel, showreelFrames } from "./showreel/Showreel";
 import { Reels, reelsSchema } from "./reels/Reels";
 import { ReelsCover } from "./reels/ReelsCover";
@@ -30,7 +30,7 @@ export const RemotionRoot: React.FC = () => {
         durationInFrames={barAt(PROMO_BARS, 60)}
       />
       <Folder name="Short">
-        <Composition id="Ad" component={Ad} width={1080} height={1920} fps={60} durationInFrames={adFrames(60)} />
+        <Composition id="Room" component={RoomReel} width={1080} height={1920} fps={60} durationInFrames={roomFrames(60)} />
         <Composition id="Showreel" component={Showreel} width={1080} height={1920} fps={60} durationInFrames={showreelFrames(60)} />
       </Folder>
       <Folder name="Extra">
