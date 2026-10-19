@@ -1,7 +1,7 @@
 // Music of the short reels, composed and synthesised here like the main track (no samples, no licences), 120 BPM,
 // cut to their scenes beat by beat:
 //
-//   npm run music:reels   → public/audio/room.wav (17 s), public/audio/showreel.wav (15 s) (48 kHz, 16-bit, ≈ −14 LUFS)
+//   npm run music:reels   → public/audio/room.wav (17 s), showreel.wav (15 s), kinetic.wav (25.2 s, 100 BPM) (48 kHz, 16-bit, ≈ −14 LUFS)
 //
 // Room — a waltz-time bar (3 beats) per room, each with its own sound world: a clock in the dull intro, then the drop
 // on the first painting; marimba and shakers (jungle), rain (London), everything under water with a semitone
@@ -9,7 +9,9 @@
 // whistle (sky), cosy keys (tea); stabs on the montage, the hook on the choice, the final chord on the logo.
 // Showreel — harder, darker: Am9 · Fmaj7 · Cmaj9 · G6 · Am9 · Fmaj7 · G6 | Cmaj9; every chapter changes the groove
 // (pulse, drive, breakbeat, half-time, full drive, gated stutter), the final hit on the logo (25).
-// Scene starts in beats are those of src/room/layout.ts and src/showreel/layout.ts.
+// Kinetic «Кто ты?» — 100 BPM: a quiet motif on the wall, silence on «молчит», a growing pulse, the hit on «КАРТИНА»,
+// a heartbeat under «кто ты?», the drop on «смелый», no drums on «спокойный», an arpeggio for «мечтатель», the logo.
+// Scene starts in beats are those of src/room/layout.ts, src/showreel/layout.ts and src/kinetic/kit.tsx.
 
 import path from "node:path";
 import { bus, dbGain, env, filter, filterBus, limit, lufs, midiHz, mixInto, pingPong, put, RATE, reverb, rng, shape, truePeak, writeWav } from "./audio/dsp.mjs";
@@ -122,7 +124,7 @@ function makeTrack(name, seed, LENGTH, arrange, post) {
     limit(out, -1.3);
   }
   writeWav(path.join(root, "public/audio", `${name}.wav`), out);
-  console.log(`${name}.wav: ${LENGTH} s at ${BPM} BPM, ${lufs(out).toFixed(1)} LUFS, ${truePeak(out).toFixed(1)} dBTP`);
+  console.log(`${name}.wav: ${LENGTH} s, ${lufs(out).toFixed(1)} LUFS, ${truePeak(out).toFixed(1)} dBTP`);
 }
 
 /** Helpers bound to one track's buses. */
@@ -336,3 +338,117 @@ makeTrack(
     filter(master.R, "lp", cut, 0.9);
   },
 );
+
+/* ── Kinetic «Кто ты?» (100 BPM) ─────────────────────────────────────────────────────────────────────────── */
+
+// This track runs at 100 BPM: its own beat helpers, the same instruments.
+{
+  const KB = 60 / 100;
+  const kat = (b) => b * KB;
+  const K16 = KB / 4;
+  makeTrack(
+    "kinetic",
+    100,
+    25.2,
+    (B) => {
+      const { ins, rand } = B;
+      const K = ins.kick();
+      const C = ins.clap();
+      const H = ins.hat();
+      const OH = ins.hat(true);
+      const SH = ins.shaker();
+      const kick = (b, g = 0.95) => {
+        put(B.drums, kat(b), K, g);
+        B.kicks.push(kat(b));
+      };
+      const clap = (b, g = 0.4) => put(B.drums, kat(b), C, g, 0.05);
+      const hat = (b, g = 0.15) => put(B.drums, kat(b), H, g, 0.3);
+      const open = (b, g = 0.13) => put(B.drums, kat(b), OH, g, -0.25);
+      const shaker = (b, g = 0.1) => put(B.drums, kat(b), SH, g, -0.35);
+      const chord = (c, b, len, vel = 0.7, gain = 0.22) => CH[c].keys.forEach((m, k) => put(B.keys, kat(b) + k * 0.004, ins.rhodes(m, len, vel), gain, -0.3 + k * 0.2));
+      const bass = (m, b, len, vel = 0.9, gain = 0.6) => put(B.bass, kat(b), ins.bass(m, len, vel), gain);
+      const note = (m, b, len, gain = 0.3, pan = 0.1) => put(B.hook, kat(b), ins.hookNote(m, len), gain, pan);
+      const pad = (c, b, len, gain = 0.45) => put(B.pads, kat(b), ins.pad(CH[c].keys.map((m) => m + 12), len), gain);
+      const bars = ["Am9", "Fmaj7", "Cmaj9", "G6", "Am9", "Fmaj7", "Cmaj9", "G6", "Am9"];
+      const chordAt = (b) => bars[Math.min(bars.length - 1, Math.floor(b / 4))];
+      const groove = (b0, b1, { claps = true, opens = true } = {}) => {
+        for (let b = b0; b < b1; b++) {
+          kick(b);
+          if (claps && b % 2 === 1) clap(b);
+          for (let q = 0; q < 4; q++) hat(b + q / 4, q === 2 ? 0.24 : q % 2 ? 0.12 : 0.08);
+          if (opens) open(b + 0.5);
+          const r = CH[chordAt(b)].root;
+          bass(r, b, KB * 0.45, 1, 0.55);
+          bass(r + 12, b + 0.5, KB * 0.3, 0.75, 0.45);
+        }
+      };
+
+      // 0–3 «стена»: a quiet Rhodes motif over a low pad.
+      // Loud enough to hook from the first frame, still far from the hit.
+      pad("Am9", 0, kat(3), 0.9);
+      [[0, 76], [0.75, 72], [1.5, 79], [2.25, 77]].forEach(([b, m]) => note(m, b, K16 * 3, 0.42, -0.2));
+      [0, 1, 2].forEach((b) => bass(33, b, KB * 0.8, 0.7, 0.4));
+      for (let q = 0; q < 12; q++) shaker(q / 4, 0.05);
+      // 3–5 «молчит»: everything stops; one high note.
+      note(88, 3.25, KB * 1.5, 0.14, 0.3);
+      // 5–8 «пока не появится»: a pulse comes in and grows, a riser into the hit.
+      for (let b = 5; b < 8; b += 0.5) bass(33, b, KB * 0.3, 0.6 + 0.12 * (b - 5), 0.5);
+      for (let q = 0; q < 12; q++) hat(5 + q / 4, 0.06 + 0.012 * q);
+      put(B.fx, kat(6), ins.impact(), 0.25);
+      put(B.fx, kat(6.2), ins.riser(kat(1.75)), 0.5);
+      // 8 «КАРТИНА»: the hit; the groove until 14.
+      put(B.fx, kat(8), ins.impact(), 0.6);
+      groove(8, 14);
+      for (let b = 8; b < 14; b++) [[0.5, 0.35], [1.5, 0.3]].forEach(([o, len]) => b % 2 === 0 && chord(chordAt(b), b + o, KB * len, 0.65));
+      // 11 «скажет»: the hook speaks.
+      [[11, 72], [11.25, 76], [11.5, 79], [12, 81], [12.5, 79], [13, 76], [13.5, 79]].forEach(([b, m]) => note(m, b, K16 * 2, 0.3, 0.1));
+      // 14–16 «за тебя»: half-time, a held chord.
+      kick(14);
+      clap(15, 0.5);
+      chord("G6", 14, KB * 1.9, 0.6, 0.26);
+      bass(43, 14, KB * 1.8, 0.9, 0.55);
+      // 16–20 «кто ты?»: a heartbeat, a dark pad, ticks on the portrait swaps, a riser.
+      pad("Am9", 16, kat(4), 0.6);
+      for (let b = 16; b < 20; b++) {
+        kick(b, 0.85);
+        kick(b + 0.28, 0.5);
+      }
+      for (let b = 16.5; b < 20; b += 0.5) hat(b, 0.12);
+      put(B.fx, kat(18.5), ins.riser(kat(1.5)), 0.5);
+      // 20 «смелый»: the drop.
+      put(B.fx, kat(20), ins.impact(), 0.65);
+      groove(20, 24);
+      for (let b = 20; b < 24; b++) put(B.keys, kat(b + 0.5), sawStab(CH.Fmaj7.keys.map((m) => m + 12), K16 * 1.4, rand, 1.2), 0.22, 0);
+      // 24 «спокойный»: drums out, soft keys, water-like plucks.
+      chord("Cmaj9", 24, KB * 3.8, 0.55, 0.28);
+      pad("Cmaj9", 24, kat(4), 0.5);
+      bass(36, 24, KB * 3.6, 0.8, 0.45);
+      [79, 76, 83, 79, 84, 81, 79, 76].forEach((m, i) => note(m, 24.5 + i * 0.4, K16 * 3, 0.16, i % 2 ? 0.4 : -0.4));
+      // 28 «мечтатель»: light kick and hats, a rising arpeggio.
+      for (let b = 28; b < 32; b++) {
+        kick(b, 0.7);
+        for (let q = 0; q < 2; q++) hat(b + q / 2, 0.1);
+      }
+      chord("G6", 28, KB * 3.8, 0.55, 0.22);
+      bass(43, 28, KB * 3.6, 0.8, 0.45);
+      [74, 79, 83, 86, 88, 91, 93, 95].forEach((m, i) => note(m, 28.25 + i * 0.45, K16 * 2, 0.2, i % 2 ? 0.3 : -0.3));
+      // 32 «159 характеров»: the full groove with the hook.
+      put(B.fx, kat(32), ins.impact(), 0.5);
+      groove(32, 36);
+      for (let b = 32; b < 36; b++) chord("Am9", b + 0.5, KB * 0.35, 0.65);
+      [[32, 76], [32.5, 79], [33, 81], [33.5, 79], [34, 84], [34.5, 83], [35, 81], [35.5, 79]].forEach(([b, m]) => note(m, b, K16 * 2, 0.28));
+      // 36 «найди свою»; 38 the logo: the hit, Cmaj9 ringing, the beads and the dot as notes.
+      chord("Fmaj7", 36, KB * 1.9, 0.6, 0.26);
+      chord("G6", 37, KB * 0.9, 0.6, 0.26);
+      kick(36);
+      kick(37);
+      put(B.fx, kat(38), ins.impact(), 0.6);
+      kick(38, 1);
+      bass(36, 38, KB * 4, 1, 0.6);
+      chord("Cmaj9", 38, KB * 4.5, 0.75, 0.3);
+      pad("Cmaj9", 38, kat(4.5), 0.55);
+      [76, 79, 83].forEach((m, i) => note(m, 38.5 + i * 0.25, K16 * 3, 0.24, i - 1));
+      note(84, 39.5, KB * 2, 0.26);
+    },
+  );
+}

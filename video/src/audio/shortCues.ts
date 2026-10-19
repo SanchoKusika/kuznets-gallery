@@ -9,6 +9,7 @@ const many = (id: SfxId, beats: number[], gainDb: number, note?: string): ShortC
 
 export const SHOWREEL_MUSIC = "audio/showreel.wav";
 export const ROOM_MUSIC = "audio/room.wav";
+export const KINETIC_MUSIC = "audio/kinetic.wav";
 
 export const SHOWREEL_CUES: ShortCue[] = [
   // S1
@@ -89,4 +90,35 @@ export const ROOM_CUES: ShortCue[] = [
   ...many("bead-drop", [30.5, 30.75, 31], -8, "бусины"),
   { id: "dot-pop", beat: 31.5, gainDb: -4, note: "точка" },
   { id: "switch-click", beat: 32, gainDb: -10, note: "kuznets.uz" },
+];
+
+/** «Кто ты?» (src/kinetic/kit.tsx, 100 BPM). */
+export const KINETIC_CUES: ShortCue[] = [
+  { id: "swing", beat: 0.2, gainDb: -14, note: "камера вдоль стены" },
+  { id: "clock-tick", beat: 3.2, gainDb: -16, note: "тишина" },
+  { id: "dot-whoosh", beat: 5.6, gainDb: -10, note: "пролёт сквозь слова" },
+  { id: "whip", beat: 7.4, gainDb: -8 },
+  { id: "slam", beat: 8, gainDb: -2, note: "КАРТИНА" },
+  { id: "plate-slide", beat: 8.8, gainDb: -6, note: "слово раскалывается" },
+  { id: "spin", beat: 10.6, gainDb: -8, note: "переворот картины" },
+  ...many("dot-pop", Array.from({ length: 6 }, (_, i) => 12 + (i * 3) / 36), -10, "буквы из губ"),
+  { id: "whip", beat: 13.6, gainDb: -8, note: "буквы мимо камеры" },
+  { id: "swing", beat: 14.2, gainDb: -8, note: "«тебя» поворачивается" },
+  { id: "whip", beat: 15.65, gainDb: -8 },
+  { id: "slam", beat: 16.3, gainDb: -6, note: "ТЫ" },
+  ...many("paper-card", [17, 17.5, 18, 18.5, 19, 19.5], -14, "смена портрета"),
+  { id: "dot-pop", beat: 17.3, gainDb: -8, note: "точка вопроса" },
+  { id: "bead-drop", beat: 19.65, gainDb: -6, note: "точка падает" },
+  { id: "fill-whoosh", beat: 19.65, gainDb: -8, note: "точка раскрывается" },
+  ...many("slam", Array.from({ length: 6 }, (_, i) => 20 + (16 + i * 4) / 36), -6, "буква «СМЕЛЫЙ»"),
+  { id: "canvas-thump", beat: 20.25, gainDb: -6, note: "картина падает" },
+  { id: "splash", beat: 23.5, gainDb: -12, note: "волна" },
+  { id: "swing", beat: 27.6, gainDb: -10, note: "подъём" },
+  { id: "dot-whoosh", beat: 28.1, gainDb: -12, note: "буквы взлетают" },
+  { id: "swing", beat: 31.6, gainDb: -10 },
+  { id: "grid-ticks", beat: 32.15, gainDb: -10, note: "счётчик" },
+  { id: "whip", beat: 35.4, gainDb: -8, note: "стена уходит" },
+  ...many("bead-drop", [38.5, 38.75, 39], -8, "бусины"),
+  { id: "dot-pop", beat: 39.5, gainDb: -4, note: "точка" },
+  { id: "switch-click", beat: 40, gainDb: -10, note: "kuznets.uz" },
 ];
