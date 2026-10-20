@@ -37,6 +37,11 @@
   --img-filter: none;
   --logo-blend: multiply;
   --logo-filter: none;
+  // vector logo (Logo.tsx): letters and beads, GALLERY, the dot and the wave
+  --logo-ink: #231f27;
+  --logo-ink-2: #343638;
+  --logo-dot: #f48157;
+  --logo-wave: #fbf172;
   --shadow-float: 0 40px 80px -30px rgba(21, 21, 21, 0.45);
 
   // type
@@ -83,4 +88,7 @@
   --img-filter: brightness(0.88) contrast(1.04);
   --logo-blend: screen;
   --logo-filter: invert(1) hue-rotate(180deg);
+  --logo-ink: var(--ink);
+  --logo-ink-2: var(--ink-2);
+  --logo-wave: #efe06a;
 }

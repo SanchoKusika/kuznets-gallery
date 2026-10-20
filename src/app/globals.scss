@@ -53,6 +53,37 @@ textarea::placeholder {
   color: var(--on-accent);
 }
 
+// Scrollbars: a thin pill on a transparent track, accent under the pointer. Chromium and Safari
+// style the -webkit- parts (standard `scrollbar-color` would switch them off in Chromium), Firefox
+// takes the standard properties.
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ink-4);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 10px;
+
+  &:hover {
+    background-color: var(--accent);
+  }
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: var(--ink-4) transparent;
+    scrollbar-width: thin;
+  }
+}
+
 img::selection {
   background: transparent;
 }

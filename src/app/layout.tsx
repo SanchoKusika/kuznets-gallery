@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { LOGO_INTRO_SCRIPT } from "@/components/ui/Logo/logo-intro";
 import { MOTION_INIT_SCRIPT } from "@/features/motion/prefers-motion";
 import { THEME_INIT_SCRIPT } from "@/features/theme/constants";
 import { InlineScript } from "@/features/theme/InlineScript";
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" className={`${onest.variable} ${piazzolla.variable}`} suppressHydrationWarning>
       <head>
-        <InlineScript html={`${THEME_INIT_SCRIPT};${MOTION_INIT_SCRIPT}`} />
+        <InlineScript html={`${THEME_INIT_SCRIPT};${MOTION_INIT_SCRIPT};${LOGO_INTRO_SCRIPT}`} />
       </head>
       <body>
         <ThemeSync />
