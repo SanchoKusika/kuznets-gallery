@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Media } from "@/components/ui/Media/Media";
+import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
 import { bem } from "@/lib/bem";
 import type { ArtworkCard as Card } from "@/lib/catalog";
 import s from "./ArtworkCard.module.scss";
@@ -13,7 +13,7 @@ const b = bem(s, "artwork-card");
 export function ArtworkCard({ card, variant = "grid" }: { card: Card; variant?: "grid" | "related" }) {
   const grid = variant === "grid";
   return (
-    <Link href={card.href} className={b(null, { related: !grid })} data-cursor="Смотреть" data-reveal={grid || undefined}>
+    <WorkLink href={card.href} className={b(null, { related: !grid })} data-cursor="Смотреть" data-reveal={grid || undefined}>
       <Media
         src={card.src}
         alt={card.title}
@@ -31,6 +31,6 @@ export function ArtworkCard({ card, variant = "grid" }: { card: Card; variant?: 
           <span className={b("price")}>{card.from}</span>
         </div>
       )}
-    </Link>
+    </WorkLink>
   );
 }

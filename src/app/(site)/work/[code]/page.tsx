@@ -12,6 +12,9 @@ import s from "./page.module.scss";
 
 const b = bem(s, "work-page");
 
+/** «Ещё»: 2 rows × 6 columns at the widest (see RelatedWorks.module.scss). */
+const RELATED_COUNT = 12;
+
 type Params = PageProps<"/work/[code]">["params"];
 
 export async function generateStaticParams() {
@@ -47,13 +50,14 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
   if (!work) notFound();
   if (code !== work.slug) permanentRedirect(routes.work(work.slug)); // /work/KZ-001 → /work/kz-001
 
-  const next = items[(index + 1) % items.length];
+  // The catalogue from the next work on, wrapping around; the first of it is the "next work" teaser.
+  const [next, ...rest] = [...items.slice(index + 1), ...items.slice(0, index)];
   const category = CATS.find((c) => c.k === work.categories[0]);
   // Uncategorised works fall back to the catalogue's "all" tag, as in the prototype.
   const tag = category?.k ?? "all";
-  const related = items
-    .filter((p) => p !== work && p.tags.includes(tag))
-    .slice(0, 4)
+  // Enough for two full rows of the widest grid; other categories top up a small one.
+  const related = [...rest.filter((p) => p.tags.includes(tag)), ...rest.filter((p) => !p.tags.includes(tag))]
+    .slice(0, RELATED_COUNT)
     .map(toCard);
   const categoryName = category?.n ?? "Все варианты";
 
@@ -72,7 +76,7 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
         formatName={FMT[work.format]}
         sizes={work.sizes}
       />
-      <NextWork card={toCard(next)} />
+      <NextWork card={toCard(next ?? work)} />
       <RelatedWorks category={categoryName} cards={related} />
     </main>
   );

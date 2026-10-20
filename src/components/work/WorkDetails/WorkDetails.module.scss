@@ -7,11 +7,13 @@
   padding: 0 var(--gutter);
   align-items: start;
 
-  // Image stays in view while the panel scrolls (≥960px).
+  // Image stays in view while the panel scrolls (≥960px). No well behind it: a photo that
+  // isn't square would show it as bands at the sides; on two columns it hugs the gutter.
   &__image {
     width: 100%;
     aspect-ratio: 1;
     max-height: 70vh;
+    background: none;
 
     @include from(960) {
       position: sticky;
@@ -22,6 +24,10 @@
 
   &__image-img {
     object-fit: contain;
+
+    @include from(960) {
+      object-position: left top;
+    }
   }
 
   &__info {
