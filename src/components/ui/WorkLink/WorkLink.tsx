@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { morphType } from "@/components/ui/ArtworkMorph/ArtworkMorph";
 import { handOff } from "@/components/ui/ArtworkMorph/handoff";
+import { rememberReturn } from "@/features/catalog/return-to-collection";
 
 /** How long a link has to stay in view on a touch screen before its page is prefetched. */
 const DWELL_MS = 600;
@@ -49,6 +50,7 @@ export function WorkLink({ morph, onClick, onPointerEnter, onTouchStart, onFocus
       onClick={(e) => {
         // A modified click opens a new tab: nothing to hand over here.
         const plain = e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey);
+        if (plain) rememberReturn(props.href.toString());
         if (morph && plain) handOff(morph, e.currentTarget.querySelector("img"));
         onClick?.(e);
       }}

@@ -94,8 +94,10 @@ img::selection {
   mix-blend-mode: normal;
 }
 
-// Card → artwork page (ArtworkMorph): the picture flies to its new place, a light blur hides the
-// resampling midway. Clicks go to the live page while it plays.
+// Card → artwork page (ArtworkMorph). One picture flies, not two crossfading: the page's photo
+// (the card's own picture, handed over) starts cropped to the card's 4:5 exactly as the card shows
+// it and opens up to the whole picture while it moves. The card's snapshot is hidden — fading two
+// different crops into each other doubled the picture mid-flight. Clicks go to the live page.
 ::view-transition {
   pointer-events: none;
 }
@@ -106,34 +108,21 @@ img::selection {
   z-index: 40;
 }
 
-::view-transition-image-pair(.morph) {
-  animation: morph-blur 0.55s var(--ease-menu-in);
+::view-transition-old(.morph) {
+  display: none;
 }
 
-// The card (4:5) and the photo box (square) differ in shape: both snapshots fill the flying box
-// instead of keeping their own ratio and spilling out of it.
-::view-transition-old(.morph),
 ::view-transition-new(.morph) {
   height: 100%;
   object-fit: cover;
-}
-
-@keyframes morph-blur {
-  35% {
-    filter: blur(3px);
-  }
+  animation: none;
 }
 
 // Reduced motion: the photo just appears in its place.
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(.morph),
-  ::view-transition-image-pair(.morph),
-  ::view-transition-new(.morph) {
+  ::view-transition-image-pair(.morph) {
     animation: none;
-  }
-
-  ::view-transition-old(.morph) {
-    display: none;
   }
 }
 

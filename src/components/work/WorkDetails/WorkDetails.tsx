@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
 import { dropHandoff, handedOff } from "@/components/ui/ArtworkMorph/handoff";
 import { Button } from "@/components/ui/Button/Button";
@@ -35,8 +35,10 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   const [frameIndex, setFrameIndex] = useState(0);
   const size = sizes[sizeIndex] ?? sizes[0];
   const imageRef = useRef<HTMLDivElement>(null);
-  // Opened from its card: the card's picture stands in until the photo loads, then goes.
-  const [placeholder, setPlaceholder] = useState(() => handedOff(code));
+  // Opened from its card: the card's picture stands in until the photo loads, then goes; its ratio
+  // sizes the frame to the picture, so the morph lands on the picture and not on a square of it.
+  const [handed] = useState(() => handedOff(code));
+  const [placeholder, setPlaceholder] = useState(handed?.src);
   useEffect(dropHandoff, []);
   const flying = useRef(false);
   const openTimer = useRef(0);
@@ -82,7 +84,9 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       {/* No reveal on the photo: it arrives morphing from the card that was clicked. */}
       <div ref={imageRef} className={b("image")}>
         <ArtworkMorph code={code}>
-          <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
+          <div className={b("frame", { fitted: !!handed })} style={handed && ({ "--ratio": handed.ratio } as CSSProperties)}>
+            <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
+          </div>
         </ArtworkMorph>
       </div>
 

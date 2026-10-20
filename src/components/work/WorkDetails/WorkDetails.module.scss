@@ -7,16 +7,33 @@
   padding: 0 var(--gutter);
   align-items: start;
 
-  // Image stays in view while the panel scrolls (≥960px).
+  // Image stays in view while the panel scrolls (≥960px). The photo sits centred, at the top left
+  // on two columns.
   &__image {
     width: 100%;
     aspect-ratio: 1;
     max-height: 70vh;
+    container-type: size;
+    display: grid;
+    place-items: center;
 
     @include from(960) {
       position: sticky;
       top: 84px;
       max-height: calc(100vh - 110px);
+      place-items: start;
+    }
+  }
+
+  // The morph's target. The whole box on a direct load; opened from a card, exactly the picture
+  // (its ratio comes with the card's picture), contained in the box like the photo itself.
+  &__frame {
+    width: 100%;
+    height: 100%;
+
+    &--fitted {
+      width: min(100cqw, 100cqh * var(--ratio));
+      height: min(100cqh, 100cqw / var(--ratio));
     }
   }
 
