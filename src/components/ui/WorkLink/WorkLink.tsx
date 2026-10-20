@@ -13,7 +13,7 @@ const DWELL_MS = 600;
  * pointer over the link, a touch or focus; touch screens have no hover, so there it is the link
  * staying in view for a moment. Prefetching every card that passes by would cost ~10 KB each.
  */
-export function WorkLink({ onPointerEnter, onTouchStart, onFocus, ...props }: ComponentProps<typeof Link>) {
+export function WorkLink({ onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref">) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [intent, setIntent] = useState(false);
 

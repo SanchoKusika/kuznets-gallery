@@ -5,7 +5,7 @@ import s from "./RelatedWorks.module.scss";
 
 const b = bem(s, "related-works");
 
-/** "Ещё <направление>": two rows of works from the same category (CSS hides what doesn't fit). */
+/** "Ещё <направление>": two rows of works after this one, same category first (CSS hides what doesn't fit). */
 export function RelatedWorks({ category, cards }: { category: string; cards: Card[] }) {
   return (
     <section className={b()} data-reveal>

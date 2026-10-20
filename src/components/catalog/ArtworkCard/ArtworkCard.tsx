@@ -6,6 +6,9 @@ import s from "./ArtworkCard.module.scss";
 
 const b = bem(s, "artwork-card");
 
+/** «Ещё» grid: 2 / 3 / 4 / 6 columns (RelatedWorks.module.scss). */
+const RELATED_SIZES = "(width >= 1600px) 17vw, (width >= 1024px) 25vw, (width >= 600px) 33vw, 50vw";
+
 /**
  * Artwork tile, 4:5. `grid` — collection grid (title + code, size range + price);
  * `related` — "Ещё" on the artwork page (title + price).
@@ -17,7 +20,7 @@ export function ArtworkCard({ card, variant = "grid" }: { card: Card; variant?: 
       <Media
         src={card.src}
         alt={card.title}
-        sizes="(width >= 600px) 25vw, 50vw"
+        sizes={grid ? "(width >= 600px) 25vw, 50vw" : RELATED_SIZES}
         className={b("media")}
         imgClassName={b("img")}
       />

@@ -55,7 +55,7 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
   const category = CATS.find((c) => c.k === work.categories[0]);
   // Uncategorised works fall back to the catalogue's "all" tag, as in the prototype.
   const tag = category?.k ?? "all";
-  // Enough for two full rows of the widest grid; other categories top up a small one.
+  // Enough for two full rows of the widest grid; other categories only top up a category too small for that.
   const related = [...rest.filter((p) => p.tags.includes(tag)), ...rest.filter((p) => !p.tags.includes(tag))]
     .slice(0, RELATED_COUNT)
     .map(toCard);
