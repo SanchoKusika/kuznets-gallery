@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useLastCategory } from "@/features/catalog/last-category";
 import { forgetReturn, returnFrom } from "@/features/catalog/return-to-collection";
+import { isPlainClick } from "@/lib/plain-click";
 import { routes } from "@/lib/routes";
 
 /**
@@ -20,7 +21,7 @@ export function BackToCollection({ label, className }: { label: string; classNam
       href={href}
       className={className}
       onClick={(e) => {
-        if (returnFrom(pathname) !== href || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        if (returnFrom(pathname) !== href || !isPlainClick(e)) return;
         e.preventDefault();
         forgetReturn();
         router.back();

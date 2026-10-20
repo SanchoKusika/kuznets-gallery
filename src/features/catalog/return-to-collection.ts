@@ -17,3 +17,8 @@ export const returnFrom = (work: string) => (opened?.work === work ? opened.from
 export function forgetReturn() {
   opened = null;
 }
+
+/** Every navigation (NavigationScroll): going anywhere else than that artwork or back ends it. */
+export function trackNavigation(pathname: string) {
+  if (opened && pathname !== opened.work && pathname !== opened.from) opened = null;
+}

@@ -5,7 +5,8 @@ export const morphType = (code: string) => `artwork-${code.toLowerCase()}`;
 
 /**
  * Shared element card → artwork page: the card's image and the page's photo carry the same name, so
- * opening the artwork from its card morphs one into the other (`.morph` in globals.scss). Only that
+ * opening the artwork from its card flies the photo from the card's place, opening up from the
+ * card's crop to the whole picture (`.morph` in globals.scss). Only that
  * navigation carries the artwork's type; other cards on both pages, «Следующая работа» and the
  * browser's back/forward don't morph. It plays when the page arrives in the same commit as the
  * navigation — prefetched, see WorkLink. Outside React navigations (the theme switch) no name is set.
