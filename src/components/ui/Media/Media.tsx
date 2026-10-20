@@ -17,6 +17,8 @@ type Props = {
   eager?: boolean;
   /** Already loaded picture shown under the image until it loads (gets `imgClassName` too). */
   placeholder?: string;
+  /** The image has loaded (client components only). */
+  onLoad?: () => void;
 };
 
 /**
@@ -24,7 +26,7 @@ type Props = {
  * dimmed in dark theme). Remote catalogue images get a nominal intrinsic size;
  * the box defines the real one.
  */
-export function Media({ src, alt = "", sizes, className, imgClassName, eager, placeholder }: Props) {
+export function Media({ src, alt = "", sizes, className, imgClassName, eager, placeholder, onLoad }: Props) {
   const dims = typeof src === "string" ? { width: 1200, height: 1200 } : {};
   return (
     <div className={b(null, null, className)}>
@@ -37,6 +39,7 @@ export function Media({ src, alt = "", sizes, className, imgClassName, eager, pl
         alt={alt}
         sizes={sizes}
         loading={eager ? "eager" : "lazy"}
+        onLoad={onLoad}
         className={b("img", null, imgClassName)}
         unoptimized={typeof src === "string" && isForeign(src)}
         {...dims}

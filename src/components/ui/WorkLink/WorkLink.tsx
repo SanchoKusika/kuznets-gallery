@@ -47,7 +47,9 @@ export function WorkLink({ morph, onClick, onPointerEnter, onTouchStart, onFocus
       prefetch={intent ? true : "auto"}
       transitionTypes={morph ? [morphType(morph)] : undefined}
       onClick={(e) => {
-        if (morph) handOff(morph, e.currentTarget.querySelector("img"));
+        // A modified click opens a new tab: nothing to hand over here.
+        const plain = e.button === 0 && !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey);
+        if (morph && plain) handOff(morph, e.currentTarget.querySelector("img"));
         onClick?.(e);
       }}
       onPointerEnter={(e) => {

@@ -8,7 +8,7 @@ import { Logo } from "@/components/ui/Logo/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle/ThemeToggle";
 import { PRIMARY_PHONE } from "@/content/site";
 import { order, useOrder } from "@/features/order/store";
-import { syncScrolled } from "@/features/scroll/header-scroll";
+import { clearScrolled, syncScrolled } from "@/features/scroll/header-scroll";
 import { lockScroll, unlockScroll } from "@/features/scroll/scroll-lock";
 import { scrollToContacts } from "@/features/scroll/smooth-scroll";
 import { bem } from "@/lib/bem";
@@ -61,7 +61,10 @@ export function Header({ total }: { total: number }) {
   useEffect(() => {
     syncScrolled();
     addEventListener("scroll", syncScrolled, { passive: true });
-    return () => removeEventListener("scroll", syncScrolled);
+    return () => {
+      removeEventListener("scroll", syncScrolled);
+      clearScrolled();
+    };
   }, []);
 
   // Never leave the page locked if the header goes away with the menu open.

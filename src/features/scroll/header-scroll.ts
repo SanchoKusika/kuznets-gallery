@@ -10,6 +10,12 @@ export function syncScrolled() {
   root().toggleAttribute(SCROLLED, scrollY > SHRINK_AT);
 }
 
+/** The header is gone (e.g. the admin): nothing on <html> keeps its state. */
+export function clearScrolled() {
+  root().removeAttribute(SCROLLED);
+  root().removeAttribute(INSTANT);
+}
+
 /** The same at once, without the header's shrink transition (for a 2-frame window). */
 export function syncScrolledInstantly() {
   root().setAttribute(INSTANT, "");

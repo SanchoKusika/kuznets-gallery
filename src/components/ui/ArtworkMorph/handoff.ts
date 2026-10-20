@@ -11,5 +11,10 @@ export function handOff(code: string, img: HTMLImageElement | null) {
   handoff = img?.complete && img.currentSrc ? { code, src: img.currentSrc } : null;
 }
 
-/** The picture handed over for `code`, if the page was opened from its card. */
+/** The picture handed over for `code` by the click that opened its page (single use, see `dropHandoff`). */
 export const handedOff = (code: string) => (handoff?.code === code ? handoff.src : undefined);
+
+/** Called by the page once it has taken the picture: a later visit by another way gets none. */
+export function dropHandoff() {
+  handoff = null;
+}
