@@ -20,7 +20,7 @@ const workSlug = (pathname: string) => pathname.match(/^\/work\/([^/]+)/)?.[1];
 
 const px = (r: DOMRect) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
 
-type Flight = { slug: string; box: HTMLDivElement; from: DOMRect; timer: number };
+type Flight = { slug: string; box: HTMLDivElement; from: DOMRect; timer: number; card?: HTMLElement };
 
 /**
  * Back from an artwork page (the browser's button or «← Коллекция»): the photo flies back into its
@@ -40,6 +40,7 @@ export function ArtworkMorphBack() {
       if (!f) return;
       clearTimeout(f.timer);
       f.box.remove();
+      f.card?.classList.remove(b("target"));
       flight.current = null;
     };
     // Navigation API: fires before the router swaps the page (by popstate it is already hidden).
@@ -80,23 +81,25 @@ export function ArtworkMorphBack() {
       raf = requestAnimationFrame(() => {
         if (flight.current !== f) return;
         clearTimeout(f.timer);
-        flight.current = null;
         const card = [...document.querySelectorAll<HTMLImageElement>(`a[href="/work/${f.slug}"] img`)]
           .map((img) => img.parentElement!)
           .find((media) => {
             const r = media.getBoundingClientRect();
             return r.width > 0 && r.bottom > 0 && r.top < innerHeight;
           });
+        // Until it lands the flight stays current, so a new Back or unmounting cleans it up (drop).
+        const land = () => {
+          f.card?.classList.remove(b("target"));
+          f.box.remove();
+          if (flight.current === f) flight.current = null;
+        };
         if (!card) {
-          f.box.animate({ opacity: [1, 0] }, { duration: 200 }).finished.then(() => f.box.remove());
+          f.box.animate({ opacity: [1, 0] }, { duration: 200 }).finished.then(land, land);
           return;
         }
+        f.card = card;
         card.classList.add(b("target"));
         const fly = f.box.animate([px(f.from), px(card.getBoundingClientRect())], { duration: DURATION, easing: EASE, fill: "forwards" });
-        const land = () => {
-          card.classList.remove(b("target"));
-          f.box.remove();
-        };
         fly.finished.then(land, land);
       });
     });
