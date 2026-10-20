@@ -1,0 +1,15 @@
+/**
+ * The picture a card already shows, handed to the artwork page it opens. The page's own photo is
+ * larger and comes from the image optimizer — up to a couple of seconds on a first view — so
+ * without it the morph would land on an empty box and the photo would pop in later. The card's
+ * file is the whole picture (the card only crops it), so it fits the photo's frame exactly.
+ */
+let handoff: { code: string; src: string } | null = null;
+
+/** Remembers the card's picture of `code` (on click), if it has loaded. */
+export function handOff(code: string, img: HTMLImageElement | null) {
+  handoff = img?.complete && img.currentSrc ? { code, src: img.currentSrc } : null;
+}
+
+/** The picture handed over for `code`, if the page was opened from its card. */
+export const handedOff = (code: string) => (handoff?.code === code ? handoff.src : undefined);

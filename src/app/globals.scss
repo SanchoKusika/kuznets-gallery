@@ -110,6 +110,14 @@ img::selection {
   animation: morph-blur 0.55s var(--ease-menu-in);
 }
 
+// The card (4:5) and the photo box (square) differ in shape: both snapshots fill the flying box
+// instead of keeping their own ratio and spilling out of it.
+::view-transition-old(.morph),
+::view-transition-new(.morph) {
+  height: 100%;
+  object-fit: cover;
+}
+
 @keyframes morph-blur {
   35% {
     filter: blur(3px);

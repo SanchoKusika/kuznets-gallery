@@ -15,6 +15,8 @@ type Props = {
   /** Image class: hover zoom (`@include zoom(...)`), fit, etc. */
   imgClassName?: string;
   eager?: boolean;
+  /** Already loaded picture shown under the image until it loads (gets `imgClassName` too). */
+  placeholder?: string;
 };
 
 /**
@@ -22,10 +24,14 @@ type Props = {
  * dimmed in dark theme). Remote catalogue images get a nominal intrinsic size;
  * the box defines the real one.
  */
-export function Media({ src, alt = "", sizes, className, imgClassName, eager }: Props) {
+export function Media({ src, alt = "", sizes, className, imgClassName, eager, placeholder }: Props) {
   const dims = typeof src === "string" ? { width: 1200, height: 1200 } : {};
   return (
     <div className={b(null, null, className)}>
+      {placeholder && (
+        // eslint-disable-next-line @next/next/no-img-element -- a file the browser already has, as is
+        <img src={placeholder} alt="" aria-hidden className={b("placeholder", null, imgClassName)} />
+      )}
       <Image
         src={src}
         alt={alt}
