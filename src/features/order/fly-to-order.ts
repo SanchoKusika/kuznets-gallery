@@ -1,5 +1,6 @@
 import { prefersMotion } from "@/features/motion/prefers-motion";
 import { bem } from "@/lib/bem";
+import { pictureRect } from "@/lib/picture-rect";
 import s from "./FlyToOrder.module.scss";
 
 const b = bem(s, "fly-to-order");
@@ -12,18 +13,6 @@ const DURATION = 750;
 
 /** The visible header «Заявка» button (the classic or the compact header). */
 const target = () => [...document.querySelectorAll<HTMLElement>("[data-order-target]")].find((el) => el.getBoundingClientRect().width > 0);
-
-/** Where the picture itself is drawn inside an <img> (object-fit: contain leaves margins). */
-function pictureRect(img: HTMLImageElement) {
-  const box = img.getBoundingClientRect();
-  const { objectFit, objectPosition } = getComputedStyle(img);
-  if (objectFit !== "contain" || !img.naturalWidth) return box;
-  const k = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight);
-  const w = img.naturalWidth * k;
-  const h = img.naturalHeight * k;
-  const [px, py] = objectPosition.split(" ").map((v) => parseFloat(v) / 100);
-  return new DOMRect(box.left + (box.width - w) * px, box.top + (box.height - h) * py, w, h);
-}
 
 const visible = (r: DOMRect) => r.bottom > 0 && r.top < innerHeight && r.width > 0;
 

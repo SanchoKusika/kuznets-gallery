@@ -100,7 +100,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       {/* No reveal on the photo: it arrives morphing from the card that was clicked. */}
       <div ref={imageRef} className={b("image")}>
         <ArtworkMorph code={code}>
-          <div className={b("photo", { fitted: !!handed })} style={handed && ({ "--ratio": handed.ratio } as CSSProperties)}>
+          <div className={b("photo", { fitted: !!handed })} data-artwork-photo={code.toLowerCase()} style={handed && ({ "--ratio": handed.ratio } as CSSProperties)}>
             <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
           </div>
         </ArtworkMorph>

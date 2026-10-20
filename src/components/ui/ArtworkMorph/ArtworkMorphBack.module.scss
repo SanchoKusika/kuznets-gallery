@@ -1,0 +1,23 @@
+// Copy of the artwork photo flying back into its card (ArtworkMorphBack sets its box).
+// object-fit: cover keeps the picture whole at the start (the box is the picture) and crops it
+// like the card at the end (the box is the card), the crop easing in between.
+.morph-back {
+  position: fixed;
+  // Under the sticky header (30) and the menu: the copy passes beneath them as the page does.
+  z-index: 25;
+  overflow: hidden;
+  pointer-events: none;
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: var(--img-filter);
+  }
+
+  // The card under the flight shows once it lands.
+  &__target {
+    visibility: hidden;
+  }
+}
