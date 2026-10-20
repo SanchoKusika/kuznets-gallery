@@ -13,9 +13,10 @@ const DWELL_MS = 600;
  * whole page is prefetched (static, from the CDN cache) and the click opens it at once. Intent is a
  * pointer over the link, a touch or focus; touch screens have no hover, so there it is the link
  * staying in view for a moment. Prefetching every card that passes by would cost ~10 KB each.
- * The navigation carries the artwork's transition type, so its picture morphs (ArtworkMorph).
+ * `morph` — code of the artwork whose card image is wrapped in ArtworkMorph: the navigation carries
+ * its transition type, and the image morphs into the page's photo.
  */
-export function WorkLink({ onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "transitionTypes"> & { href: string }) {
+export function WorkLink({ morph, onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "transitionTypes"> & { morph?: string }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [intent, setIntent] = useState(false);
 
@@ -42,7 +43,7 @@ export function WorkLink({ onPointerEnter, onTouchStart, onFocus, ...props }: Om
       {...props}
       ref={ref}
       prefetch={intent ? true : "auto"}
-      transitionTypes={[morphType(props.href.split("/").pop() ?? "")]}
+      transitionTypes={morph ? [morphType(morph)] : undefined}
       onPointerEnter={(e) => {
         setIntent(true);
         onPointerEnter?.(e);

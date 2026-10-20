@@ -94,7 +94,7 @@ img::selection {
   mix-blend-mode: normal;
 }
 
-// Card ↔ artwork page (ArtworkMorph): the picture flies to its new place, a light blur hides the
+// Card → artwork page (ArtworkMorph): the picture flies to its new place, a light blur hides the
 // resampling midway. Clicks go to the live page while it plays.
 ::view-transition {
   pointer-events: none;
@@ -113,6 +113,19 @@ img::selection {
 @keyframes morph-blur {
   35% {
     filter: blur(3px);
+  }
+}
+
+// Reduced motion: the photo just appears in its place.
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(.morph),
+  ::view-transition-image-pair(.morph),
+  ::view-transition-new(.morph) {
+    animation: none;
+  }
+
+  ::view-transition-old(.morph) {
+    display: none;
   }
 }
 

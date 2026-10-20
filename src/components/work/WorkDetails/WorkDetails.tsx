@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
@@ -34,10 +34,15 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   const [frameIndex, setFrameIndex] = useState(0);
   const size = sizes[sizeIndex] ?? sizes[0];
   const imageRef = useRef<HTMLDivElement>(null);
+  const flying = useRef(false);
+  const openTimer = useRef(0);
+  useEffect(() => () => clearTimeout(openTimer.current), []);
 
   // The artwork flies into the header «Заявка» first; the line is added as it lands, the drawer
-  // opens a moment later. Without motion, at once.
+  // opens a moment later (not if the visitor has left the page). Without motion, at once. Presses
+  // during the flight are ignored, so it adds one line.
   const addToOrder = async (e: MouseEvent<HTMLButtonElement>) => {
+    if (flying.current) return;
     const item = {
       code,
       title,
@@ -50,9 +55,11 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       frame: FRAMES[frameIndex].n,
       frameIndex,
     };
+    flying.current = true;
     const flew = await flyToOrder(imageRef.current?.querySelector("img"), e.currentTarget);
+    flying.current = false;
     order.add(item, { open: !flew });
-    if (flew) setTimeout(order.open, OPEN_AFTER_LANDING_MS);
+    if (flew) openTimer.current = window.setTimeout(order.open, OPEN_AFTER_LANDING_MS);
   };
 
   const rows = sizes.length

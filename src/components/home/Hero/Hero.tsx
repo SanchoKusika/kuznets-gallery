@@ -48,7 +48,7 @@ export function Hero({ thumbs, total }: { thumbs: ArtworkCard[]; total: number }
 
       <div className={b("thumbs")}>
         {thumbs.map((t) => (
-          <WorkLink key={t.href} href={t.href} className={b("thumb")} data-cursor="Смотреть">
+          <WorkLink key={t.href} href={t.href} morph={t.code} className={b("thumb")} data-cursor="Смотреть">
             <ArtworkMorph code={t.code}>
               <Media
                 src={t.src}
