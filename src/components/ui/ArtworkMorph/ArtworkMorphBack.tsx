@@ -25,10 +25,10 @@ type Flight = { slug: string; box: HTMLDivElement; from: DOMRect; timer: number 
 /**
  * Back from an artwork page (the browser's button or «← Коллекция»): the photo flies back into its
  * card, closing down from the whole picture to the card's crop — the forward morph in reverse.
- * History navigations in Next.js commit asynchronously and carry no view-transition type, so this
- * one is a plain overlay (like the flight into «Заявка»): on popstate a copy of the photo is laid
- * over it; once the page we return to is shown and scrolled back into place, the copy flies to the
- * card and the card takes over.
+ * History navigations in Next.js carry no view-transition type (and the page is already swapped
+ * by popstate), so this one is a plain overlay, like the flight into «Заявка»: when the traversal
+ * starts, a copy of the photo is laid over it; once the page we return to is shown and scrolled
+ * back into place, the copy flies to the card and the card takes over.
  */
 export function ArtworkMorphBack() {
   const pathname = usePathname();
@@ -42,10 +42,11 @@ export function ArtworkMorphBack() {
       f.box.remove();
       flight.current = null;
     };
-    const onPopState = () => {
+    // Navigation API: fires before the router swaps the page (by popstate it is already hidden).
+    const onNavigate = (e: Event) => {
+      if ((e as Event & { navigationType?: string }).navigationType !== "traverse") return;
       drop();
-      // Location has already changed: the page being left is the one still on screen. A page kept
-      // hidden for later (Activity) has an empty box.
+      // The page being left is the one on screen; a page kept hidden for later (Activity) has an empty box.
       const photo = [...document.querySelectorAll<HTMLElement>("[data-artwork-photo]")].find((el) => el.getBoundingClientRect().width > 0);
       const slug = photo?.dataset.artworkPhoto;
       const img = photo?.querySelector<HTMLImageElement>("img:last-of-type");
@@ -62,9 +63,11 @@ export function ArtworkMorphBack() {
       document.body.append(box);
       flight.current = { slug, box, from, timer: window.setTimeout(drop, GIVE_UP_MS) };
     };
-    addEventListener("popstate", onPopState);
+    // Without the Navigation API (older Safari and Firefox) back simply has no flight.
+    const nav = (window as Window & { navigation?: EventTarget }).navigation;
+    nav?.addEventListener("navigate", onNavigate);
     return () => {
-      removeEventListener("popstate", onPopState);
+      nav?.removeEventListener("navigate", onNavigate);
       drop();
     };
   }, []);
