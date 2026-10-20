@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type MouseEvent } from "react";
+import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
 import { FRAMES, PRIMARY_PHONE, SPECS } from "@/content/site";
+import { flyToOrder } from "@/features/order/fly-to-order";
 import { order } from "@/features/order/store";
 import { bem } from "@/lib/bem";
 import type { ArtworkSize } from "@/lib/catalog";
@@ -11,6 +13,9 @@ import { formatPrice } from "@/lib/format";
 import s from "./WorkDetails.module.scss";
 
 const b = bem(s, "work-details");
+
+/** Pause between the landing in the header and the drawer opening, ms. */
+const OPEN_AFTER_LANDING_MS = 450;
 
 type Props = {
   code: string;
@@ -28,9 +33,12 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   const [sizeIndex, setSizeIndex] = useState(0);
   const [frameIndex, setFrameIndex] = useState(0);
   const size = sizes[sizeIndex] ?? sizes[0];
+  const imageRef = useRef<HTMLDivElement>(null);
 
-  const addToOrder = () =>
-    order.add({
+  // The artwork flies into the header «Заявка» first; the line is added as it lands, the drawer
+  // opens a moment later. Without motion, at once.
+  const addToOrder = async (e: MouseEvent<HTMLButtonElement>) => {
+    const item = {
       code,
       title,
       src,
@@ -41,17 +49,26 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       price: size?.p ?? null,
       frame: FRAMES[frameIndex].n,
       frameIndex,
-    });
+    };
+    const flew = await flyToOrder(imageRef.current?.querySelector("img"), e.currentTarget);
+    order.add(item, { open: !flew });
+    if (flew) setTimeout(order.open, OPEN_AFTER_LANDING_MS);
+  };
 
   const rows = sizes.length
     ? sizes.map((z, i) => ({ label: `${z.w} × ${z.h} см`, price: formatPrice(z.p), selected: i === sizeIndex, pick: () => setSizeIndex(i) }))
     : [{ label: "Размер на заказ", price: "по запросу", selected: true, pick: () => {} }];
 
   return (
-    <section className={b()} data-reveal>
-      <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("image")} imgClassName={b("image-img")} eager />
+    <section className={b()}>
+      {/* No reveal on the photo: it arrives morphing from the card that was clicked. */}
+      <div ref={imageRef} className={b("image")}>
+        <ArtworkMorph code={code}>
+          <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} eager />
+        </ArtworkMorph>
+      </div>
 
-      <div className={b("info")}>
+      <div className={b("info")} data-reveal>
         <div className={b("intro")}>
           <span className={b("meta")}>
             {code} · Kuznetsovs Gallery · {formatName}

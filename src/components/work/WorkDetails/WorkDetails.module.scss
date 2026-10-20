@@ -7,19 +7,24 @@
   padding: 0 var(--gutter);
   align-items: start;
 
-  // Image stays in view while the panel scrolls (≥960px). No well behind it: a photo that
-  // isn't square would show it as bands at the sides; on two columns it hugs the gutter.
+  // Image stays in view while the panel scrolls (≥960px).
   &__image {
     width: 100%;
     aspect-ratio: 1;
     max-height: 70vh;
-    background: none;
 
     @include from(960) {
       position: sticky;
       top: 84px;
       max-height: calc(100vh - 110px);
     }
+  }
+
+  // No well behind the photo: one that isn't square would show it as bands at the sides;
+  // on two columns the photo hugs the gutter.
+  &__media {
+    height: 100%;
+    background: none;
   }
 
   &__image-img {

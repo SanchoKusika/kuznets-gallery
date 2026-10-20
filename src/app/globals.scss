@@ -94,6 +94,28 @@ img::selection {
   mix-blend-mode: normal;
 }
 
+// Card ↔ artwork page (ArtworkMorph): the picture flies to its new place, a light blur hides the
+// resampling midway. Clicks go to the live page while it plays.
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 0.55s;
+  animation-timing-function: var(--ease-menu-in);
+  z-index: 40;
+}
+
+::view-transition-image-pair(.morph) {
+  animation: morph-blur 0.55s var(--ease-menu-in);
+}
+
+@keyframes morph-blur {
+  35% {
+    filter: blur(3px);
+  }
+}
+
 // Until <Reveal> first runs (motion on, see MOTION_INIT_SCRIPT): blocks wait hidden for their
 // entrance instead of flashing in the server HTML. If scripts never run, they appear after 3s.
 [data-motion] [data-reveal] {

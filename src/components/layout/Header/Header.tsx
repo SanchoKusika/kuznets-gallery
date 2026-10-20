@@ -123,7 +123,7 @@ export function Header({ total }: { total: number }) {
               <Icon name="phone" size={14} />
               {PRIMARY_PHONE.label}
             </a>
-            <button type="button" className={b("cta")} onClick={order.open}>
+            <button type="button" className={b("cta")} onClick={order.open} data-order-target>
               <Icon name="bag" size={15} />
               Заявка <span className={b("count")}>{count}</span>
             </button>
@@ -136,7 +136,7 @@ export function Header({ total }: { total: number }) {
           </Link>
           <div className={b("compact-actions")}>
             <ThemeToggle />
-            <button type="button" className={b("bag")} aria-label="Заявка" onClick={order.open}>
+            <button type="button" className={b("bag")} aria-label="Заявка" onClick={order.open} data-order-target>
               <Icon name="bag" size={15} />
               <span className={b("bag-label")}>Заявка</span>
               <span className={b("count")}>{count}</span>
