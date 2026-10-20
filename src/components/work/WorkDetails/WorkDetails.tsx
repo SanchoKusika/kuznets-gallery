@@ -36,7 +36,14 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   const imageRef = useRef<HTMLDivElement>(null);
   const flying = useRef(false);
   const openTimer = useRef(0);
-  useEffect(() => () => clearTimeout(openTimer.current), []);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      clearTimeout(openTimer.current);
+    };
+  }, []);
 
   // The artwork flies into the header «Заявка» first; the line is added as it lands, the drawer
   // opens a moment later (not if the visitor has left the page). Without motion, at once. Presses
@@ -58,8 +65,8 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
     flying.current = true;
     const flew = await flyToOrder(imageRef.current?.querySelector("img"), e.currentTarget);
     flying.current = false;
-    order.add(item, { open: !flew });
-    if (flew) openTimer.current = window.setTimeout(order.open, OPEN_AFTER_LANDING_MS);
+    order.add(item, { open: !flew && mounted.current });
+    if (flew && mounted.current) openTimer.current = window.setTimeout(order.open, OPEN_AFTER_LANDING_MS);
   };
 
   const rows = sizes.length
