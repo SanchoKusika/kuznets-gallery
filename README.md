@@ -101,7 +101,7 @@ src/
                         GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
   proxy.ts              обновляет сессию админа перед /admin и /api/admin
   components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle, WorkLink (ссылка на работу с предзагрузкой
-                        по намерению), ArtworkMorph (картина перелетает из карточки на страницу работы)
+                        по намерению), ArtworkMorph (картина перелетает из карточки на страницу работы и обратно)
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
   components/catalog/   Collection, ArtworkCard, ArtworkRow
