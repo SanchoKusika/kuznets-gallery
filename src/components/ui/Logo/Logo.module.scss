@@ -25,6 +25,11 @@ $rise: cubic-bezier(0.16, 0.84, 0.24, 1);
     fill: var(--logo-dot);
   }
 
+  // Nested viewport around the letters: clips them while they rise into place.
+  &__row {
+    overflow: hidden;
+  }
+
   &__dot,
   &__letter,
   &__bead {
@@ -37,11 +42,11 @@ $rise: cubic-bezier(0.16, 0.84, 0.24, 1);
   }
 
   // The pupil widens under the pointer (its position is set by useLogoEye).
-  &--live &__dot {
-    transition: scale 0.35s var(--ease-out);
-  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    &--live &__dot {
+      transition: scale 0.35s var(--ease-out);
+    }
 
-  @media (hover: hover) {
     &--live:hover &__dot {
       scale: 1.25;
     }

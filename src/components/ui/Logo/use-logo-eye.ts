@@ -1,26 +1,23 @@
 import { useEffect, type RefObject } from "react";
 import { prefersMotion } from "@/features/motion/prefers-motion";
-import { LOGO_INTRO_ATTR, LOGO_INTRO_MS } from "./logo-intro";
 
 /** How far the dot may leave the centre of the «O», in logo units (the counter's radius is ~28, the dot's ~9). */
 const REACH = 13;
 /** Pointer distance (px) at which the dot looks fully aside; closer, it looks less far. */
 const NEAR = 220;
-/** Logo units per 1 px of rendered height (the canvas is 192 units tall). */
+/** Canvas height in logo units: px per unit = rendered height / UNITS. */
 const UNITS = 192;
 
 /**
  * The live header logo: the orange dot follows the mouse like a pupil (eased, only while it moves),
- * the «O» blinks on press, and the first-visit build ends by dropping `html[data-logo-intro]`.
+ * and the «O» blinks on press.
  */
 export function useLogoEye(ref: RefObject<SVGSVGElement | null>, enabled: boolean) {
   useEffect(() => {
     const svg = ref.current;
-    if (!enabled || !svg) return;
+    if (!enabled || !svg || !prefersMotion()) return;
 
     const root = document.documentElement;
-    const intro = root.hasAttribute(LOGO_INTRO_ATTR) ? window.setTimeout(() => root.removeAttribute(LOGO_INTRO_ATTR), LOGO_INTRO_MS) : 0;
-    if (!prefersMotion()) return () => clearTimeout(intro);
 
     const dot = svg.querySelector<SVGPathElement>("[data-logo-dot]")!;
     const o = svg.querySelector<SVGPathElement>("[data-logo-o]")!;
@@ -72,7 +69,6 @@ export function useLogoEye(ref: RefObject<SVGSVGElement | null>, enabled: boolea
     addEventListener("pointermove", onMove, { passive: true });
     root.addEventListener("mouseleave", onLeave);
     return () => {
-      clearTimeout(intro);
       cancelAnimationFrame(raf);
       svg.removeEventListener("pointerdown", blink);
       removeEventListener("pointermove", onMove);

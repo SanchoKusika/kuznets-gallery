@@ -119,7 +119,7 @@ src/
                         форматирование, маршруты, bem(); lib/supabase — клиенты и типы БД
   styles/               _tokens.scss, _mixins.scss (`@use "mixins" as *;`), _admin.scss — миксины админки
                         (`@use "mixins" as *; @use "admin" as *;`)
-  assets/               логотип и фото для статических импортов
+  assets/               фото для статических импортов (логотип — вектор в components/ui/Logo)
 public/assets/          логотипы клиентов (clients/), иконки веб-манифеста (icons/)
 design/                 эталонные прототипы (не входят в сборку)
 supabase/migrations/    схема БД

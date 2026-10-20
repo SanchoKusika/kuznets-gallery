@@ -26,7 +26,6 @@ export function Logo({ className, live = false }: { className?: string; live?: b
       {LOGO_PATHS.beads.map((d) => (
         <path key={d} className={b("bead")} d={d} />
       ))}
-      {/* Own viewport around the letters: it clips them while they rise into place. */}
       <svg className={b("row")} x={0} y={31} width={499} height={80} viewBox="0 31 499 80">
         {LOGO_PATHS.letters.map((d, i) => (
           <path key={d} className={b("letter")} d={d} data-logo-o={i === O || undefined} />
