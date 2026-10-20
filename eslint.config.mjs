@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Design reference (prototype runtime), not part of the app.
     "design/**",
+    // Promo video (Remotion project with its own package.json).
+    "video/**",
   ]),
 ]);
 

@@ -1,10 +1,13 @@
-import Link from "next/link";
 import { Media } from "@/components/ui/Media/Media";
+import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
 import { bem } from "@/lib/bem";
 import type { ArtworkCard as Card } from "@/lib/catalog";
 import s from "./ArtworkCard.module.scss";
 
 const b = bem(s, "artwork-card");
+
+/** «Ещё» grid: 2 / 3 / 4 / 6 columns (RelatedWorks.module.scss). */
+const RELATED_SIZES = "(width >= 1600px) 17vw, (width >= 1024px) 25vw, (width >= 600px) 33vw, 50vw";
 
 /**
  * Artwork tile, 4:5. `grid` — collection grid (title + code, size range + price);
@@ -13,11 +16,11 @@ const b = bem(s, "artwork-card");
 export function ArtworkCard({ card, variant = "grid" }: { card: Card; variant?: "grid" | "related" }) {
   const grid = variant === "grid";
   return (
-    <Link href={card.href} className={b(null, { related: !grid })} data-cursor="Смотреть" data-reveal={grid || undefined}>
+    <WorkLink href={card.href} className={b(null, { related: !grid })} data-cursor="Смотреть" data-reveal={grid || undefined}>
       <Media
         src={card.src}
         alt={card.title}
-        sizes="(width >= 600px) 25vw, 50vw"
+        sizes={grid ? "(width >= 600px) 25vw, 50vw" : RELATED_SIZES}
         className={b("media")}
         imgClassName={b("img")}
       />
@@ -31,6 +34,6 @@ export function ArtworkCard({ card, variant = "grid" }: { card: Card; variant?: 
           <span className={b("price")}>{card.from}</span>
         </div>
       )}
-    </Link>
+    </WorkLink>
   );
 }

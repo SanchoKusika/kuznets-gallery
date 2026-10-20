@@ -100,7 +100,7 @@ src/
   app/api/cron/keepalive/
                         GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
   proxy.ts              обновляет сессию админа перед /admin и /api/admin
-  components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle
+  components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle, WorkLink (ссылка на работу с предзагрузкой по намерению)
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
   components/catalog/   Collection, ArtworkCard, ArtworkRow

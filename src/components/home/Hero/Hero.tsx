@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
+import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
 import { OrderButton } from "@/features/order/OrderButton";
 import { bem } from "@/lib/bem";
 import type { ArtworkCard } from "@/lib/catalog";
@@ -47,7 +47,7 @@ export function Hero({ thumbs, total }: { thumbs: ArtworkCard[]; total: number }
 
       <div className={b("thumbs")}>
         {thumbs.map((t) => (
-          <Link key={t.href} href={t.href} className={b("thumb")} data-cursor="Смотреть">
+          <WorkLink key={t.href} href={t.href} className={b("thumb")} data-cursor="Смотреть">
             <Media
               src={t.src}
               alt={t.title}
@@ -60,7 +60,7 @@ export function Hero({ thumbs, total }: { thumbs: ArtworkCard[]; total: number }
               <span className={b("chip-dot")} />
               <span className={b("chip-text")}>{t.title}</span>
             </span>
-          </Link>
+          </WorkLink>
         ))}
       </div>
     </section>
