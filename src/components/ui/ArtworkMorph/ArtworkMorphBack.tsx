@@ -32,8 +32,6 @@ type Flight = { slug: string; box: HTMLDivElement; from: DOMRect; timer: number 
  */
 export function ArtworkMorphBack() {
   const pathname = usePathname();
-  // The page shown until the popstate is handled (location has already changed by then).
-  const shown = useRef(pathname);
   const flight = useRef<Flight | null>(null);
 
   useEffect(() => {
@@ -46,8 +44,11 @@ export function ArtworkMorphBack() {
     };
     const onPopState = () => {
       drop();
-      const slug = workSlug(shown.current);
-      const img = document.querySelector<HTMLImageElement>("[data-artwork-photo] img:last-of-type");
+      // Location has already changed: the page being left is the one still on screen. A page kept
+      // hidden for later (Activity) has an empty box.
+      const photo = [...document.querySelectorAll<HTMLElement>("[data-artwork-photo]")].find((el) => el.getBoundingClientRect().width > 0);
+      const slug = photo?.dataset.artworkPhoto;
+      const img = photo?.querySelector<HTMLImageElement>("img:last-of-type");
       if (!slug || !img?.complete || !prefersMotion()) return;
       const box = document.createElement("div");
       box.className = b();
@@ -70,7 +71,6 @@ export function ArtworkMorphBack() {
 
   // The page we went back to is committed: fly once the browser has restored its scroll position.
   useLayoutEffect(() => {
-    shown.current = pathname;
     const f = flight.current;
     if (!f || workSlug(pathname) === f.slug) return;
     let raf = requestAnimationFrame(() => {
