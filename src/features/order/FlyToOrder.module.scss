@@ -1,0 +1,15 @@
+// Copy of an artwork flying into the header «Заявка» button (fly-to-order.ts sets its box).
+.fly-to-order {
+  position: fixed;
+  z-index: 70;
+  pointer-events: none;
+
+  &__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    box-shadow: var(--shadow-float);
+    filter: var(--img-filter);
+  }
+}

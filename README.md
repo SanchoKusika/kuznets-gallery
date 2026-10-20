@@ -100,7 +100,8 @@ src/
   app/api/cron/keepalive/
                         GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
   proxy.ts              обновляет сессию админа перед /admin и /api/admin
-  components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle, WorkLink (ссылка на работу с предзагрузкой по намерению)
+  components/ui/        примитивы: Button, Media, Icon, Logo, ThemeToggle, WorkLink (ссылка на работу с предзагрузкой
+                        по намерению), ArtworkMorph (картина перелетает из карточки на страницу работы)
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
   components/catalog/   Collection, ArtworkCard, ArtworkRow
@@ -111,7 +112,7 @@ src/
   components/admin/     админка: вход, навигация, обзор и график, заявки (список, доска, карточка),
                         каталог, карточка товара и редактор фото, прайс, отзывы; ui/ — примитивы дизайн-системы
   features/admin/       модель, состояние панели (store), аналитика обзора, форматирование, серверная часть
-  features/             theme, order (заявка и её drawer), catalog (фильтры коллекции),
+  features/             theme, order (заявка, её drawer и полёт картины в «Заявку»), catalog (фильтры коллекции),
                         motion (появление при скролле, курсор), scroll (Lenis, блокировка скролла),
                         map (карта подвала: стиль, метки, места)
   content/site.ts       тексты и справочники из прототипа

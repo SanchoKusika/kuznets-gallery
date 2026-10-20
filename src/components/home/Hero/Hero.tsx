@@ -1,3 +1,4 @@
+import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
 import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
@@ -47,15 +48,17 @@ export function Hero({ thumbs, total }: { thumbs: ArtworkCard[]; total: number }
 
       <div className={b("thumbs")}>
         {thumbs.map((t) => (
-          <WorkLink key={t.href} href={t.href} className={b("thumb")} data-cursor="Смотреть">
-            <Media
-              src={t.src}
-              alt={t.title}
-              sizes="(width >= 1000px) 16vw, 33vw"
-              className={b("thumb-media")}
-              imgClassName={b("thumb-img")}
-              eager
-            />
+          <WorkLink key={t.href} href={t.href} morph={t.code} className={b("thumb")} data-cursor="Смотреть">
+            <ArtworkMorph code={t.code}>
+              <Media
+                src={t.src}
+                alt={t.title}
+                sizes="(width >= 1000px) 16vw, 33vw"
+                className={b("thumb-media")}
+                imgClassName={b("thumb-img")}
+                eager
+              />
+            </ArtworkMorph>
             <span className={b("chip")}>
               <span className={b("chip-dot")} />
               <span className={b("chip-text")}>{t.title}</span>
