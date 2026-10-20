@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { Icon } from "@/components/ui/Icon/Icon";
 import { Logo } from "@/components/ui/Logo/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle/ThemeToggle";
 import { PRIMARY_PHONE } from "@/content/site";
 import { order, useOrder } from "@/features/order/store";
+import { clearScrolled, syncScrolled } from "@/features/scroll/header-scroll";
 import { lockScroll, unlockScroll } from "@/features/scroll/scroll-lock";
 import { scrollToContacts } from "@/features/scroll/smooth-scroll";
 import { bem } from "@/lib/bem";
@@ -24,7 +25,6 @@ export function Header({ total }: { total: number }) {
   const pathname = usePathname();
   const section = sectionOf(pathname);
   const count = useOrder().items.length;
-  const scrolled = useScrolledPast(40);
 
   const [menu, setMenu] = useState<MenuState>(MENU_CLOSED);
   const menuRef = useRef(menu);
@@ -55,6 +55,16 @@ export function Header({ total }: { total: number }) {
       contactsAfterClose.current = false;
       scrollToContacts();
     }
+  }, []);
+
+  // The classic header shrinks past the top: `html[data-scrolled]` (NavigationScroll also sets it).
+  useEffect(() => {
+    syncScrolled();
+    addEventListener("scroll", syncScrolled, { passive: true });
+    return () => {
+      removeEventListener("scroll", syncScrolled);
+      clearScrolled();
+    };
   }, []);
 
   // Never leave the page locked if the header goes away with the menu open.
@@ -100,7 +110,7 @@ export function Header({ total }: { total: number }) {
 
   return (
     <>
-      <header className={b(null, { scrolled })}>
+      <header className={b()}>
         <div className={b("classic")}>
           <Link href={routes.home} className={b("logo")} aria-label="Kuznetsovs Gallery — на главную">
             <Logo className={b("logo-img")} live />
@@ -173,18 +183,5 @@ export function Header({ total }: { total: number }) {
         />
       )}
     </>
-  );
-}
-
-function subscribeScroll(cb: () => void) {
-  addEventListener("scroll", cb, { passive: true });
-  return () => removeEventListener("scroll", cb);
-}
-
-function useScrolledPast(offset: number) {
-  return useSyncExternalStore(
-    subscribeScroll,
-    () => scrollY > offset,
-    () => false,
   );
 }

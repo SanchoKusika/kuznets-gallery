@@ -10,4 +10,12 @@
 
 :where(.media__img) {
   @include media-fill;
+  position: relative;
+}
+
+// Under the image: shows through until the image has loaded.
+:where(.media__placeholder) {
+  @include media-fill;
+  position: absolute;
+  inset: 0;
 }

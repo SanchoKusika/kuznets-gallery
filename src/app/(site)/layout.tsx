@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header/Header";
 import { Cursor } from "@/features/motion/Cursor";
 import { Reveal } from "@/features/motion/Reveal";
 import { OrderDrawer } from "@/features/order/OrderDrawer";
+import { NavigationScroll } from "@/features/scroll/NavigationScroll";
 import { SmoothScroll } from "@/features/scroll/SmoothScroll";
 import { getCatalog } from "@/lib/catalog";
 import { bem } from "@/lib/bem";
@@ -17,6 +18,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
     <div className={b()}>
       <Header total={total} />
       {children}
+      <NavigationScroll />
       <Footer />
       <OrderDrawer />
       <AdminBadge />

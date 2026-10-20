@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
+import { dropHandoff, handedOff } from "@/components/ui/ArtworkMorph/handoff";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
 import { FRAMES, PRIMARY_PHONE, SPECS } from "@/content/site";
@@ -34,6 +35,9 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   const [frameIndex, setFrameIndex] = useState(0);
   const size = sizes[sizeIndex] ?? sizes[0];
   const imageRef = useRef<HTMLDivElement>(null);
+  // Opened from its card: the card's picture stands in until the photo loads, then goes.
+  const [placeholder, setPlaceholder] = useState(() => handedOff(code));
+  useEffect(dropHandoff, []);
   const flying = useRef(false);
   const openTimer = useRef(0);
   const mounted = useRef(true);
@@ -78,7 +82,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       {/* No reveal on the photo: it arrives morphing from the card that was clicked. */}
       <div ref={imageRef} className={b("image")}>
         <ArtworkMorph code={code}>
-          <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} eager />
+          <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
         </ArtworkMorph>
       </div>
 
