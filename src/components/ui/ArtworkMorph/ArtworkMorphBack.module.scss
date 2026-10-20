@@ -3,7 +3,8 @@
 // like the card at the end (the box is the card), the crop easing in between.
 .morph-back {
   position: fixed;
-  z-index: 40;
+  // Under the sticky header (30) and the menu: the copy passes beneath them as the page does.
+  z-index: 25;
   overflow: hidden;
   pointer-events: none;
 

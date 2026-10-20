@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { prefersMotion } from "@/features/motion/prefers-motion";
+import { syncScrolledInstantly } from "@/features/scroll/header-scroll";
 import { bem } from "@/lib/bem";
 import { pictureRect } from "@/lib/picture-rect";
 import s from "./ArtworkMorphBack.module.scss";
@@ -23,8 +24,9 @@ const px = (r: DOMRect) => ({ left: `${r.left}px`, top: `${r.top}px`, width: `${
 type Flight = { slug: string; box: HTMLDivElement; from: DOMRect; timer: number; card?: HTMLElement };
 
 /**
- * Back from an artwork page (the browser's button or «← Коллекция»): the photo flies back into its
- * card, closing down from the whole picture to the card's crop — the forward morph in reverse.
+ * Back from an artwork page (the browser's button, or «← Коллекция» when it goes back in history)
+ * to a page with its card: the photo flies back into the card, closing down from the whole picture
+ * to the card's crop — the forward morph in reverse.
  * History navigations in Next.js carry no view-transition type (and the page is already swapped
  * by popstate), so this one is a plain overlay, like the flight into «Заявка»: when the traversal
  * starts, a copy of the photo is laid over it; once the page we return to is shown and scrolled
@@ -44,17 +46,22 @@ export function ArtworkMorphBack() {
       flight.current = null;
     };
     // Navigation API: fires before the router swaps the page (by popstate it is already hidden).
-    const onNavigate = (e: Event) => {
-      if ((e as Event & { navigationType?: string }).navigationType !== "traverse") return;
+    const onNavigate = (event: Event) => {
+      const e = event as Event & { navigationType?: string; destination?: { url: string } };
+      if (e.navigationType !== "traverse" || e.defaultPrevented || !e.destination) return;
       drop();
+      // Only back to a page of this site that shows cards: not another artwork, not elsewhere.
+      const to = new URL(e.destination.url);
+      if (to.origin !== location.origin || to.pathname === location.pathname || workSlug(to.pathname)) return;
       // The page being left is the one on screen; a page kept hidden for later (Activity) has an empty box.
       const photo = [...document.querySelectorAll<HTMLElement>("[data-artwork-photo]")].find((el) => el.getBoundingClientRect().width > 0);
       const slug = photo?.dataset.artworkPhoto;
       const img = photo?.querySelector<HTMLImageElement>("img:last-of-type");
       if (!slug || !img?.complete || !prefersMotion()) return;
+      const from = pictureRect(img);
+      if (from.bottom <= 0 || from.top >= innerHeight) return; // scrolled away: nothing to fly
       const box = document.createElement("div");
       box.className = b();
-      const from = pictureRect(img);
       Object.assign(box.style, px(from));
       const copy = document.createElement("img");
       copy.className = b("img");
@@ -81,6 +88,8 @@ export function ArtworkMorphBack() {
       raf = requestAnimationFrame(() => {
         if (flight.current !== f) return;
         clearTimeout(f.timer);
+        // The restored scroll shrinks the header: at once, so the card doesn't move under the flight.
+        syncScrolledInstantly();
         const card = [...document.querySelectorAll<HTMLImageElement>(`a[href="/work/${f.slug}"] img`)]
           .map((img) => img.parentElement!)
           .find((media) => {
