@@ -1,6 +1,157 @@
+// First-visit build of the header logo, as in the end of the promo videos: the wave draws in,
+// the beads drop onto it, the letters rise into place, the dot pops, GALLERY gathers from wide tracking.
+$rise: cubic-bezier(0.16, 0.84, 0.24, 1);
+
 .logo {
   display: block;
   width: auto;
-  mix-blend-mode: var(--logo-blend);
-  filter: var(--logo-filter);
+  aspect-ratio: 499 / 192;
+  overflow: visible;
+
+  &__letter,
+  &__bead {
+    fill: var(--logo-ink);
+  }
+
+  &__gallery {
+    fill: var(--logo-ink-2);
+  }
+
+  &__wave {
+    fill: var(--logo-wave);
+  }
+
+  &__dot {
+    fill: var(--logo-dot);
+  }
+
+  // Nested viewport around the letters: clips them while they rise into place.
+  &__row {
+    overflow: hidden;
+  }
+
+  &__dot,
+  &__letter,
+  &__bead {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  &__bead {
+    transform-origin: center bottom;
+  }
+
+  // The pupil widens under the pointer (its position is set by useLogoEye).
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    &--live &__dot {
+      transition: scale 0.35s var(--ease-out);
+    }
+
+    &--live:hover &__dot {
+      scale: 1.25;
+    }
+  }
+
+  :global([data-logo-intro]) &--live {
+    .logo__wave {
+      animation: logo-wipe 0.7s var(--ease-out) 0.1s backwards;
+    }
+
+    .logo__bead {
+      animation: logo-drop 0.7s backwards;
+
+      // Paths of the root: the wave is the first, then the three beads.
+      @for $i from 1 through 3 {
+        &:nth-of-type(#{$i + 1}) {
+          animation-delay: #{0.2 + $i * 0.1}s;
+        }
+      }
+    }
+
+    .logo__letter {
+      animation: logo-rise 1s $rise backwards;
+
+      @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{0.35 + ($i - 1) * 0.04}s;
+        }
+      }
+    }
+
+    .logo__dot {
+      animation: logo-pop 0.45s var(--ease-out) 1s backwards;
+    }
+
+    // Wide tracking around the middle «L»: 22 units a letter.
+    .logo__gallery {
+      animation: logo-gather 0.8s var(--ease-out) 0.8s backwards;
+
+      @for $i from 1 through 7 {
+        &:nth-child(#{$i}) {
+          --dx: #{($i - 4) * 22}px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes logo-wipe {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0);
+  }
+}
+
+// Falls, lands, hops once.
+@keyframes logo-drop {
+  0% {
+    translate: 0 -60px;
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  55% {
+    translate: 0 0;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+  }
+
+  75% {
+    translate: 0 -8px;
+    animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes logo-rise {
+  from {
+    translate: 0 84px;
+  }
+}
+
+@keyframes logo-pop {
+  0% {
+    scale: 0;
+  }
+
+  60% {
+    scale: 1.15;
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes logo-gather {
+  from {
+    translate: var(--dx) 0;
+    opacity: 0;
+  }
 }

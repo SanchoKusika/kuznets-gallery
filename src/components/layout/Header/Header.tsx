@@ -103,7 +103,7 @@ export function Header({ total }: { total: number }) {
       <header className={b(null, { scrolled })}>
         <div className={b("classic")}>
           <Link href={routes.home} className={b("logo")} aria-label="Kuznetsovs Gallery — на главную">
-            <Logo className={b("logo-img")} />
+            <Logo className={b("logo-img")} live />
           </Link>
           <nav className={b("nav")} aria-label="Основная навигация">
             {nav.map((n) => (
@@ -132,7 +132,7 @@ export function Header({ total }: { total: number }) {
 
         <div className={b("compact")}>
           <Link href={routes.home} className={b("logo")} aria-label="Kuznetsovs Gallery — на главную">
-            <Logo className={b("logo-img", { compact: true })} />
+            <Logo className={b("logo-img", { compact: true })} live />
           </Link>
           <div className={b("compact-actions")}>
             <ThemeToggle />
