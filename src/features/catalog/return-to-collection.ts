@@ -18,9 +18,6 @@ export function rememberReturn(work: string) {
   else opened = null;
 }
 
-/** The collection page to return to from an artwork, if the visitor came from one. */
-export const returnTo = () => opened?.from ?? null;
-
 /**
  * «← Коллекция» clicked on `work`: true if it was handled — back in history right after the card's
  * click, otherwise `open(from)` and the position restored once the collection is shown.
@@ -41,7 +38,11 @@ export function goBackToCollection(work: string, back: () => void, open: (href: 
 export function trackNavigation(pathname: string) {
   if (restore?.path === pathname) {
     const lenis = getLenis();
-    if (lenis) lenis.scrollTo(restore.y, { immediate: true, force: true });
+    // Lenis still knows the artwork page's height (its observer runs later): measure first.
+    if (lenis) {
+      lenis.resize();
+      lenis.scrollTo(restore.y, { immediate: true, force: true });
+    }
     else scrollTo(0, restore.y);
   }
   restore = null;

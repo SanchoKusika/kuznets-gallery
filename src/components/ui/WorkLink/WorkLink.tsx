@@ -16,8 +16,8 @@ const DWELL_MS = 600;
  * pointer over the link, a touch or focus; touch screens have no hover, so there it is the link
  * staying in view for a moment. Prefetching every card that passes by would cost ~10 KB each.
  * A plain click hands the card's picture to the page, which shows it until its own photo loads
- * (card-picture.ts); from a collection page it also remembers that page, so «← Коллекция» on the
- * artwork goes back to it (return-to-collection.ts).
+ * (card-picture.ts); from a collection page it also remembers that page and where the visitor was
+ * in it, so «← Коллекция» brings them back there (return-to-collection.ts).
  */
 export function WorkLink({ onClick, onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "href"> & { href: string }) {
   const ref = useRef<HTMLAnchorElement>(null);
