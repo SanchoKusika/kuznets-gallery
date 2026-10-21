@@ -5,7 +5,7 @@ import type { FormatKey } from "@/content/site";
 
 export type Sort = 0 | 1 | 2;
 
-/** Works per page; the grid's 2 / 3 / 4 / 6 columns all divide it (Collection.module.scss). */
+/** Works per page; the grid's 2 / 3 / 4 / 6 columns all divide it (artwork-grid in _mixins.scss). */
 export const PAGE_SIZE = 24;
 
 export type CollectionFilters = {

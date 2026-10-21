@@ -34,7 +34,7 @@ export function goBackToCollection(work: string, back: () => void, open: (href: 
   return true;
 }
 
-/** Every navigation (NavigationScroll, in the commit): restores the position, ends the return elsewhere. */
+/** Every navigation (NavigationScroll, in the commit): restores the position, ends the return off artworks. */
 export function trackNavigation(pathname: string) {
   if (restore?.path === pathname) {
     const lenis = getLenis();
@@ -46,5 +46,6 @@ export function trackNavigation(pathname: string) {
     else scrollTo(0, restore.y);
   }
   restore = null;
-  if (opened && pathname !== opened.from && !pathname.startsWith("/work/")) opened = null;
+  // Back at the collection some other way (the browser's Back, the menu) or elsewhere: it's over.
+  if (opened && !pathname.startsWith("/work/")) opened = null;
 }

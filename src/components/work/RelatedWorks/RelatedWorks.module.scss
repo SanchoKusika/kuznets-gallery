@@ -1,14 +1,5 @@
 @use "mixins" as *;
 
-// $cols columns; cards past the second row are hidden (the page sends enough for the widest grid).
-@mixin two-rows($cols) {
-  grid-template-columns: repeat($cols, minmax(0, 1fr));
-
-  > :nth-child(n + #{2 * $cols + 1}) {
-    display: none;
-  }
-}
-
 .related-works {
   @include section;
 
@@ -20,29 +11,10 @@
     margin-bottom: 24px;
   }
 
-  // Two full rows at every width: 2 / 3 / 4 / 6 columns, the extra cards are hidden.
+  // Two full rows at every width (the page sends enough for the widest grid), the rest hidden.
   &__grid {
     display: grid;
     gap: 28px clamp(12px, 1.6vw, 24px);
-
-    @include below(600) {
-      @include two-rows(2);
-    }
-
-    @include from(600) {
-      @include below(1024) {
-        @include two-rows(3);
-      }
-    }
-
-    @include from(1024) {
-      @include below(1600) {
-        @include two-rows(4);
-      }
-    }
-
-    @include from(1600) {
-      @include two-rows(6);
-    }
+    @include artwork-grid(2);
   }
 }
