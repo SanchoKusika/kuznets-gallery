@@ -1,0 +1,61 @@
+@keyframes size-scheme-stretch {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+
+  50% {
+    transform: scale(1.15, 0.72);
+  }
+}
+
+.size-scheme {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+
+  &__floor,
+  &__dimension line {
+    stroke: var(--ink-4);
+    stroke-width: 1;
+  }
+
+  &__frame {
+    fill: var(--paper-raised);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  &__mat {
+    fill: none;
+    stroke: var(--line-medium);
+    stroke-width: 1;
+  }
+
+  &__label {
+    fill: var(--ink-3);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  &__custom {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+    transform-box: fill-box;
+    transform-origin: bottom left;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: size-scheme-stretch 6s var(--ease-in-out) infinite;
+    }
+  }
+
+  &__custom-mark {
+    fill: var(--accent);
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
