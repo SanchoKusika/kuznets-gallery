@@ -40,6 +40,19 @@
     justify-content: center;
     gap: clamp(28px, 4vw, 56px);
     padding: clamp(24px, 4vw, 56px) var(--gutter);
+
+    // Wide screens: the text on the left and the plate on the right of "4 [frame] 4" — one screen, no scroll.
+    @include from(1100) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      grid-template-areas:
+        "copy digits plate"
+        "controls controls controls";
+      align-items: center;
+      column-gap: clamp(24px, 3vw, 56px);
+      row-gap: clamp(16px, 3vh, 32px);
+      padding-block: clamp(16px, 3vh, 40px);
+    }
   }
 
   // —— "4 [frame] 4"
@@ -54,6 +67,11 @@
     letter-spacing: -0.07em;
     user-select: none;
     padding-top: 0.22em;
+
+    @include from(1100) {
+      grid-area: digits;
+      font-size: min(22vw, 44vh, 360px);
+    }
   }
 
   &__slot {
@@ -160,6 +178,10 @@
     align-items: center;
     gap: 10px;
     text-align: center;
+
+    @include from(1100) {
+      grid-area: controls;
+    }
   }
 
   &__actions {
@@ -206,6 +228,11 @@
     max-width: 1360px;
     width: 100%;
     margin: 0 auto;
+
+    // Its children (text, plate) become cells of the main grid.
+    @include from(1100) {
+      display: contents;
+    }
   }
 
   &__copy {
@@ -213,6 +240,11 @@
     flex-direction: column;
     gap: 20px;
     min-width: 0;
+
+    @include from(1100) {
+      grid-area: copy;
+      gap: clamp(10px, 1.8vh, 20px);
+    }
   }
 
   &__eyebrow {
@@ -227,6 +259,10 @@
     line-height: 0.9;
     letter-spacing: -0.06em;
     text-wrap: balance;
+
+    @include from(1100) {
+      font-size: clamp(32px, min(3.2vw, 6.2vh), 64px);
+    }
   }
 
   &__lede {
@@ -236,6 +272,10 @@
     font-size: clamp(20.24px, 2.02vw, 27.6px);
     line-height: 1.25;
     text-wrap: pretty;
+
+    @include from(1100) {
+      font-size: clamp(17px, min(1.4vw, 2.8vh), 24px);
+    }
   }
 
   &__ctas {
@@ -271,6 +311,12 @@
     gap: 14px;
     padding: 20px 22px;
     background: var(--paper-2);
+
+    @include from(1100) {
+      grid-area: plate;
+      justify-self: end;
+      align-self: center;
+    }
   }
 
   &__plate-head {
