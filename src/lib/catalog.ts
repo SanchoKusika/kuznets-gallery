@@ -24,6 +24,8 @@ export type Artwork = {
   image: string;
   /** Resolved image URL. */
   src: string;
+  /** Straight-on photo of the painting alone (no wall), or null; «Примерьте размер» on the home page. */
+  flatSrc: string | null;
   sizes: ArtworkSize[];
   /** Raw category list incl. "all" (used for filtering, as in the prototype). */
   tags: string[];
@@ -43,7 +45,7 @@ export async function getCatalog(): Promise<Artwork[]> {
 
   const { data, error } = await publicDb()
     .from("products")
-    .select("code, title, description, image, sizes, custom_sizes, categories")
+    .select("code, title, description, image, flat_image, sizes, custom_sizes, categories")
     .order("sort_order")
     .order("code");
   if (error) throw error;
@@ -63,6 +65,7 @@ export async function getCatalog(): Promise<Artwork[]> {
       description: p.description,
       image: p.image,
       src: imageUrl(p.image),
+      flatSrc: p.flat_image ? imageUrl(p.flat_image) : null,
       sizes,
       tags: p.categories,
       categories: p.categories.filter((k): k is CategoryKey => k !== "all"),

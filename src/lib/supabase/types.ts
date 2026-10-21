@@ -22,6 +22,7 @@ export type Database = {
           created_at: string;
           custom_sizes: string[];
           description: string;
+          flat_image: string;
           hidden: boolean;
           image: string;
           sizes: Json;
@@ -35,6 +36,7 @@ export type Database = {
           created_at?: string;
           custom_sizes?: string[];
           description?: string;
+          flat_image?: string;
           hidden?: boolean;
           image?: string;
           sizes?: Json;
@@ -48,6 +50,7 @@ export type Database = {
           created_at?: string;
           custom_sizes?: string[];
           description?: string;
+          flat_image?: string;
           hidden?: boolean;
           image?: string;
           sizes?: Json;

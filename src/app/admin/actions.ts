@@ -30,6 +30,7 @@ const ProductSchema = z.object({
   title: text(200),
   description: text(2000),
   image: text(500),
+  flatImage: text(500),
   sizes: z.array(Size).max(50),
   customSizes: z.array(text(50)).max(20),
   categories: z.array(z.enum(["home", "kids", "office", "public", "all"])),

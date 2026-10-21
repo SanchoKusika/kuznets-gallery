@@ -137,6 +137,9 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
         <Field label="Изображение — путь в uploads или ссылка" className={b("field")}>
           <input className={b("input", { path: true })} value={e.image} onChange={(ev) => setDraft({ image: ev.target.value })} placeholder="2024/05/kartina.jpg" />
         </Field>
+        <Field label="Ровное фото для «Примерьте размер» — путь или ссылка" className={b("field")}>
+          <input className={b("input", { path: true })} value={e.flatImage} onChange={(ev) => setDraft({ flatImage: ev.target.value })} placeholder="flat/KZ-001.jpg" />
+        </Field>
 
         <Field label="Название" className={b("field", { gap: 28 })}>
           <input className={b("input", { title: true })} value={e.title} onChange={(ev) => setDraft({ title: ev.target.value })} placeholder="Название картины" />
