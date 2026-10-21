@@ -19,7 +19,7 @@ const DWELL_MS = 600;
  * (card-picture.ts); from a collection page it also remembers that page, so «← Коллекция» on the
  * artwork goes back to it (return-to-collection.ts).
  */
-export function WorkLink({ onClick, onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "transitionTypes" | "href"> & { href: string }) {
+export function WorkLink({ onClick, onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "href"> & { href: string }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [intent, setIntent] = useState(false);
 

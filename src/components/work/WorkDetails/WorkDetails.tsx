@@ -66,7 +66,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       frameIndex,
     };
     flying.current = true;
-    const flew = await flyToOrder(imageRef.current?.querySelector("img"), e.currentTarget);
+    const flew = await flyToOrder(imageRef.current?.querySelector("img:last-of-type"), e.currentTarget);
     flying.current = false;
     order.add(item, { open: !flew && mounted.current });
     if (flew && mounted.current) openTimer.current = window.setTimeout(order.open, OPEN_AFTER_LANDING_MS);
