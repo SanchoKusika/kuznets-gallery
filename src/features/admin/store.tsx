@@ -183,7 +183,7 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     const top = Math.min(0, ...latest.current.products.map((p) => p.sortOrder));
     setEdit({
       isNew: true,
-      draft: toDraft({ code: nextCode(), title: "", description: "", image: "", sizes: [{ w: 50, h: 50, price: 310000 }], customSizes: [], categories: ["home", "all"], hidden: false, sortOrder: top - 1 }),
+      draft: toDraft({ code: nextCode(), title: "", description: "", image: "", flatImage: "", sizes: [{ w: 50, h: 50, price: 310000 }], customSizes: [], categories: ["home", "all"], hidden: false, sortOrder: top - 1 }),
     });
     setDrawer("prod");
   }, [nextCode]);

@@ -3,19 +3,16 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
+import { SizeList } from "@/components/ui/SizeList/SizeList";
 import { FRAMES, PRIMARY_PHONE, SPECS } from "@/content/site";
 import { dropHandoff, handedOff } from "@/features/catalog/card-picture";
-import { flyToOrder } from "@/features/order/fly-to-order";
-import { order } from "@/features/order/store";
+import { useAddToOrder } from "@/features/order/use-add-to-order";
 import { bem } from "@/lib/bem";
 import type { ArtworkSize } from "@/lib/catalog";
 import { formatPrice } from "@/lib/format";
 import s from "./WorkDetails.module.scss";
 
 const b = bem(s, "work-details");
-
-/** Pause between the landing in the header and the drawer opening, ms. */
-const OPEN_AFTER_LANDING_MS = 450;
 
 type Props = {
   code: string;
@@ -37,22 +34,9 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   // Opened from its card: the card's picture stands in until the photo loads, then goes.
   const [placeholder, setPlaceholder] = useState(() => handedOff(code));
   useEffect(dropHandoff, []);
-  const flying = useRef(false);
-  const openTimer = useRef(0);
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-      clearTimeout(openTimer.current);
-    };
-  }, []);
+  const add = useAddToOrder();
 
-  // The artwork flies into the header «Заявка» first; the line is added as it lands, the drawer
-  // opens a moment later (not if the visitor has left the page). Without motion, at once. Presses
-  // during the flight are ignored, so it adds one line.
-  const addToOrder = async (e: MouseEvent<HTMLButtonElement>) => {
-    if (flying.current) return;
+  const addToOrder = (e: MouseEvent<HTMLButtonElement>) => {
     const item = {
       code,
       title,
@@ -65,11 +49,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       frame: FRAMES[frameIndex].n,
       frameIndex,
     };
-    flying.current = true;
-    const flew = await flyToOrder(imageRef.current?.querySelector("img:last-of-type"), e.currentTarget);
-    flying.current = false;
-    order.add(item, { open: !flew && mounted.current });
-    if (flew && mounted.current) openTimer.current = window.setTimeout(order.open, OPEN_AFTER_LANDING_MS);
+    add(item, imageRef.current?.querySelector("img:last-of-type"), e.currentTarget);
   };
 
   const rows = sizes.length
@@ -91,21 +71,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
           <p className={b("description")}>{description}</p>
         </div>
 
-        <div className={b("sizes")}>
-          <div className={b("sizes-head")}>
-            <span>Размер</span>
-            <span>Цена</span>
-          </div>
-          {rows.map((r) => (
-            <button key={r.label} type="button" className={b("size", { selected: r.selected })} onClick={r.pick}>
-              <span className={b("size-label")}>
-                <span className={b("dot")} />
-                {r.label}
-              </span>
-              <span className={b("size-price")}>{r.price}</span>
-            </button>
-          ))}
-        </div>
+        <SizeList rows={rows} />
 
         <div className={b("framing")}>
           <span className={b("label")}>Оформление</span>

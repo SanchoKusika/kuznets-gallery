@@ -1,0 +1,421 @@
+@use "sass:list";
+@use "mixins" as *;
+
+// Centimetres on the wall: the wall is a size container `--wall-cm` wide, so 1 cm = 100cqw / --wall-cm.
+// The scene's heights and margins come from TryOn.tsx (`SCENE`, `PERSON`) as CSS variables.
+@function cm($v) {
+  @return calc(#{$v} * 100cqw / var(--wall-cm));
+}
+
+// Wall, floor, furniture (light, dark) and the ink of the person and labels.
+$walls: (
+  plaster: (#e7e2d9, #cdbfac, #d6cec1, #bfb5a5, #3a3732),
+  sage: (#c6cdbd, #a3937d, #e4e0d6, #aab09f, #2c3328),
+  clay: (#c9937a, #8c6a53, #eadfcf, #b98068, #2a1d16),
+  graphite: (#303337, #5a4e44, #5f5b55, #4a4743, #e9e5dd),
+);
+
+.try-on {
+  @include section;
+
+  &__head {
+    @include section-head;
+    margin-bottom: 40px;
+  }
+
+  &__title {
+    @include section-title;
+    margin: 0;
+  }
+
+  &__lede {
+    @include serif;
+    margin: 0 0 0.35em;
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.25;
+    max-width: 440px;
+    color: var(--ink-2);
+  }
+
+  &__body {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: clamp(24px, 3vw, 48px);
+    align-items: start;
+
+    @include below(960) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  // —— controls
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+
+    @include below(960) {
+      order: 1;
+    }
+  }
+
+  &__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 40px;
+  }
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    @include label(12px);
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+
+  &__works {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  &__work {
+    @include button-reset;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--paper-3);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    transition: outline-color 0.25s;
+
+    &:hover {
+      outline-color: var(--line-medium);
+    }
+
+    &--selected,
+    &--selected:hover {
+      outline-color: var(--accent);
+    }
+  }
+
+  &__work-img {
+    @include media-fill;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__chip {
+    @include button-reset;
+    padding: 8px 14px;
+    border: 1px solid var(--line-medium);
+    border-radius: 999px;
+    font-size: 14px;
+    transition:
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s;
+
+    &:hover {
+      border-color: var(--ink);
+    }
+
+    &--selected,
+    &--selected:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &__swatch {
+    @include button-reset;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line-medium);
+    background: var(--wall);
+    transition: box-shadow 0.25s;
+
+    &--selected {
+      box-shadow:
+        0 0 0 3px var(--paper),
+        0 0 0 4px var(--accent);
+    }
+  }
+
+  // —— the wall
+
+  &__stage {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  &__wall {
+    --wall-cm: 420;
+    --centre-cm: 176;
+    container-type: inline-size;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--wall-cm) / var(--wall-h);
+    // the whole wall stays within the screen
+    width: min(100%, calc(70svh * var(--wall-cm) / var(--wall-h)));
+    background: var(--wall);
+    transition: background 0.5s;
+    user-select: none;
+
+    @include below(600) {
+      --wall-cm: 300;
+      --centre-cm: 125;
+    }
+
+    // floor
+    &::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: cm(var(--floor));
+      background: var(--floor);
+      transition: background 0.5s;
+    }
+  }
+
+  @each $name, $c in $walls {
+    &__wall--#{$name},
+    &__swatch--#{$name} {
+      --wall: #{list.nth($c, 1)};
+      --floor: #{list.nth($c, 2)};
+      --furniture: #{list.nth($c, 3)};
+      --furniture-2: #{list.nth($c, 4)};
+      --scene-ink: #{list.nth($c, 5)};
+    }
+  }
+
+  &__eye {
+    position: absolute;
+    inset: auto 0 cm(calc(var(--eye) + var(--floor))) 0;
+    border-top: 1px dashed var(--scene-ink);
+    opacity: 0.3;
+  }
+
+  &__eye-label,
+  &__person-label,
+  &__hint {
+    @include tabular;
+    position: absolute;
+    font-size: 11px;
+    color: var(--scene-ink);
+    white-space: nowrap;
+  }
+
+  &__eye-label {
+    left: 12px;
+    bottom: 4px;
+
+    // on a phone the picture covers it
+    @include below(600) {
+      display: none;
+    }
+  }
+
+  &__furniture {
+    position: absolute;
+    bottom: cm(var(--floor));
+    left: cm(calc(var(--centre-cm) - var(--furniture-w) / 2));
+    width: cm(var(--furniture-w));
+    height: cm(var(--furniture-h));
+  }
+
+  &__furniture-light {
+    fill: var(--furniture);
+    transition: fill 0.5s;
+  }
+
+  &__furniture-dark {
+    fill: var(--furniture-2);
+    transition: fill 0.5s;
+  }
+
+  &__person {
+    position: absolute;
+    bottom: cm(var(--floor));
+    right: cm(8);
+    width: cm(var(--person-w));
+    height: cm(var(--person-h));
+    fill: var(--scene-ink);
+    opacity: 0.2;
+  }
+
+  &__person-label {
+    right: cm(8);
+    bottom: cm(calc(var(--floor) + var(--person-h) + 5));
+    width: cm(var(--person-w));
+    text-align: center;
+    opacity: 0.7;
+  }
+
+  &__hint {
+    top: 12px;
+    right: 14px;
+    opacity: 0.6;
+  }
+
+  // The picture: its own size in cm, centred over the furniture plus the dragged offset, kept on the wall
+  // with room for its height dimension on the right (same limits as clampOffset in TryOn.tsx).
+  &__art {
+    position: absolute;
+    z-index: 1;
+    width: cm(var(--w));
+    height: cm(var(--h));
+    bottom: cm(var(--bottom));
+    left: clamp(#{cm(var(--edge))}, #{cm(calc(var(--centre-cm) + var(--offset) - var(--w) / 2))}, calc(100cqw - #{cm(var(--w))} - max(#{cm(var(--edge))}, var(--dimension-room))));
+    transform-origin: 50% -40px;
+    cursor: grab;
+    touch-action: pan-y;
+    box-shadow:
+      2px 3px 0 rgba(0, 0, 0, 0.16),
+      0 22px 34px -18px rgba(0, 0, 0, 0.55);
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        width 0.55s var(--ease-out),
+        height 0.55s var(--ease-out),
+        bottom 0.55s var(--ease-out),
+        left 0.55s var(--ease-out),
+        rotate 0.8s cubic-bezier(0.3, 1.8, 0.5, 1);
+    }
+
+    &--dragging {
+      cursor: grabbing;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition:
+          width 0.55s var(--ease-out),
+          height 0.55s var(--ease-out),
+          bottom 0.55s var(--ease-out),
+          rotate 0.12s linear;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+  }
+
+  &__art-img {
+    @include media-fill;
+    pointer-events: none;
+  }
+
+  // Dimension lines with end ticks, outside the picture's bottom and right edges.
+  &__dim {
+    position: absolute;
+    color: var(--accent);
+    pointer-events: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+    }
+
+    &--width {
+      inset: calc(100% + 8px) 0 auto;
+      height: 9px;
+      border-inline: 1px solid;
+
+      &::before {
+        inset: 50% 0 auto;
+        border-top: 1px solid;
+      }
+    }
+
+    &--height {
+      inset: 0 auto 0 calc(100% + 8px);
+      width: 9px;
+      border-block: 1px solid;
+
+      &::before {
+        inset: 0 auto 0 50%;
+        border-left: 1px solid;
+      }
+    }
+  }
+
+  &__dim-text {
+    @include tabular;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: 0 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--wall);
+    transition: background 0.5s;
+    translate: -50% -50%;
+  }
+
+  &__dim--height &__dim-text {
+    rotate: -90deg;
+  }
+
+  // —— under the wall
+
+  &__summary {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px 32px;
+  }
+
+  &__summary-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__summary-title {
+    font-size: clamp(22px, 2vw, 30px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  &__summary-meta {
+    @include tabular;
+    font-size: 14px;
+    color: var(--ink-3);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__link {
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink);
+    transition:
+      color 0.25s,
+      border-color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+}

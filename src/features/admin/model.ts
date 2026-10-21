@@ -39,6 +39,8 @@ export type Product = {
   description: string;
   /** Object key in the `artworks` bucket or a URL. */
   image: string;
+  /** Straight-on photo of the painting alone, for «Примерьте размер»; key or URL, "" — none. */
+  flatImage: string;
   sizes: Size[];
   /** "Размеры по запросу", e.g. "100/140 см". */
   customSizes: string[];
@@ -121,6 +123,7 @@ export const fromDraft = (d: ProductDraft): Product => {
     title: d.title.trim() || "Без названия",
     description: d.description.trim(),
     image: d.image.trim(),
+    flatImage: d.flatImage.trim(),
     categories: [...d.categories.filter((c) => c !== "all"), "all"],
     sizes: sizes.filter((z) => +z.w && +z.h).map((z) => ({ w: +z.w, h: +z.h, price: z.price === "" ? null : +z.price })),
     customSizes: customText

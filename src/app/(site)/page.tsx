@@ -7,7 +7,8 @@ import { Hero } from "@/components/home/Hero/Hero";
 import { HeroWord } from "@/components/home/HeroWord/HeroWord";
 import { Occasions } from "@/components/home/Occasions/Occasions";
 import { Reviews } from "@/components/home/Reviews/Reviews";
-import { Room } from "@/components/home/Room/Room";
+import { pickTryOn } from "@/components/home/TryOn/pick";
+import { TryOn } from "@/components/home/TryOn/TryOn";
 import { WaveRibbon } from "@/components/home/WaveRibbon/WaveRibbon";
 import { Faq } from "@/components/sections/Faq/Faq";
 import { CATS } from "@/content/site";
@@ -21,6 +22,7 @@ export default async function HomePage() {
   const [items, reviews] = await Promise.all([getCatalog(), getReviews()]);
 
   const heroThumbs = inCategory(items, "home").slice(0, 9).map(toCard);
+  const tryOnWorks = pickTryOn(inCategory(items, "home"), new Set(heroThumbs.map((t) => t.code)));
 
   // Each category gets a cover not used by the rows above it (prototype `catRows`).
   const usedCovers = new Set<string>();
@@ -47,7 +49,7 @@ export default async function HomePage() {
         <HeroWord />
         <WaveRibbon titles={ribbonTitles} />
         <Categories rows={categoryRows} />
-        <Room />
+        {tryOnWorks.length > 0 && <TryOn works={tryOnWorks} />}
         <Framing />
         <Occasions />
         <Clients />
