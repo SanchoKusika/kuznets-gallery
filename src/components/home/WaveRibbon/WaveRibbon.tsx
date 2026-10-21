@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { prefersMotion } from "@/features/motion/prefers-motion";
 import { bem } from "@/lib/bem";
-import { RIBBON } from "./geometry";
+import { ribbonFor } from "./geometry";
 import s from "./WaveRibbon.module.scss";
 
 const b = bem(s, "wave-ribbon");
@@ -17,13 +17,13 @@ const FRAME_MS = 1000 / 60;
 const viewBoxWidth = (el: HTMLElement) => Math.round(Math.max(600, Math.min(1440, el.clientWidth || 1440)));
 
 /** Sine wave spanning 22% past both edges, 2.6 periods (prototype `initLoops`, shape "wave"). */
-function wavePath(vb: number) {
+function wavePath(vb: number, ribbon: ReturnType<typeof ribbonFor>) {
   const x0 = -Math.round(vb * 0.22);
   const x1 = Math.round(vb * 1.22);
   const period = (x1 - x0) / 2.6;
   let d = "";
   for (let x = x0; x <= x1; x += 8) {
-    const y = RIBBON.cy + Math.sin(((x - x0) / period) * Math.PI * 2) * RIBBON.amplitude;
+    const y = ribbon.cy + Math.sin(((x - x0) / period) * Math.PI * 2) * ribbon.amplitude;
     d += `${x === x0 ? "M" : "L"}${x},${y.toFixed(1)}`;
   }
   return d;
@@ -136,16 +136,18 @@ export function WaveRibbon({ titles }: { titles: string[] }) {
     };
   }, [vb]);
 
+  const ribbon = ribbonFor(vb ?? 1440);
+
   return (
     <div ref={rootRef} className={b(null, { ready: vb !== null })} title="Потяните, чтобы изменить направление">
       {vb !== null && (
-        <svg className={b("svg")} viewBox={`0 0 ${vb} ${RIBBON.height}`} aria-hidden="true">
+        <svg className={b("svg")} viewBox={`0 0 ${vb} ${ribbon.height}`} aria-hidden="true">
           {/* The band is also the path the text runs along. */}
-          <path ref={pathRef} id={pathId} className={b("band")} d={wavePath(vb)} strokeWidth={RIBBON.band} />
-          <text ref={measureRef} className={b("measure")} x="0" y="-999" fontSize={RIBBON.fontSize}>
+          <path ref={pathRef} id={pathId} className={b("band")} d={wavePath(vb, ribbon)} strokeWidth={ribbon.band} />
+          <text ref={measureRef} className={b("measure")} x="0" y="-999" fontSize={ribbon.fontSize}>
             {one}
           </text>
-          <text className={b("text")} dominantBaseline="central" fontSize={RIBBON.fontSize}>
+          <text className={b("text")} dominantBaseline="central" fontSize={ribbon.fontSize}>
             <textPath ref={textPathRef} href={`#${pathId}`} startOffset="0" />
           </text>
         </svg>
