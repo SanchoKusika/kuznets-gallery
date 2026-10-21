@@ -11,7 +11,7 @@ const MIN_WIDTH = 300;
 
 /** On a plain click on a link to `/work/<slug>`: remembers its picture, if it has loaded and is big enough. */
 export function handOff(href: string, img: HTMLImageElement | null) {
-  const slug = href.split("/").pop() ?? "";
+  const slug = new URL(href, location.href).pathname.split("/").pop() ?? "";
   handoff = img?.complete && img.naturalWidth >= MIN_WIDTH && img.currentSrc ? { slug, src: img.currentSrc } : null;
 }
 
