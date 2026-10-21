@@ -2,11 +2,10 @@
 @use "mixins" as *;
 
 // Centimetres on the wall: the wall is a size container `--wall-cm` wide, so 1 cm = 100cqw / --wall-cm.
+// The scene's heights and margins come from TryOn.tsx (`SCENE`, `PERSON`) as CSS variables.
 @function cm($v) {
   @return calc(#{$v} * 100cqw / var(--wall-cm));
 }
-
-$floor: 6; // cm, mirrors FLOOR in TryOn.tsx
 
 // Wall, floor, furniture (light, dark) and the ink of the person and labels.
 $walls: (
@@ -72,8 +71,7 @@ $walls: (
     flex-direction: column;
   }
 
-  &__label,
-  &__sizes-head {
+  &__label {
     @include label(12px);
     color: var(--ink-3);
     margin-bottom: 12px;
@@ -106,56 +104,6 @@ $walls: (
 
   &__work-img {
     @include media-fill;
-  }
-
-  &__sizes-head {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 12px;
-    border-top: 1px solid var(--ink);
-  }
-
-  &__size {
-    @include button-reset;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 12px;
-    margin: 0 -12px;
-    border-top: 1px solid var(--line);
-    transition: background 0.25s;
-
-    &:hover,
-    &--selected {
-      background: var(--paper-hover);
-    }
-  }
-
-  &__size-label {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    font-size: 17px;
-    font-weight: 500;
-  }
-
-  &__dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 1px solid var(--ink);
-    transition: background 0.25s;
-  }
-
-  &__size--selected &__dot {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  &__size-price {
-    @include tabular;
-    font-size: 14px;
   }
 
   &__chips {
@@ -218,9 +166,9 @@ $walls: (
     container-type: inline-size;
     position: relative;
     overflow: hidden;
-    aspect-ratio: var(--wall-cm) / 270;
+    aspect-ratio: var(--wall-cm) / var(--wall-h);
     // the whole wall stays within the screen
-    width: min(100%, calc(70svh * var(--wall-cm) / 270));
+    width: min(100%, calc(70svh * var(--wall-cm) / var(--wall-h)));
     background: var(--wall);
     transition: background 0.5s;
     user-select: none;
@@ -235,7 +183,7 @@ $walls: (
       content: "";
       position: absolute;
       inset: auto 0 0;
-      height: cm($floor);
+      height: cm(var(--floor));
       background: var(--floor);
       transition: background 0.5s;
     }
@@ -254,7 +202,7 @@ $walls: (
 
   &__eye {
     position: absolute;
-    inset: auto 0 cm(156) 0;
+    inset: auto 0 cm(calc(var(--eye) + var(--floor))) 0;
     border-top: 1px dashed var(--scene-ink);
     opacity: 0.3;
   }
@@ -281,7 +229,7 @@ $walls: (
 
   &__furniture {
     position: absolute;
-    bottom: cm($floor);
+    bottom: cm(var(--floor));
     left: cm(calc(var(--centre-cm) - var(--furniture-w) / 2));
     width: cm(var(--furniture-w));
     height: cm(var(--furniture-h));
@@ -299,18 +247,18 @@ $walls: (
 
   &__person {
     position: absolute;
-    bottom: cm($floor);
+    bottom: cm(var(--floor));
     right: cm(8);
-    width: cm(60);
-    height: cm(175);
+    width: cm(var(--person-w));
+    height: cm(var(--person-h));
     fill: var(--scene-ink);
     opacity: 0.2;
   }
 
   &__person-label {
     right: cm(8);
-    bottom: cm(186);
-    width: cm(60);
+    bottom: cm(calc(var(--floor) + var(--person-h) + 5));
+    width: cm(var(--person-w));
     text-align: center;
     opacity: 0.7;
   }
@@ -321,34 +269,41 @@ $walls: (
     opacity: 0.6;
   }
 
-  // The picture: its own size in cm, centred over the furniture plus the dragged offset, kept on the wall.
+  // The picture: its own size in cm, centred over the furniture plus the dragged offset, kept on the wall
+  // with room for its height dimension on the right (same limits as clampOffset in TryOn.tsx).
   &__art {
     position: absolute;
     z-index: 1;
     width: cm(var(--w));
     height: cm(var(--h));
     bottom: cm(var(--bottom));
-    left: clamp(#{cm(4)}, #{cm(calc(var(--centre-cm) + var(--offset) - var(--w) / 2))}, #{cm(calc(var(--wall-cm) - var(--w) - 4))});
+    left: clamp(#{cm(var(--edge))}, #{cm(calc(var(--centre-cm) + var(--offset) - var(--w) / 2))}, calc(100cqw - #{cm(var(--w))} - max(#{cm(var(--edge))}, var(--dimension-room))));
     transform-origin: 50% -40px;
     cursor: grab;
     touch-action: pan-y;
     box-shadow:
       2px 3px 0 rgba(0, 0, 0, 0.16),
       0 22px 34px -18px rgba(0, 0, 0, 0.55);
-    transition:
-      width 0.55s var(--ease-out),
-      height 0.55s var(--ease-out),
-      bottom 0.55s var(--ease-out),
-      left 0.55s var(--ease-out),
-      rotate 0.8s cubic-bezier(0.3, 1.8, 0.5, 1);
 
-    &--dragging {
-      cursor: grabbing;
+    @media (prefers-reduced-motion: no-preference) {
       transition:
         width 0.55s var(--ease-out),
         height 0.55s var(--ease-out),
         bottom 0.55s var(--ease-out),
-        rotate 0.12s linear;
+        left 0.55s var(--ease-out),
+        rotate 0.8s cubic-bezier(0.3, 1.8, 0.5, 1);
+    }
+
+    &--dragging {
+      cursor: grabbing;
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition:
+          width 0.55s var(--ease-out),
+          height 0.55s var(--ease-out),
+          bottom 0.55s var(--ease-out),
+          rotate 0.12s linear;
+      }
     }
 
     &:focus-visible {

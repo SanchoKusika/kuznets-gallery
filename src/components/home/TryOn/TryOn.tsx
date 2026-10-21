@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from "react";
+import { useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent } from "react";
 import { Button } from "@/components/ui/Button/Button";
+import { SizeList } from "@/components/ui/SizeList/SizeList";
 import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
 import { FRAMES } from "@/content/site";
 import { prefersMotion } from "@/features/motion/prefers-motion";
-import { flyToOrder } from "@/features/order/fly-to-order";
-import { order } from "@/features/order/store";
+import { useAddToOrder } from "@/features/order/use-add-to-order";
 import { bem } from "@/lib/bem";
 import { formatPrice } from "@/lib/format";
 import { isForeign } from "@/lib/images";
@@ -17,13 +17,21 @@ import s from "./TryOn.module.scss";
 
 const b = bem(s, "try-on");
 
-// Heights on the wall, cm: floor strip, eye level (the centre of a picture), gap above furniture, top limit.
-const FLOOR = 6;
-const EYE = 150;
-const GAP = 22;
-const TOP = 262;
-/** Margin between a picture and the wall's edges, cm. */
-const EDGE = 4;
+/** The scene in cm (the wall's width and the furniture's centre are set in CSS per breakpoint). */
+const SCENE = {
+  height: 270,
+  floor: 6,
+  /** Eye level: where the centre of a picture goes. */
+  eye: 150,
+  /** Least gap between furniture and a picture. */
+  gap: 22,
+  /** A picture's top stays below this. */
+  top: 262,
+  /** Margin between a picture and the wall's sides. */
+  edge: 4,
+};
+/** Room for the height dimension on the picture's right, px. */
+const DIMENSION_ROOM = 28;
 /** Step of the arrow keys, cm. */
 const STEP = 10;
 
@@ -35,18 +43,20 @@ const WALLS = [
 ] as const;
 type WallKey = (typeof WALLS)[number]["k"];
 
-/** Wall width and the furniture's centre, cm — set in CSS per breakpoint. */
+/** Wall width and the furniture's centre in cm, and cm per screen pixel. */
 const wallGeometry = (el: HTMLElement) => {
   const css = getComputedStyle(el);
-  return { wall: parseFloat(css.getPropertyValue("--wall-cm")), centre: parseFloat(css.getPropertyValue("--centre-cm")) };
+  const width = parseFloat(css.getPropertyValue("--wall-cm"));
+  return { width, centre: parseFloat(css.getPropertyValue("--centre-cm")), cmPerPx: width / el.clientWidth };
 };
 
 const defaultSize = (w: TryOnWork) => Math.min(1, w.sizes.length - 1);
 
 /**
- * «Примерьте размер»: a wall drawn to scale (4.2 m, 2.8 m on phones) with furniture and a 175 cm person.
- * The picked work hangs at its real size — centre at eye level, at least 22 cm above the furniture —
- * and can be dragged along the wall (it swings on its nail). The size goes to «Заявка» as on the work page.
+ * «Примерьте размер»: a wall drawn to scale (4.2 m, 3 m on phones) with furniture and a 175 cm person.
+ * The picked work hangs at its real size, centred at eye level or at least 22 cm above the furniture
+ * (as long as it stays under 2.62 m), and can be dragged along the wall — it swings on its nail.
+ * «В заявку» adds the shown size, as on the work page.
  */
 export function TryOn({ works }: { works: TryOnWork[] }) {
   const [workIndex, setWorkIndex] = useState(0);
@@ -59,27 +69,20 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
   const wallRef = useRef<HTMLDivElement>(null);
   const artRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; from: number; cmPerPx: number; lastX: number; lastT: number } | null>(null);
-  const flying = useRef(false);
-  const mounted = useRef(true);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
+  const add = useAddToOrder();
 
-  const work = works[workIndex];
+  const work = works[workIndex] ?? works[0];
   const size = work.sizes[sizeIndex] ?? work.sizes[0];
   const item = FURNITURE[furniture];
-  const centreY = Math.min(Math.max(EYE, item.h + GAP + size.h / 2), TOP - size.h / 2);
+  const centreY = Math.min(Math.max(SCENE.eye, item.h + SCENE.gap + size.h / 2), SCENE.top - size.h / 2);
 
-  /** Keeps the picture on the wall. */
+  /** Keeps the picture on the wall, with room for its height dimension on the right. */
   const clampOffset = (value: number) => {
     const el = wallRef.current;
     if (!el) return value;
-    const { wall: width, centre } = wallGeometry(el);
-    const min = size.w / 2 + EDGE - centre;
-    const max = width - size.w / 2 - EDGE - centre;
+    const { width, centre, cmPerPx } = wallGeometry(el);
+    const min = size.w / 2 + SCENE.edge - centre;
+    const max = width - size.w / 2 - Math.max(SCENE.edge, DIMENSION_ROOM * cmPerPx) - centre;
     return Math.max(min, Math.min(max, value));
   };
 
@@ -96,8 +99,7 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     const el = wallRef.current;
     if (!el || !e.isPrimary) return;
-    const { wall: width } = wallGeometry(el);
-    drag.current = { x: e.clientX, from: clampOffset(offset), cmPerPx: width / el.clientWidth, lastX: e.clientX, lastT: e.timeStamp };
+    drag.current = { x: e.clientX, from: clampOffset(offset), cmPerPx: wallGeometry(el).cmPerPx, lastX: e.clientX, lastT: e.timeStamp };
     e.currentTarget.setPointerCapture(e.pointerId);
     setDragging(true);
   };
@@ -124,8 +126,7 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
     setOffset((v) => clampOffset(clampOffset(v) + step));
   };
 
-  const addToOrder = async (e: MouseEvent<HTMLButtonElement>) => {
-    if (flying.current) return;
+  const addToOrder = (e: MouseEvent<HTMLButtonElement>) => {
     const line = {
       code: work.code,
       title: work.title,
@@ -138,15 +139,23 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
       frame: FRAMES[0].n,
       frameIndex: 0,
     };
-    flying.current = true;
-    const flew = await flyToOrder(artRef.current?.querySelector("img"), e.currentTarget);
-    flying.current = false;
-    order.add(line, { open: !flew && mounted.current });
-    if (flew && mounted.current) window.setTimeout(order.open, 450);
+    add(line, artRef.current?.querySelector("img"), e.currentTarget);
   };
 
-  const sceneVars = { "--furniture-w": item.w, "--furniture-h": item.h } as CSSProperties;
-  const artVars = { "--w": size.w, "--h": size.h, "--offset": offset, "--bottom": centreY - size.h / 2 + FLOOR } as CSSProperties;
+  const sizeRows = work.sizes.map((z, i) => ({ label: `${z.w} × ${z.h} см`, price: formatPrice(z.p), selected: i === sizeIndex, pick: () => setSizeIndex(i) }));
+
+  const wallVars = {
+    "--wall-h": SCENE.height,
+    "--floor": SCENE.floor,
+    "--eye": SCENE.eye,
+    "--edge": SCENE.edge,
+    "--dimension-room": `${DIMENSION_ROOM}px`,
+    "--person-w": PERSON.w,
+    "--person-h": PERSON.h,
+    "--furniture-w": item.w,
+    "--furniture-h": item.h,
+  } as CSSProperties;
+  const artVars = { "--w": size.w, "--h": size.h, "--offset": offset, "--bottom": centreY - size.h / 2 + SCENE.floor } as CSSProperties;
 
   return (
     <section className={b()} data-reveal>
@@ -162,27 +171,13 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
             <div className={b("works")}>
               {works.map((w, i) => (
                 <button key={w.code} type="button" className={b("work", { selected: i === workIndex })} aria-pressed={i === workIndex} aria-label={w.title} title={w.title} onClick={() => pickWork(i)}>
-                  <Image src={w.flatSrc} alt="" width={120} height={120} sizes="64px" className={b("work-img")} unoptimized={isForeign(w.flatSrc)} />
+                  <Image src={w.flatSrc} alt="" width={120} height={120} sizes="(width >= 960px) 56px, 18vw" className={b("work-img")} unoptimized={isForeign(w.flatSrc)} />
                 </button>
               ))}
             </div>
           </div>
 
-          <div className={b("group")}>
-            <div className={b("sizes-head")}>
-              <span>Размер</span>
-              <span>Цена</span>
-            </div>
-            {work.sizes.map((z, i) => (
-              <button key={`${z.w}x${z.h}`} type="button" className={b("size", { selected: i === sizeIndex })} aria-pressed={i === sizeIndex} onClick={() => setSizeIndex(i)}>
-                <span className={b("size-label")}>
-                  <span className={b("dot")} />
-                  {z.w} × {z.h} см
-                </span>
-                <span className={b("size-price")}>{formatPrice(z.p)}</span>
-              </button>
-            ))}
-          </div>
+          <SizeList rows={sizeRows} />
 
           <div className={b("options")}>
             <div className={b("group")}>
@@ -207,9 +202,9 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
         </div>
 
         <div className={b("stage")}>
-          <div ref={wallRef} className={b("wall", { [wall]: true })} style={sceneVars}>
+          <div ref={wallRef} className={b("wall", { [wall]: true })} style={wallVars}>
             <div className={b("eye")}>
-              <span className={b("eye-label")}>150 см — уровень глаз</span>
+              <span className={b("eye-label")}>{SCENE.eye} см — уровень глаз</span>
             </div>
             <svg className={b("furniture")} viewBox={`0 0 ${item.w} ${item.h}`} preserveAspectRatio="none" aria-hidden="true">
               {item.art}
@@ -217,7 +212,7 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
             <svg className={b("person")} viewBox={`0 0 ${PERSON.w} ${PERSON.h}`} aria-hidden="true">
               <Person />
             </svg>
-            <span className={b("person-label")}>175 см</span>
+            <span className={b("person-label")}>{PERSON.h} см</span>
             <div
               ref={artRef}
               className={b("art", { dragging })}
