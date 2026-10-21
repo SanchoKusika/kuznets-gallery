@@ -24,7 +24,7 @@
   }
 
   // Shrinks past the top of the page (features/scroll/header-scroll.ts); after a navigation
-  // to the top it grows back at once, so a view transition captures the final layout.
+  // to the top it grows back at once (data-scroll-instant), so the new page doesn't slide down.
   :global([data-scrolled]) &__classic {
     padding-top: 8px;
     padding-bottom: 8px;

@@ -1,6 +1,5 @@
 import { Footer } from "@/components/layout/Footer/Footer";
 import { AdminBadge } from "@/components/layout/AdminBadge/AdminBadge";
-import { ArtworkMorphBack } from "@/components/ui/ArtworkMorph/ArtworkMorphBack";
 import { Header } from "@/components/layout/Header/Header";
 import { Cursor } from "@/features/motion/Cursor";
 import { Reveal } from "@/features/motion/Reveal";
@@ -20,7 +19,6 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       <Header total={total} />
       {children}
       <NavigationScroll />
-      <ArtworkMorphBack />
       <Footer />
       <OrderDrawer />
       <AdminBadge />

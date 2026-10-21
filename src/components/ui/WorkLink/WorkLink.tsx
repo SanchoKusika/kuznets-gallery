@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
-import { morphType } from "@/components/ui/ArtworkMorph/ArtworkMorph";
-import { handOff } from "@/components/ui/ArtworkMorph/handoff";
+import { handOff } from "@/features/catalog/card-picture";
 import { rememberReturn } from "@/features/catalog/return-to-collection";
 import { isPlainClick } from "@/lib/plain-click";
 
@@ -16,12 +15,11 @@ const DWELL_MS = 600;
  * whole page is prefetched (static, from the CDN cache) and the click opens it at once. Intent is a
  * pointer over the link, a touch or focus; touch screens have no hover, so there it is the link
  * staying in view for a moment. Prefetching every card that passes by would cost ~10 KB each.
- * `morph` — code of the artwork whose card image is wrapped in ArtworkMorph: the navigation carries
- * its transition type, the image morphs into the page's photo, and the page shows the card's
- * picture until its own photo loads (handoff.ts). A plain click from a collection page also remembers
- * that page, so «← Коллекция» on the artwork goes back to it (return-to-collection.ts).
+ * A plain click hands the card's picture to the page, which shows it until its own photo loads
+ * (card-picture.ts); from a collection page it also remembers that page, so «← Коллекция» on the
+ * artwork goes back to it (return-to-collection.ts).
  */
-export function WorkLink({ morph, onClick, onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "transitionTypes" | "href"> & { href: string; morph?: string }) {
+export function WorkLink({ onClick, onPointerEnter, onTouchStart, onFocus, ...props }: Omit<ComponentProps<typeof Link>, "prefetch" | "ref" | "href"> & { href: string }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [intent, setIntent] = useState(false);
 
@@ -48,12 +46,11 @@ export function WorkLink({ morph, onClick, onPointerEnter, onTouchStart, onFocus
       {...props}
       ref={ref}
       prefetch={intent ? true : "auto"}
-      transitionTypes={morph ? [morphType(morph)] : undefined}
       onClick={(e) => {
         // A modified click opens a new tab: nothing to hand over here.
         if (isPlainClick(e)) {
           rememberReturn(props.href);
-          if (morph) handOff(morph, e.currentTarget.querySelector("img"));
+          handOff(props.href, e.currentTarget.querySelector("img"));
         }
         onClick?.(e);
       }}

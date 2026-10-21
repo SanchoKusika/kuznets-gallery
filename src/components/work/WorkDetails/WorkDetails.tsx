@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
-import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
-import { dropHandoff, handedOff } from "@/components/ui/ArtworkMorph/handoff";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
 import { FRAMES, PRIMARY_PHONE, SPECS } from "@/content/site";
+import { dropHandoff, handedOff } from "@/features/catalog/card-picture";
 import { flyToOrder } from "@/features/order/fly-to-order";
 import { order } from "@/features/order/store";
 import { bem } from "@/lib/bem";
@@ -14,11 +13,6 @@ import { formatPrice } from "@/lib/format";
 import s from "./WorkDetails.module.scss";
 
 const b = bem(s, "work-details");
-
-/** On <html> while the morph flies the handed-over picture alone (globals.scss). */
-const MORPH_HANDED = "data-morph-handed";
-/** Longer than the morph (0.55s). */
-const MORPH_MS = 1000;
 
 /** Pause between the landing in the header and the drawer opening, ms. */
 const OPEN_AFTER_LANDING_MS = 450;
@@ -40,21 +34,8 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   const [frameIndex, setFrameIndex] = useState(0);
   const size = sizes[sizeIndex] ?? sizes[0];
   const imageRef = useRef<HTMLDivElement>(null);
-  // Opened from its card: the card's picture stands in until the photo loads, then goes; its ratio
-  // sizes the frame to the picture, so the morph lands on the picture and not on a square of it.
-  const [handed] = useState(() => handedOff(code));
-  const [placeholder, setPlaceholder] = useState(handed?.src);
-  // Tells the morph there is a picture to fly alone (globals.scss); without one it crossfades.
-  useLayoutEffect(() => {
-    if (!handed) return;
-    const root = document.documentElement;
-    root.setAttribute(MORPH_HANDED, "");
-    const timer = window.setTimeout(() => root.removeAttribute(MORPH_HANDED), MORPH_MS);
-    return () => {
-      clearTimeout(timer);
-      root.removeAttribute(MORPH_HANDED);
-    };
-  }, [handed]);
+  // Opened from its card: the card's picture stands in until the photo loads, then goes.
+  const [placeholder, setPlaceholder] = useState(() => handedOff(code));
   useEffect(dropHandoff, []);
   const flying = useRef(false);
   const openTimer = useRef(0);
@@ -85,7 +66,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
       frameIndex,
     };
     flying.current = true;
-    const flew = await flyToOrder(imageRef.current?.querySelector("img"), e.currentTarget);
+    const flew = await flyToOrder(imageRef.current?.querySelector("img:last-of-type"), e.currentTarget);
     flying.current = false;
     order.add(item, { open: !flew && mounted.current });
     if (flew && mounted.current) openTimer.current = window.setTimeout(order.open, OPEN_AFTER_LANDING_MS);
@@ -96,17 +77,12 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
     : [{ label: "Размер на заказ", price: "по запросу", selected: true, pick: () => {} }];
 
   return (
-    <section className={b()}>
-      {/* No reveal on the photo: it arrives morphing from the card that was clicked. */}
+    <section className={b()} data-reveal>
       <div ref={imageRef} className={b("image")}>
-        <ArtworkMorph code={code}>
-          <div className={b("photo", { fitted: !!handed })} data-artwork-photo={code.toLowerCase()} style={handed && ({ "--ratio": handed.ratio } as CSSProperties)}>
-            <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
-          </div>
-        </ArtworkMorph>
+        <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
       </div>
 
-      <div className={b("info")} data-reveal>
+      <div className={b("info")}>
         <div className={b("intro")}>
           <span className={b("meta")}>
             {code} · Kuznetsovs Gallery · {formatName}
