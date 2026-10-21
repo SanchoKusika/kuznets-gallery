@@ -1,4 +1,3 @@
-import { ArtworkMorph } from "@/components/ui/ArtworkMorph/ArtworkMorph";
 import { Media } from "@/components/ui/Media/Media";
 import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
 import { bem } from "@/lib/bem";
@@ -17,16 +16,14 @@ const RELATED_SIZES = "(width >= 1600px) 17vw, (width >= 1024px) 25vw, (width >=
 export function ArtworkCard({ card, variant = "grid" }: { card: Card; variant?: "grid" | "related" }) {
   const grid = variant === "grid";
   return (
-    <WorkLink href={card.href} morph={card.code} className={b(null, { related: !grid })} data-cursor="Смотреть" data-reveal={grid || undefined}>
-      <ArtworkMorph code={card.code}>
-        <Media
-          src={card.src}
-          alt={card.title}
-          sizes={grid ? "(width >= 600px) 25vw, 50vw" : RELATED_SIZES}
-          className={b("media")}
-          imgClassName={b("img")}
-        />
-      </ArtworkMorph>
+    <WorkLink href={card.href} className={b(null, { related: !grid })} data-cursor="Смотреть" data-reveal={grid || undefined}>
+      <Media
+        src={card.src}
+        alt={card.title}
+        sizes={grid ? "(width >= 600px) 25vw, 50vw" : RELATED_SIZES}
+        className={b("media")}
+        imgClassName={b("img")}
+      />
       <div className={b("line")}>
         <span className={b("title")}>{card.title}</span>
         <span className={b(grid ? "code" : "price")}>{grid ? card.code : card.from}</span>

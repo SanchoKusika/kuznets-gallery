@@ -94,43 +94,6 @@ img::selection {
   mix-blend-mode: normal;
 }
 
-// Card → artwork page (ArtworkMorph). One picture flies, not two crossfading: the page's photo
-// (the card's own picture, handed over) starts cropped to the card's 4:5 exactly as the card shows
-// it and opens up to the whole picture while it moves. The card's snapshot is hidden — fading two
-// different crops into each other doubled the picture mid-flight. Clicks go to the live page.
-::view-transition {
-  pointer-events: none;
-}
-
-::view-transition-group(.morph) {
-  animation-duration: 0.55s;
-  animation-timing-function: var(--ease-menu-in);
-  z-index: 40;
-}
-
-::view-transition-old(.morph),
-::view-transition-new(.morph) {
-  height: 100%;
-  object-fit: cover;
-}
-
-// The page has the card's picture (WorkDetails sets the attribute): it flies alone. Without one
-// (the card's image hadn't loaded) the two crossfade, so something still flies.
-:root[data-morph-handed]::view-transition-old(.morph) {
-  display: none;
-}
-
-:root[data-morph-handed]::view-transition-new(.morph) {
-  animation: none;
-}
-
-// Reduced motion: the photo just appears in its place.
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(.morph) {
-    animation: none;
-  }
-}
-
 // Until <Reveal> first runs (motion on, see MOTION_INIT_SCRIPT): blocks wait hidden for their
 // entrance instead of flashing in the server HTML. If scripts never run, they appear after 3s.
 [data-motion] [data-reveal] {
