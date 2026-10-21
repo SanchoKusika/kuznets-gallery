@@ -6,10 +6,13 @@
  */
 let handoff: { slug: string; src: string } | null = null;
 
-/** On a plain click on a link to `/work/<slug>`: remembers its picture, if it has loaded. */
+/** A smaller picture (the list view's 88px thumbnail) would only show blurred in the photo's place. */
+const MIN_WIDTH = 300;
+
+/** On a plain click on a link to `/work/<slug>`: remembers its picture, if it has loaded and is big enough. */
 export function handOff(href: string, img: HTMLImageElement | null) {
   const slug = href.split("/").pop() ?? "";
-  handoff = img?.complete && img.naturalWidth && img.currentSrc ? { slug, src: img.currentSrc } : null;
+  handoff = img?.complete && img.naturalWidth >= MIN_WIDTH && img.currentSrc ? { slug, src: img.currentSrc } : null;
 }
 
 /** The picture handed over for `code` by the click that opened its page (single use, see `dropHandoff`). */
