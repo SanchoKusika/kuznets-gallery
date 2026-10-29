@@ -163,6 +163,10 @@ $walls: (
   &__wall {
     --wall-cm: 420;
     --centre-cm: 176;
+    // The picture's left edge: centred over the furniture plus the dragged offset, kept on the wall
+    // with room for its height dimension on the right (same limits as clampOffset in TryOn.tsx).
+    // The lamp's light follows the picture where it really hangs.
+    --art-left: clamp(#{cm(var(--edge))}, #{cm(calc(var(--centre-cm) + var(--offset) - var(--w) / 2))}, calc(100cqw - #{cm(var(--w))} - max(#{cm(var(--edge))}, var(--dimension-room))));
     container-type: inline-size;
     position: relative;
     overflow: hidden;
@@ -203,6 +207,7 @@ $walls: (
   // —— light: layers over the wall and furniture, under the picture; «день» is the scene as it is
   &__light {
     position: absolute;
+    z-index: 1;
     opacity: 0;
     pointer-events: none;
 
@@ -216,26 +221,20 @@ $walls: (
     opacity: 1;
   }
 
-  // Low sun from the left: a warm tint and two slanting shafts of window light.
+  // Low sun from the left: a warm tint and two slanting shafts of window light with soft edges,
+  // fading out towards the floor.
   &__light--sunset {
     inset: 0;
     background: linear-gradient(98deg, rgba(255, 140, 60, 0.26), rgba(255, 110, 40, 0.1) 58%, rgba(74, 36, 78, 0.28));
 
-    &::before,
-    &::after {
+    &::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(255, 214, 140, 0.26), rgba(255, 180, 90, 0.06));
-      filter: blur(8px);
-    }
-
-    &::before {
-      clip-path: polygon(-6% 0, 14% 0, 40% 100%, 20% 100%);
-    }
-
-    &::after {
-      clip-path: polygon(24% 0, 31% 0, 57% 100%, 50% 100%);
+      background:
+        linear-gradient(104deg, transparent 6%, rgba(255, 214, 140, 0.26) 14%, rgba(255, 214, 140, 0.26) 24%, transparent 32%),
+        linear-gradient(104deg, transparent 38%, rgba(255, 214, 140, 0.2) 42%, rgba(255, 214, 140, 0.2) 46%, transparent 50%);
+      mask-image: linear-gradient(180deg, #000, transparent 92%);
     }
   }
 
@@ -244,7 +243,7 @@ $walls: (
   &__light--lamp {
     width: 300%;
     height: 300%;
-    left: calc(#{cm(calc(var(--centre-cm) + var(--offset)))} - 150%);
+    left: calc(var(--art-left) + #{cm(calc(var(--w) / 2))} - 150%);
     top: calc(#{cm(calc(var(--wall-h) - var(--bottom) - var(--h) / 2))} - 150%);
     background: radial-gradient(
       circle 85cqw at 50% 50%,
@@ -337,20 +336,20 @@ $walls: (
   }
 
   &__hint {
+    z-index: 2;
     top: 12px;
     right: 14px;
     opacity: 0.6;
   }
 
-  // The picture: its own size in cm, centred over the furniture plus the dragged offset, kept on the wall
-  // with room for its height dimension on the right (same limits as clampOffset in TryOn.tsx).
+  // The picture: its own size in cm, its left edge is `--art-left` of the wall.
   &__art {
     position: absolute;
     z-index: 1;
     width: cm(var(--w));
     height: cm(var(--h));
     bottom: cm(var(--bottom));
-    left: clamp(#{cm(var(--edge))}, #{cm(calc(var(--centre-cm) + var(--offset) - var(--w) / 2))}, calc(100cqw - #{cm(var(--w))} - max(#{cm(var(--edge))}, var(--dimension-room))));
+    left: var(--art-left);
     transform-origin: 50% -40px;
     cursor: grab;
     touch-action: pan-y;

@@ -27,7 +27,8 @@ const subscribe = (cb: () => void) => {
 };
 
 const getSnapshot = () => {
-  slot ??= !straightened() && Math.random() < CHANCE ? Math.floor(Math.random() * SLOTS) : null;
+  // Rolled once: null is a decision too (all hang straight), so `??=` would roll again on every render.
+  if (slot === undefined) slot = !straightened() && Math.random() < CHANCE ? Math.floor(Math.random() * SLOTS) : null;
   return slot;
 };
 

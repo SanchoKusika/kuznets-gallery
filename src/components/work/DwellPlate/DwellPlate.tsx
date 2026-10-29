@@ -4,13 +4,14 @@ import { useEffect, useState, type MouseEvent } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { Icon } from "@/components/ui/Icon/Icon";
 import { useOrder } from "@/features/order/store";
+import { isScrollLocked } from "@/features/scroll/scroll-lock";
 import { bem } from "@/lib/bem";
 import s from "./DwellPlate.module.scss";
 
 const b = bem(s, "dwell-plate");
 
 const STORAGE_KEY = "kz_dwell_plate";
-/** Seconds on the page (tab in view) before the plate appears. */
+/** Seconds on the page (tab in view, nothing covering it) before the plate appears. */
 const DWELL_S = 30;
 /** The plate leaves by itself after this long, ms. */
 const STAY_MS = 16_000;
@@ -32,12 +33,12 @@ export function DwellPlate({ code, onAdd }: { code: string; onAdd: (e: MouseEven
   const [shown, setShown] = useState(false);
   const { items, drawerOpen } = useOrder();
 
-  // Counts only the seconds the tab is in view.
+  // Counts only the seconds the page is really in view: not in a hidden tab, not under the menu, the request or the meditation mode.
   useEffect(() => {
     if (seen()) return;
     let seconds = 0;
     const timer = setInterval(() => {
-      if (document.hidden || ++seconds < DWELL_S) return;
+      if (document.hidden || isScrollLocked() || ++seconds < DWELL_S) return;
       clearInterval(timer);
       try {
         sessionStorage.setItem(STORAGE_KEY, "1");

@@ -79,12 +79,13 @@ function Stage({ works, onClose }: { works: MeditationWork[]; onClose: () => voi
   const frameRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const busy = useRef(false);
+  const leaving = useRef(false);
   const lastWheel = useRef(0);
   const work = works[index];
 
   const leave = (then?: () => void) => {
-    if (busy.current) return;
-    busy.current = true;
+    if (leaving.current) return;
+    leaving.current = true;
     const done = () => {
       onClose();
       then?.();
@@ -95,12 +96,13 @@ function Stage({ works, onClose }: { works: MeditationWork[]; onClose: () => voi
   };
 
   const step = async (dir: 1 | -1) => {
-    if (busy.current || works.length < 2) return;
+    if (busy.current || leaving.current || works.length < 2) return;
     busy.current = true;
     if (prefersMotion()) {
       await frameRef.current?.animate({ opacity: [1, 0], scale: [1, 0.985] }, { duration: FADE_MS, easing: "ease-in", fill: "forwards" }).finished;
     }
-    setIndex((i) => (i + dir + works.length) % works.length);
+    // A page turn doesn't hold up leaving: the picture just stays faded out under the closing fade.
+    if (!leaving.current) setIndex((i) => (i + dir + works.length) % works.length);
     busy.current = false;
   };
 
@@ -191,7 +193,7 @@ function Stage({ works, onClose }: { works: MeditationWork[]; onClose: () => voi
       const buttons = [...e.currentTarget.querySelectorAll("button")];
       const at = buttons.indexOf(document.activeElement as HTMLButtonElement);
       buttons[(at + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length]?.focus();
-    } else if (e.key === "Escape" || e.code === "KeyM") leave();
+    } else if (e.key === "Escape" || (e.code === "KeyM" && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey)) leave();
     else if (e.key === "ArrowRight") step(1);
     else if (e.key === "ArrowLeft") step(-1);
     else if (e.key === "Enter" && !(e.target instanceof HTMLButtonElement)) openWork();
