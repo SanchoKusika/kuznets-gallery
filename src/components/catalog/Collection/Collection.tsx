@@ -10,6 +10,7 @@ import { FMT, type CategoryKey, type FormatKey } from "@/content/site";
 import { PAGE_SIZE, useCollectionFilters, type CollectionFilters, type Sort } from "@/features/catalog/filters";
 import { rememberCategory } from "@/features/catalog/last-category";
 import { order } from "@/features/order/store";
+import { useCrookedSlot } from "@/features/whimsy/crooked-card";
 import { bem } from "@/lib/bem";
 import type { ArtworkCard as Card } from "@/lib/catalog";
 import { worksWord } from "@/lib/format";
@@ -32,6 +33,7 @@ type Props = { category: CategoryKey | "all"; title: string; items: Card[]; chip
 export function Collection({ category, title, items, chips }: Props) {
   const [{ format, sort, query, view, limit }, setFilters] = useCollectionFilters();
   const wide = useMediaQuery("(width >= 900px)", true);
+  const [crookedSlot, straighten] = useCrookedSlot();
   useEffect(() => rememberCategory(category), [category]);
   const asList = wide && view === "list";
 
@@ -113,8 +115,8 @@ export function Collection({ category, title, items, chips }: Props) {
         </section>
       ) : (
         <section className={b("grid")}>
-          {visible.map((card) => (
-            <ArtworkCard key={card.code} card={card} />
+          {visible.map((card, i) => (
+            <ArtworkCard key={card.code} card={card} crooked={i === crookedSlot} onStraighten={straighten} />
           ))}
         </section>
       )}

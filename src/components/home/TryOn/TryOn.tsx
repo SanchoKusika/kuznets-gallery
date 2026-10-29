@@ -43,6 +43,13 @@ const WALLS = [
 ] as const;
 type WallKey = (typeof WALLS)[number]["k"];
 
+const LIGHTS = [
+  { k: "day", name: "День" },
+  { k: "sunset", name: "Закат" },
+  { k: "lamp", name: "Торшер" },
+] as const;
+type LightKey = (typeof LIGHTS)[number]["k"];
+
 /** Wall width and the furniture's centre in cm, and cm per screen pixel. */
 const wallGeometry = (el: HTMLElement) => {
   const css = getComputedStyle(el);
@@ -56,13 +63,15 @@ const defaultSize = (w: TryOnWork) => Math.min(1, w.sizes.length - 1);
  * «Примерьте размер»: a wall drawn to scale (4.2 m, 3 m on phones) with furniture and a 175 cm person.
  * The picked work hangs at its real size, centred at eye level or at least 22 cm above the furniture
  * (as long as it stays under 2.62 m), and can be dragged along the wall — it swings on its nail.
- * «В заявку» adds the shown size, as on the work page.
+ * «В заявку» adds the shown size, as on the work page. «Свет» (day, sunset, floor lamp) is layers of
+ * gradients over the wall, no scripts (day is the plain scene).
  */
 export function TryOn({ works }: { works: TryOnWork[] }) {
   const [workIndex, setWorkIndex] = useState(0);
   const [sizeIndex, setSizeIndex] = useState(() => defaultSize(works[0]));
   const [furniture, setFurniture] = useState<FurnitureKey>("sofa");
   const [wall, setWall] = useState<WallKey>("plaster");
+  const [light, setLight] = useState<LightKey>("day");
   /** Offset of the picture's centre from the furniture's centre, cm. */
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -144,6 +153,7 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
 
   const sizeRows = work.sizes.map((z, i) => ({ label: `${z.w} × ${z.h} см`, price: formatPrice(z.p), selected: i === sizeIndex, pick: () => setSizeIndex(i) }));
 
+  // The picture's own variables sit on the wall too: the lamp light follows the picture.
   const wallVars = {
     "--wall-h": SCENE.height,
     "--floor": SCENE.floor,
@@ -154,8 +164,11 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
     "--person-h": PERSON.h,
     "--furniture-w": item.w,
     "--furniture-h": item.h,
+    "--w": size.w,
+    "--h": size.h,
+    "--offset": offset,
+    "--bottom": centreY - size.h / 2 + SCENE.floor,
   } as CSSProperties;
-  const artVars = { "--w": size.w, "--h": size.h, "--offset": offset, "--bottom": centreY - size.h / 2 + SCENE.floor } as CSSProperties;
 
   return (
     <section className={b()} data-reveal>
@@ -198,11 +211,21 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
                 ))}
               </div>
             </div>
+            <div className={b("group")}>
+              <span className={b("label")}>Свет</span>
+              <div className={b("chips")}>
+                {LIGHTS.map((l) => (
+                  <button key={l.k} type="button" className={b("chip", { selected: l.k === light })} aria-pressed={l.k === light} onClick={() => setLight(l.k)}>
+                    {l.name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className={b("stage")}>
-          <div ref={wallRef} className={b("wall", { [wall]: true })} style={wallVars}>
+          <div ref={wallRef} className={b("wall", { [wall]: true, sunset: light === "sunset", lamp: light === "lamp", dragging })} style={wallVars}>
             <div className={b("eye")}>
               <span className={b("eye-label")}>{SCENE.eye} см — уровень глаз</span>
             </div>
@@ -213,10 +236,11 @@ export function TryOn({ works }: { works: TryOnWork[] }) {
               <Person />
             </svg>
             <span className={b("person-label")}>{PERSON.h} см</span>
+            <div className={b("light", { sunset: true })} aria-hidden="true" />
+            <div className={b("light", { lamp: true })} aria-hidden="true" />
             <div
               ref={artRef}
               className={b("art", { dragging })}
-              style={artVars}
               role="img"
               aria-label={`«${work.title}», ${size.w} × ${size.h} см; стрелками можно сдвинуть по стене`}
               tabIndex={0}

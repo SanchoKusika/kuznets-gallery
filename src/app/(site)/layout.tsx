@@ -6,6 +6,7 @@ import { Reveal } from "@/features/motion/Reveal";
 import { OrderDrawer } from "@/features/order/OrderDrawer";
 import { NavigationScroll } from "@/features/scroll/NavigationScroll";
 import { SmoothScroll } from "@/features/scroll/SmoothScroll";
+import { SiteQuirks } from "@/features/whimsy/SiteQuirks";
 import { getCatalog } from "@/lib/catalog";
 import { bem } from "@/lib/bem";
 import s from "./layout.module.scss";
@@ -25,6 +26,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       <Cursor />
       <Reveal />
       <SmoothScroll />
+      <SiteQuirks />
     </div>
   );
 }

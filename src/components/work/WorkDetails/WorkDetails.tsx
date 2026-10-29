@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { Media } from "@/components/ui/Media/Media";
 import { SizeList } from "@/components/ui/SizeList/SizeList";
+import { DwellPlate } from "@/components/work/DwellPlate/DwellPlate";
 import { FRAMES, PRIMARY_PHONE, SPECS } from "@/content/site";
 import { dropHandoff, handedOff } from "@/features/catalog/card-picture";
 import { useAddToOrder } from "@/features/order/use-add-to-order";
@@ -57,55 +58,58 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
     : [{ label: "Размер на заказ", price: "по запросу", selected: true, pick: () => {} }];
 
   return (
-    <section className={b()} data-reveal>
-      <div ref={imageRef} className={b("image")}>
-        <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
-      </div>
-
-      <div className={b("info")}>
-        <div className={b("intro")}>
-          <span className={b("meta")}>
-            {code} · Kuznetsovs Gallery · {formatName}
-          </span>
-          <h1 className={b("title")}>{title}</h1>
-          <p className={b("description")}>{description}</p>
+    <>
+      <section className={b()} data-reveal>
+        <div ref={imageRef} className={b("image")}>
+          <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
         </div>
 
-        <SizeList rows={rows} />
+        <div className={b("info")}>
+          <div className={b("intro")}>
+            <span className={b("meta")}>
+              {code} · Kuznetsovs Gallery · {formatName}
+            </span>
+            <h1 className={b("title")}>{title}</h1>
+            <p className={b("description")}>{description}</p>
+          </div>
 
-        <div className={b("framing")}>
-          <span className={b("label")}>Оформление</span>
-          <div className={b("frames")}>
-            {FRAMES.map((f, i) => (
-              <button key={f.n} type="button" className={b("frame", { selected: i === frameIndex })} onClick={() => setFrameIndex(i)}>
-                <Media src={f.img} sizes="160px" className={b("frame-media")} imgClassName={b("frame-img")} />
-                <span className={b("frame-name")}>{f.n}</span>
-                <span className={b("frame-note")}>{f.note}</span>
-              </button>
+          <SizeList rows={rows} />
+
+          <div className={b("framing")}>
+            <span className={b("label")}>Оформление</span>
+            <div className={b("frames")}>
+              {FRAMES.map((f, i) => (
+                <button key={f.n} type="button" className={b("frame", { selected: i === frameIndex })} onClick={() => setFrameIndex(i)}>
+                  <Media src={f.img} sizes="160px" className={b("frame-media")} imgClassName={b("frame-img")} />
+                  <span className={b("frame-name")}>{f.n}</span>
+                  <span className={b("frame-note")}>{f.note}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={b("actions")}>
+            {/* Label and price are separate flex items, as in the prototype. */}
+            <Button size="lg" icon="plus" onClick={addToOrder}>
+              Добавить в заявку ·{" "}
+              <span>{formatPrice(size?.p)}</span>
+            </Button>
+            <Button href={PRIMARY_PHONE.href} variant="outline" size="lg" regular icon="phone" iconSize={14}>
+              Позвонить
+            </Button>
+          </div>
+
+          <div className={b("specs")}>
+            {SPECS.map((sp) => (
+              <div key={sp.k} className={b("spec")}>
+                <span className={b("spec-key")}>{sp.k}</span>
+                <span className={b("spec-value")}>{sp.v}</span>
+              </div>
             ))}
           </div>
         </div>
-
-        <div className={b("actions")}>
-          {/* Label and price are separate flex items, as in the prototype. */}
-          <Button size="lg" icon="plus" onClick={addToOrder}>
-            Добавить в заявку ·{" "}
-            <span>{formatPrice(size?.p)}</span>
-          </Button>
-          <Button href={PRIMARY_PHONE.href} variant="outline" size="lg" regular icon="phone" iconSize={14}>
-            Позвонить
-          </Button>
-        </div>
-
-        <div className={b("specs")}>
-          {SPECS.map((sp) => (
-            <div key={sp.k} className={b("spec")}>
-              <span className={b("spec-key")}>{sp.k}</span>
-              <span className={b("spec-value")}>{sp.v}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
+      </section>
+      <DwellPlate code={code} onAdd={addToOrder} />
+    </>
   );
 }

@@ -47,12 +47,12 @@ export function WorkLink({ onClick, onPointerEnter, onTouchStart, onFocus, ...pr
       ref={ref}
       prefetch={intent ? true : "auto"}
       onClick={(e) => {
-        // A modified click opens a new tab: nothing to hand over here.
-        if (isPlainClick(e)) {
+        onClick?.(e);
+        // A modified click opens a new tab and a prevented one stays here: nothing to hand over.
+        if (isPlainClick(e) && !e.defaultPrevented) {
           rememberReturn(props.href);
           handOff(props.href, e.currentTarget.querySelector("img"));
         }
-        onClick?.(e);
       }}
       onPointerEnter={(e) => {
         setIntent(true);
