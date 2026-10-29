@@ -10,12 +10,22 @@ import { SmoothScroll } from "@/features/scroll/SmoothScroll";
 import { SiteQuirks } from "@/features/whimsy/SiteQuirks";
 import { getCatalog } from "@/lib/catalog";
 import { bem } from "@/lib/bem";
+import { routes } from "@/lib/routes";
 import s from "./layout.module.scss";
 
 const b = bem(s, "site");
 
+/** Pictures the meditation mode shows: every n-th work of the catalogue, so that all categories are in. */
+const MEDITATION_COUNT = 40;
+
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
-  const total = (await getCatalog()).length;
+  const catalog = await getCatalog();
+  const total = catalog.length;
+  const step = Math.max(1, Math.floor(total / MEDITATION_COUNT));
+  const meditationWorks = catalog
+    .filter((_, i) => i % step === 0)
+    .slice(0, MEDITATION_COUNT)
+    .map((p) => ({ src: p.src, href: routes.work(p.slug) }));
   return (
     <div className={b()}>
       <Header total={total} />
@@ -28,7 +38,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       <Reveal />
       <SmoothScroll />
       <SiteQuirks />
-      <Meditation />
+      <Meditation works={meditationWorks} />
     </div>
   );
 }

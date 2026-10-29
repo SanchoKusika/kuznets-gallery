@@ -1,0 +1,67 @@
+@use "mixins" as *;
+
+// The sizes of the plane and the tiles (px) come from GridMotion.tsx as CSS variables: `--plane-w`,
+// `--plane-h`, `--tile-w`, `--tile-h`, `--gap`, `--top` (the first row's offset), `--angle`, and `--r`
+// (the row's number). The rows are moved, and the tiles lit (`--spot`, 0…1), from the script every frame.
+
+.grid-motion {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+
+  &__plane {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--plane-w);
+    height: var(--plane-h);
+    transform: translate(-50%, -50%) rotate(var(--angle));
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: grid-motion-in 1.2s ease both;
+    }
+  }
+
+  &__row {
+    position: absolute;
+    left: 0;
+    top: calc(var(--top) + var(--r) * (var(--tile-h) + var(--gap)));
+    display: flex;
+    gap: var(--gap);
+    will-change: transform;
+  }
+
+  // A picture away from the light is dimmed, the lit ones are as they are.
+  &__tile {
+    position: relative;
+    flex: none;
+    width: var(--tile-w);
+    height: var(--tile-h);
+    overflow: hidden;
+    background: #1b1613;
+    cursor: pointer;
+    opacity: calc(1 - 0.62 * (1 - var(--spot, 0)));
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 0 1px rgba(246, 231, 210, 0.08);
+      pointer-events: none;
+    }
+  }
+
+  &__picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+  }
+}
+
+@keyframes grid-motion-in {
+  from {
+    opacity: 0;
+  }
+}
