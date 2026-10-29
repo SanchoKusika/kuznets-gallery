@@ -67,7 +67,6 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
       <div className={b("crumbs")}>
         <BackToCollection label={categoryName} className={b("back")} />
         <MeditationTrigger />
-        <span>{work.code}</span>
       </div>
       <WorkDetails
         code={work.code}
