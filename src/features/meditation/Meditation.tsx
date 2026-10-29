@@ -28,8 +28,8 @@ const WANDER_AFTER_S = 3;
 /** The drawing buffer's share of the screen: the cloth is smooth, so a coarser one costs nothing and spares weak GPUs. */
 const SCALE_FROM = 0.8;
 const SCALE_LEAST = 0.3;
-/** A frame slower than this on average (ms, over `WINDOW` frames) makes the picture coarser. */
-const SLOW_MS = 26;
+/** A frame slower than this (ms; 25 fps — a screen held to 30 fps by power saving is not slow) makes the picture coarser once most of `WINDOW` frames are. */
+const SLOW_MS = 40;
 const WINDOW = 45;
 
 const typing = (t: EventTarget | null) => t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
@@ -80,7 +80,6 @@ export function Meditation() {
 function Stage() {
   const [closing, setClosing] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
   const leaving = useRef(false);
 
@@ -106,9 +105,14 @@ function Stage() {
   // The cloth, the lamp, the breath and the idle pointer. With reduced motion the cloth is one still frame.
   useEffect(() => {
     const stage = stageRef.current;
-    const canvas = canvasRef.current;
     const label = labelRef.current;
-    if (!stage || !canvas || !label) return;
+    if (!stage || !label) return;
+
+    // A canvas of its own for every run: a WebGL context given back can't be taken again from the same one.
+    const canvas = document.createElement("canvas");
+    canvas.className = s["meditation__cloth"];
+    canvas.setAttribute("aria-hidden", "true");
+    stage.prepend(canvas);
 
     let idle = 0;
     const wake = () => {
@@ -121,7 +125,12 @@ function Stage() {
     const motion = prefersMotion();
     const silk = createSilk(canvas);
     let scale = SCALE_FROM;
-    const fit = () => silk?.resize(Math.max(2, Math.round(stage.clientWidth * scale)), Math.max(2, Math.round(stage.clientHeight * scale)));
+    let clock = 0;
+    // A resized canvas is blank, so the frame is drawn again at once, before anything is painted.
+    const fit = () => {
+      silk?.resize(Math.max(2, Math.round(stage.clientWidth * scale)), Math.max(2, Math.round(stage.clientHeight * scale)));
+      silk?.frame(clock);
+    };
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(stage);
@@ -130,13 +139,12 @@ function Stage() {
     const pointer = { x: 0.5, y: 0.5, moved: -Infinity };
     const light = { x: 0.5, y: 0.5 };
     const toScreen = (e: PointerEvent) => ({ x: e.clientX / innerWidth, y: 1 - e.clientY / innerHeight });
-    let clock = 0;
     const onMove = (e: PointerEvent) => {
       wake();
       Object.assign(pointer, toScreen(e), { moved: clock });
     };
     const onDown = (e: PointerEvent) => {
-      if (e.target instanceof HTMLButtonElement) return;
+      if (e.target instanceof Element && e.target.closest("button")) return;
       const at = toScreen(e);
       silk?.ring(at.x, at.y, clock);
       if (!motion) silk?.frame(clock);
@@ -192,6 +200,7 @@ function Stage() {
       silk?.frame(clock);
       stage.style.setProperty("--breath", "0.55");
       label.textContent = "Дышите спокойно";
+      label.style.opacity = "1";
     }
 
     return () => {
@@ -201,6 +210,7 @@ function Stage() {
       removeEventListener("pointermove", onMove);
       removeEventListener("pointerdown", onDown);
       silk?.destroy();
+      canvas.remove();
     };
   }, []);
 
@@ -214,7 +224,6 @@ function Stage() {
 
   return (
     <div ref={stageRef} className={b(null, { closing })} role="dialog" aria-modal="true" aria-label="Режим медитации" tabIndex={-1} onKeyDown={onKeyDown}>
-      <canvas ref={canvasRef} className={b("cloth")} aria-hidden="true" />
       <div className={b("grain")} />
       <div className={b("breath")} aria-hidden="true">
         <div className={b("ring")} />

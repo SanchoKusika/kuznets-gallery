@@ -83,7 +83,7 @@ export type Silk = {
   set(light: { x: number; y: number }, breath: number): void;
   /** A ring runs over the cloth from this point (0…1, y up). */
   ring(x: number, y: number, time: number): void;
-  /** Size of the drawing buffer in pixels (the canvas is stretched over the screen by CSS). */
+  /** Size of the drawing buffer in pixels (the canvas is stretched over the screen by CSS). It comes out blank: draw a frame after it. */
   resize(width: number, height: number): void;
   destroy(): void;
 };
@@ -98,7 +98,10 @@ function compile(gl: WebGLRenderingContext, type: number, source: string) {
   return null;
 }
 
-/** Null when there is no WebGL (or the shader doesn't build): the page then keeps its plain dark backdrop. */
+/**
+ * Null when there is no WebGL (or the shader doesn't build): the page then keeps its plain dark backdrop.
+ * `destroy()` gives the context back, so the canvas must not be used again: one canvas per call.
+ */
 export function createSilk(canvas: HTMLCanvasElement): Silk | null {
   const gl = canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, stencil: false });
   if (!gl) return null;
@@ -158,17 +161,15 @@ export function createSilk(canvas: HTMLCanvasElement): Silk | null {
       nextRing = (nextRing + 1) % RINGS;
     },
     resize(width, height) {
+      // Setting the size, even to the same value, wipes the drawing buffer.
+      if (width === canvas.width && height === canvas.height) return;
       canvas.width = width;
       canvas.height = height;
       gl.viewport(0, 0, width, height);
       gl.uniform2f(uRes, width, height);
     },
-    // The context itself is left to go with its canvas: a lost one would be handed back, dead, by the next getContext().
     destroy() {
-      gl.deleteProgram(program);
-      gl.deleteShader(vertex);
-      gl.deleteShader(fragment);
-      gl.deleteBuffer(buffer);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     },
   };
 }

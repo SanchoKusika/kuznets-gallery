@@ -13,7 +13,6 @@ import s from "./page.module.scss";
 
 const b = bem(s, "work-page");
 
-
 /** «Ещё»: 2 rows × 6 columns at the widest (see RelatedWorks.module.scss). */
 const RELATED_COUNT = 12;
 
