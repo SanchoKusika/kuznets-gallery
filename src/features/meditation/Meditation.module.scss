@@ -1,0 +1,171 @@
+@use "mixins" as *;
+
+// The mode is a small world of its own — satin in the logo's colours (drawn by silk.ts on the canvas),
+// the same in both site themes, hence the literal colours. `--breath` (0…1) is written every frame
+// by Meditation.tsx.
+
+$ink: #f6e7d2;
+$ink-dim: rgba(246, 231, 210, 0.55);
+$grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+.meditation {
+  --breath: 0.5;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  // what shows where there is no WebGL
+  background: radial-gradient(120% 90% at 50% 40%, #3a1a0f 0%, #140d0a 60%, #0a0705 100%);
+  color: $ink;
+  outline: none;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: meditation-in 0.9s ease both;
+  }
+
+  &--idle {
+    cursor: none;
+  }
+
+  &--closing {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: meditation-out 0.45s ease forwards;
+    }
+  }
+
+  // —— the way in: «M» in the breadcrumbs of the work page (not shown without a keyboard)
+  &__trigger {
+    @include button-reset;
+    @include label(12px);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-3);
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      display: none;
+    }
+  }
+
+  &__key {
+    padding: 2px 6px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 11px;
+    letter-spacing: 0;
+    line-height: 1.2;
+    text-transform: none;
+  }
+
+  // —— the cloth: the canvas is drawn coarser than the screen and stretched over it
+  &__cloth,
+  &__grain {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__grain {
+    background-image: $grain;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  // —— the breath: a ring that fills and empties, the word inside it
+  &__breath {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  &__ring {
+    position: absolute;
+    width: min(36vmin, 380px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(246, 231, 210, 0.3);
+    border-radius: 50%;
+    box-shadow:
+      0 0 60px rgba(224, 80, 46, 0.28),
+      inset 0 0 50px rgba(224, 80, 46, 0.14);
+    opacity: calc(0.35 + var(--breath) * 0.65);
+    scale: calc(0.62 + var(--breath) * 0.5);
+  }
+
+  &__word {
+    @include serif;
+    position: relative;
+    font-size: clamp(26px, 2.6vw, 40px);
+    text-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+  }
+
+  // —— controls: fade out together with the pointer
+  &__controls {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.6s;
+
+    :where(button) {
+      pointer-events: auto;
+    }
+  }
+
+  &--idle &__controls:not(:focus-within) {
+    opacity: 0;
+  }
+
+  &__exit {
+    @include button-reset;
+    @include label(12px);
+    position: absolute;
+    top: 24px;
+    right: clamp(16px, 3vw, 48px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: $ink-dim;
+    transition: color 0.25s;
+
+    &:hover {
+      color: $ink;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+  }
+
+  &__hint {
+    @include label(11px);
+    position: absolute;
+    bottom: clamp(20px, 4vh, 40px);
+    left: 50%;
+    color: $ink-dim;
+    translate: -50% 0;
+    white-space: nowrap;
+  }
+}
+
+@keyframes meditation-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes meditation-out {
+  to {
+    opacity: 0;
+  }
+}

@@ -1,6 +1,7 @@
 import { Footer } from "@/components/layout/Footer/Footer";
 import { AdminBadge } from "@/components/layout/AdminBadge/AdminBadge";
 import { Header } from "@/components/layout/Header/Header";
+import { Meditation } from "@/features/meditation/Meditation";
 import { Cursor } from "@/features/motion/Cursor";
 import { Reveal } from "@/features/motion/Reveal";
 import { OrderDrawer } from "@/features/order/OrderDrawer";
@@ -27,6 +28,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       <Reveal />
       <SmoothScroll />
       <SiteQuirks />
+      <Meditation />
     </div>
   );
 }
