@@ -1,4 +1,5 @@
 import Image, { type StaticImageData } from "next/image";
+import type { Ref } from "react";
 import { bem } from "@/lib/bem";
 import { isForeign } from "@/lib/images";
 import s from "./Media.module.scss";
@@ -19,6 +20,8 @@ type Props = {
   placeholder?: string;
   /** The image has loaded (client components only). */
   onLoad?: () => void;
+  /** The wrapper element. */
+  ref?: Ref<HTMLDivElement>;
 };
 
 /**
@@ -26,10 +29,10 @@ type Props = {
  * dimmed in dark theme). Remote catalogue images get a nominal intrinsic size;
  * the box defines the real one.
  */
-export function Media({ src, alt = "", sizes, className, imgClassName, eager, placeholder, onLoad }: Props) {
+export function Media({ src, alt = "", sizes, className, imgClassName, eager, placeholder, onLoad, ref }: Props) {
   const dims = typeof src === "string" ? { width: 1200, height: 1200 } : {};
   return (
-    <div className={b(null, null, className)}>
+    <div ref={ref} className={b(null, null, className)}>
       {placeholder && (
         // eslint-disable-next-line @next/next/no-img-element -- a file the browser already has, as is
         <img src={placeholder} alt="" aria-hidden className={b("placeholder", null, imgClassName)} />

@@ -2,18 +2,24 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { NextWork } from "@/components/work/NextWork/NextWork";
 import { BackToCollection } from "@/components/work/BackToCollection/BackToCollection";
+import { Meditation } from "@/components/work/Meditation/Meditation";
 import { RelatedWorks } from "@/components/work/RelatedWorks/RelatedWorks";
 import { WorkDetails } from "@/components/work/WorkDetails/WorkDetails";
 import { CATS, FMT } from "@/content/site";
 import { bem } from "@/lib/bem";
-import { getCatalog, toCard } from "@/lib/catalog";
+import { getCatalog, toCard, type Artwork } from "@/lib/catalog";
 import { routes } from "@/lib/routes";
 import s from "./page.module.scss";
 
 const b = bem(s, "work-page");
 
+/** The picture alone (the flat photo, when there is one) for the meditation mode. */
+const meditationWork = (p: Artwork) => ({ code: p.code, href: routes.work(p.slug), title: p.title, src: p.flatSrc ?? p.src, range: toCard(p).range });
+
 /** «Ещё»: 2 rows × 6 columns at the widest (see RelatedWorks.module.scss). */
 const RELATED_COUNT = 12;
+/** Works the meditation mode can page through: this one and the next ones in the catalogue. */
+const MEDITATION_COUNT = 12;
 
 type Params = PageProps<"/work/[code]">["params"];
 
@@ -65,6 +71,7 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
     <main>
       <div className={b("crumbs")}>
         <BackToCollection label={categoryName} className={b("back")} />
+        <Meditation works={[work, ...(next ? [next, ...rest] : [])].slice(0, MEDITATION_COUNT).map(meditationWork)} />
         <span>{work.code}</span>
       </div>
       <WorkDetails

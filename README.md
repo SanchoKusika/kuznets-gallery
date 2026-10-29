@@ -106,7 +106,7 @@ src/
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
   components/catalog/   Collection, ArtworkCard, ArtworkRow
-  components/work/      WorkDetails, NextWork, RelatedWorks
+  components/work/      WorkDetails, NextWork, RelatedWorks, DwellPlate (табличка «30 секунд»), Meditation (режим медитации, клавиша M, только ПК)
   components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
   components/not-found/ страница 404: рама-маятник, этикетка
@@ -115,7 +115,8 @@ src/
   features/admin/       модель, состояние панели (store), аналитика обзора, форматирование, серверная часть
   features/             theme, order (заявка, её drawer и полёт картины в «Заявку»), catalog (фильтры коллекции, возврат «← Коллекция» на то же место сетки, картинка карточки на странице работы),
                         motion (появление при скролле, курсор), scroll (Lenis, блокировка скролла, состояние шапки на <html> — data-scrolled),
-                        map (карта подвала: стиль, метки, места)
+                        map (карта подвала: стиль, метки, места, пасхалка с чаем),
+                        whimsy (мелочи без веса: «Поправь картину» в сетке коллекции, заголовок вкладки и сообщение в консоли)
   content/site.ts       тексты и справочники из прототипа
   lib/                  каталог и отзывы (Supabase, 'use cache'), заявка (правила и тип), картинки,
                         форматирование, маршруты, bem(); lib/supabase — клиенты и типы БД

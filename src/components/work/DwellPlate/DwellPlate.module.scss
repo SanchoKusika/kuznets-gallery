@@ -1,0 +1,62 @@
+@use "mixins" as *;
+
+// Under the header (30) and the menu (29); the admin badge sits bottom left, the plate bottom right.
+.dwell-plate {
+  position: fixed;
+  right: clamp(12px, 2vw, 24px);
+  bottom: clamp(12px, 2vw, 24px);
+  z-index: 27;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  width: min(300px, calc(100vw - 24px));
+  padding: 18px 18px 16px;
+  background: var(--paper-raised);
+  border: 1px solid var(--ink);
+  box-shadow: var(--shadow-float);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: dwell-plate-in 0.6s var(--ease-out) both;
+  }
+
+  &__close {
+    @include button-reset;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    padding: 4px;
+    color: var(--ink-3);
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__label {
+    @include label(11px);
+    padding-right: 24px;
+    color: var(--ink-3);
+  }
+
+  &__text {
+    @include serif;
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  &__button {
+    margin-top: 4px;
+  }
+}
+
+@keyframes dwell-plate-in {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}

@@ -177,6 +177,57 @@
     box-shadow: 0 0 0 3px var(--inverse);
   }
 
+  // Easter egg (tea.ts): a bowl of green tea above the pin and a note under it.
+  &__tea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    animation: map-tea 5.6s var(--ease-out) both;
+  }
+
+  &__tea-bowl {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    translate: -50% -18px;
+    color: var(--inverse-fg);
+  }
+
+  &__tea-surface {
+    fill: #a8c070;
+  }
+
+  &__tea-steam {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: map-steam 2.4s ease-in-out infinite;
+    }
+
+    &--n-2 {
+      animation-delay: -0.8s;
+    }
+
+    &--n-3 {
+      animation-delay: -1.6s;
+    }
+  }
+
+  &__tea-note {
+    @include serif;
+    position: absolute;
+    left: 0;
+    top: 24px;
+    width: 220px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--inverse-fg);
+    color: var(--inverse);
+    font-size: 15px;
+    line-height: 1.2;
+    text-align: center;
+    translate: -50% 0;
+  }
+
   &__pin-label {
     position: absolute;
     left: 18px;
@@ -203,5 +254,38 @@
   to {
     transform: scale(4.5);
     opacity: 0;
+  }
+}
+
+@keyframes map-tea {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  6%,
+  90% {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes map-steam {
+  0% {
+    opacity: 0;
+    translate: 0 6px;
+  }
+
+  30% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 -8px;
   }
 }

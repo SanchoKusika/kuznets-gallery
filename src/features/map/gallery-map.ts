@@ -6,6 +6,7 @@ import { bem } from "@/lib/bem";
 import { PIN_CLASS, PIN_HTML } from "./pin";
 import { GALLERY_LL, GALLERY_ZOOM, METRO, type Station } from "./places";
 import { ACCENT, mapCustomization } from "./style";
+import { pourTeaOnTaps } from "./tea";
 import s from "./GalleryMap.module.scss";
 
 const b = bem(s, "map");
@@ -119,7 +120,9 @@ export async function createGalleryMap(container: HTMLElement, theme: Theme, api
       return pill;
     });
 
-    marker(GALLERY_LL, el(PIN_CLASS, PIN_HTML), 3);
+    const pin = el(PIN_CLASS, PIN_HTML);
+    const stopTea = pourTeaOnTaps(pin);
+    marker(GALLERY_LL, pin, 3);
 
     // Hint over the map for a plain wheel / one-finger drag.
     const hint = el(b("hint"));
@@ -188,6 +191,7 @@ export async function createGalleryMap(container: HTMLElement, theme: Theme, api
         if (removed) return;
         removed = true;
         clearTimeout(hintTimer);
+        stopTea();
         container.removeEventListener("wheel", onWheel, { capture: true });
         container.removeEventListener("touchmove", onTouchMove, { capture: true });
         hint.remove();
