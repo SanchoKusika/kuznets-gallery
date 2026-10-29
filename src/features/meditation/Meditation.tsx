@@ -72,6 +72,7 @@ function Stage({ works }: { works: GridTile[] }) {
   const router = useRouter();
   const [closing, setClosing] = useState(false);
   const [tiles] = useState(() => shuffled(works));
+  const [motion] = useState(prefersMotion);
   const stageRef = useRef<HTMLDivElement>(null);
   const leaving = useRef(false);
 
@@ -126,7 +127,7 @@ function Stage({ works }: { works: GridTile[] }) {
 
   return (
     <div ref={stageRef} className={b(null, { closing })} role="dialog" aria-modal="true" aria-label="Режим медитации" tabIndex={-1} onKeyDown={onKeyDown}>
-      <GridMotion tiles={tiles} motion={prefersMotion()} onOpen={(href) => leave(() => router.push(href))} />
+      <GridMotion tiles={tiles} motion={motion} onOpen={(href) => leave(() => router.push(href))} />
       <div className={b("vignette")} />
       <div className={b("controls")}>
         <button type="button" className={b("exit")} onClick={() => leave()}>
@@ -134,7 +135,7 @@ function Stage({ works }: { works: GridTile[] }) {
           Выйти
           <kbd className={b("key")}>Esc</kbd>
         </button>
-        <span className={b("hint")}>Ведите мышью — свет идёт за ней · клик по картине открывает работу</span>
+        <span className={b("hint")}>{motion ? "Ведите мышью — свет идёт за ней · " : ""}клик по картине открывает работу</span>
       </div>
     </div>
   );

@@ -83,6 +83,7 @@ type Props = {
 export function GridMotion({ tiles, motion, onOpen }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
+  const phase = useRef<{ offsets: number[]; shifts: number[] }>({ offsets: [], shifts: [] });
   const [size, setSize] = useState({ width: 0, height: 0 });
   const layout = useMemo(() => layoutFor(size.width, size.height), [size]);
   const images = useMemo(() => tiles.map((t) => tileImage(t.src)), [tiles]);
@@ -109,9 +110,14 @@ export function GridMotion({ tiles, motion, onOpen }: Props) {
     const tileEls = rowEls.map((row) => Array.from(row.children) as HTMLElement[]);
     /** The light on each tile (0…1, eased) and what was last written to it. */
     const spots = tileEls.map((list) => new Float32Array(list.length));
-    const written = tileEls.map((list) => new Float32Array(list.length));
-    const offsets = rowEls.map((_, r) => r * layout.step * 0.37);
-    const shifts = rowEls.map(() => 0);
+    // -1: nothing written yet — the first frame writes every tile, over what an earlier run left on it.
+    const written = tileEls.map((list) => new Float32Array(list.length).fill(-1));
+    // Where the rows have got to survives a resize (the effect runs again), so they don't jump back.
+    const { offsets, shifts } = phase.current;
+    rowEls.forEach((_, r) => {
+      offsets[r] ??= r * layout.step * 0.37;
+      shifts[r] ??= 0;
+    });
 
     // The pointer from the middle of the screen, px, and when it last moved, s.
     const pointer = { x: 0, y: 0, moved: -Infinity };
@@ -120,7 +126,7 @@ export function GridMotion({ tiles, motion, onOpen }: Props) {
       pointer.y = e.clientY - innerHeight / 2;
       pointer.moved = performance.now() / 1000;
     };
-    addEventListener("pointermove", onMove, { passive: true });
+    if (motion) addEventListener("pointermove", onMove, { passive: true });
 
     const turn = (ANGLE * Math.PI) / 180;
     const cos = Math.cos(turn);

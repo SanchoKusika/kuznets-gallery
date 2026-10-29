@@ -15,16 +15,14 @@ import s from "./layout.module.scss";
 
 const b = bem(s, "site");
 
-/** Pictures the meditation mode shows: every n-th work of the catalogue, so that all categories are in. */
+/** Pictures the meditation mode shows: works spread evenly over the whole catalogue, so that all categories are in. */
 const MEDITATION_COUNT = 40;
 
 export default async function SiteLayout({ children }: LayoutProps<"/">) {
   const catalog = await getCatalog();
   const total = catalog.length;
-  const step = Math.max(1, Math.floor(total / MEDITATION_COUNT));
-  const meditationWorks = catalog
-    .filter((_, i) => i % step === 0)
-    .slice(0, MEDITATION_COUNT)
+  const count = Math.min(MEDITATION_COUNT, total);
+  const meditationWorks = Array.from({ length: count }, (_, j) => catalog[Math.floor((j * total) / count)])
     .map((p) => ({ src: p.src, href: routes.work(p.slug) }));
   return (
     <div className={b()}>
