@@ -6,8 +6,8 @@ import { Drawer, DrawerLabel } from "@/components/admin/ui/Drawer/Drawer";
 import { Field } from "@/components/admin/ui/Field/Field";
 import { SearchField } from "@/components/admin/ui/SearchField/SearchField";
 import { Thumb } from "@/components/admin/ui/Thumb/Thumb";
-import { count, dstr, fmtP, hm, PICTURES } from "@/features/admin/format";
-import { FRAME_NAMES, SOURCES, STATUSES, digits, minPrice, reqTotal, type Source } from "@/features/admin/model";
+import { count, dstr, fmtP, hm, num, PICTURES } from "@/features/admin/format";
+import { FRAME_NAMES, SOURCES, STATUSES, digits, lineTotal, minPrice, reqTotal, separateFrame, type Source } from "@/features/admin/model";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import type { RequestItem } from "@/lib/request";
@@ -176,13 +176,36 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
                       </option>
                     ))}
                   </select>
-                  <select className={b("item-select")} aria-label="Оформление" value={FRAME_NAMES.includes(it.frame) ? it.frame : FRAME_NAMES[0]} onChange={(e) => updItem(i, { frame: e.target.value })}>
+                  <select
+                    className={b("item-select")}
+                    aria-label="Оформление"
+                    value={FRAME_NAMES.includes(it.frame) ? it.frame : FRAME_NAMES[0]}
+                    // Back to the canvas on a stretcher: its framing is in the price, the entered sum goes.
+                    onChange={(e) => updItem(i, { frame: e.target.value, ...(e.target.value === FRAME_NAMES[0] && { framePrice: null }) })}
+                  >
                     {FRAME_NAMES.map((f) => (
                       <option key={f} value={f}>
                         {f}
                       </option>
                     ))}
                   </select>
+                  {separateFrame(it) && (
+                    <label className={b("frame-price", { empty: it.framePrice == null })} title="Оформление за штуку: багет или рамка со стеклом считаются отдельно">
+                      <span>+</span>
+                      <input
+                        className={b("frame-input")}
+                        value={it.framePrice == null ? "" : num(it.framePrice)}
+                        onChange={(e) => {
+                          const d = digits(e.target.value);
+                          updItem(i, { framePrice: d ? +d : null });
+                        }}
+                        inputMode="numeric"
+                        placeholder="оформление"
+                        aria-label="Цена оформления за штуку"
+                      />
+                      <span>сум</span>
+                    </label>
+                  )}
                   <div className={b("qty")}>
                     <button type="button" className={b("qty-button")} aria-label="Меньше" onClick={() => updItem(i, { qty: Math.max(1, (it.qty || 1) - 1) })}>
                       −
@@ -192,7 +215,7 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
                       +
                     </button>
                   </div>
-                  <span className={b("item-line")}>{it.price == null ? "по запросу" : fmtP(it.price * (it.qty || 1))}</span>
+                  <span className={b("item-line")}>{fmtP(lineTotal(it))}</span>
                 </div>
               </div>
             </div>
@@ -240,7 +263,9 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
       <div className={b("total")}>
         <div>
           <div className={b("total-label")}>Итого</div>
-          <div className={b("total-note")}>{total.q ? "Часть позиций — цена по запросу" : "Доставка и оформление — отдельно"}</div>
+          <div className={b("total-note")}>
+            {total.q ? "Часть позиций — цена по запросу" : total.f ? "Без оформления: впишите сумму у позиции" : "Доставка — отдельно"}
+          </div>
         </div>
         <div className={b("total-value")}>{total.t ? fmtP(total.t) : "по запросу"}</div>
       </div>
