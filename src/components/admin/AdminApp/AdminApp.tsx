@@ -4,6 +4,7 @@ import { Activity, useEffect, type ReactNode } from "react";
 import { AdminNav } from "@/components/admin/AdminNav/AdminNav";
 import { Catalog } from "@/components/admin/Catalog/Catalog";
 import { Dashboard } from "@/components/admin/Dashboard/Dashboard";
+import { OgEditor } from "@/components/admin/OgEditor/OgEditor";
 import { Prices } from "@/components/admin/Prices/Prices";
 import { ProductDrawer } from "@/components/admin/ProductDrawer/ProductDrawer";
 import { RequestDrawer } from "@/components/admin/RequestDrawer/RequestDrawer";
@@ -26,7 +27,8 @@ const b = bem(s, "admin");
 type Props = { admin: AdminUser; data: AdminData; edit?: string; tab?: string };
 
 /**
- * The admin panel (design/Admin.dc.html): navigation, page header, five sections, drawers and the toast.
+ * The admin panel (design/Admin.dc.html): navigation, page header, six sections («Превью» has no prototype), drawers
+ * and the toast.
  * Rendered on the client only — it lays out by window width and shows local dates and "5 мин назад".
  */
 export function AdminApp({ admin, data, edit, tab }: Props) {
@@ -41,7 +43,7 @@ export function AdminApp({ admin, data, edit, tab }: Props) {
   );
 }
 
-const TITLES: Record<Tab, string> = { dash: "обзор", req: "заявки", cat: "каталог", price: "прайс", rev: "отзывы" };
+const TITLES: Record<Tab, string> = { dash: "обзор", req: "заявки", cat: "каталог", price: "прайс", rev: "отзывы", og: "превью ссылки" };
 const VIEWS = [
   ["list", "Список"],
   ["board", "Доска"],
@@ -78,6 +80,7 @@ function Shell({ edit, tab: tabParam }: { edit?: string; tab?: string }) {
     cat: count(products.length, PICTURES) + (hidden ? ` · ${hidden} скрыто` : ""),
     price: "Цены по стандартным размерам",
     rev: `${reviews.filter((r) => !r.hidden).length} из ${reviews.length} на сайте`,
+    og: "Картинка, когда делятся ссылкой на сайт",
   };
 
   const actions: Partial<Record<Tab, ReactNode>> = {
@@ -110,6 +113,7 @@ function Shell({ edit, tab: tabParam }: { edit?: string; tab?: string }) {
           {section("cat", <Catalog />)}
           {section("price", <Prices />)}
           {section("rev", <ReviewsEditor />)}
+          {section("og", <OgEditor />)}
         </div>
       </main>
       <RequestDrawer open={drawer === "req"} id={store.openId} />

@@ -1,8 +1,9 @@
-import { createImageUpload, createVariantUploads } from "@/app/admin/actions";
-import { bucketKey, IMAGE_BASE, VARIANT_DIR, VARIANT_WIDTHS, variantKey } from "@/lib/images";
+import { createImageUpload, createSiteOgUpload, createVariantUploads, siteOgChanged } from "@/app/admin/actions";
+import { bucketKey, IMAGE_BASE, needsOgCopy, OG_COPY_WIDTH, ogCopyKey, VARIANT_DIR, VARIANT_WIDTHS, variantKey } from "@/lib/images";
 
 // Artwork images in the browser: everything goes to the bucket as WebP, with the copies the site's image loader
-// serves (lib/images.ts). Encoding happens here, so it works the same on Vercel and on Cloudflare.
+// serves and a JPEG copy for link previews (lib/images.ts). Encoding happens here, so it works the same on Vercel
+// and on Cloudflare.
 
 /** Uploaded images keep the long side up to this many pixels. */
 export const MAX_SIDE = 3000;
@@ -10,6 +11,7 @@ export const MAX_SIDE = 3000;
 export const MAX_FILE_MB = 40;
 const QUALITY = 0.9;
 const COPY_QUALITY = 0.8;
+const OG_QUALITY = 0.82;
 
 /** File name without the extension; "kartina" when nothing is left. */
 export const baseName = (name: string) => name.replace(/\.[^.]+$/, "") || "kartina";
@@ -38,9 +40,9 @@ function scaled(bitmap: ImageBitmap, width: number) {
   return canvasOf(source, target, Math.max(1, Math.round((bitmap.height * target) / bitmap.width)));
 }
 
-/** WebP of the canvas (a browser that cannot encode it gives PNG: the type says which). */
-async function encode(canvas: HTMLCanvasElement, quality: number) {
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", quality));
+/** WebP (or `type`) of the canvas; a browser that cannot encode WebP gives PNG: the type says which. */
+async function encode(canvas: HTMLCanvasElement, quality: number, type = "image/webp") {
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
   if (!blob) throw new Error("encode");
   return blob;
 }
@@ -60,18 +62,19 @@ export function checkFile(file: File): string | null {
   return null;
 }
 
-/** Signed upload of `body` to the bucket. */
-async function put(url: string, body: Blob, upsert: boolean) {
+/** Signed upload of `body` to the bucket (cached for a year unless `cacheControl` says otherwise, in seconds). */
+async function put(url: string, body: Blob, upsert: boolean, cacheControl = "31536000") {
   const form = new FormData();
-  form.append("cacheControl", "31536000");
+  form.append("cacheControl", cacheControl);
   form.append("", body);
   const res = await fetch(url, { method: "PUT", body: form, headers: { "x-upsert": String(upsert) } });
   if (!res.ok) throw new Error(String(res.status));
 }
 
 async function uploadCopies(key: string, bitmap: ImageBitmap) {
-  const targets = await createVariantUploads(key);
-  await Promise.all(targets.map(async ({ width, url }) => put(url, await encode(scaled(bitmap, width), COPY_QUALITY), true)));
+  const { copies, og } = await createVariantUploads(key);
+  const upload = async (url: string, width: number, quality: number, type?: string) => put(url, await encode(scaled(bitmap, width), quality, type), true);
+  await Promise.all([...copies.map(({ width, url }) => upload(url, width, COPY_QUALITY)), og && upload(og, OG_COPY_WIDTH, OG_QUALITY, "image/jpeg")]);
 }
 
 /**
@@ -99,13 +102,42 @@ export async function uploadImage(file: File) {
 export async function ensureCopies(path: string) {
   const key = bucketKey(path.trim());
   if (!key || key.startsWith(VARIANT_DIR)) return;
-  const present = await Promise.all(VARIANT_WIDTHS.map((w) => fetch(IMAGE_BASE + variantKey(key, w), { method: "HEAD", cache: "no-store" }).then((r) => r.ok)));
+  const copies = [...VARIANT_WIDTHS.map((w) => variantKey(key, w)), ...(needsOgCopy(key) ? [ogCopyKey(key)] : [])];
+  const present = await Promise.all(copies.map((k) => fetch(IMAGE_BASE + k, { method: "HEAD", cache: "no-store" }).then((r) => r.ok)));
   if (present.every(Boolean)) return;
   const res = await fetch(IMAGE_BASE + key, { cache: "no-store" });
   if (!res.ok) throw new Error(`no image ${key}`);
   const bitmap = await createImageBitmap(await res.blob());
   try {
     await uploadCopies(key, bitmap);
+  } finally {
+    bitmap.close();
+  }
+}
+
+/** The site's link preview: 1200×630 (what Telegram, WhatsApp and Facebook expect), JPEG up to this size. */
+export const SITE_OG = { w: 1200, h: 630, maxBytes: 300 * 1024 } as const;
+
+/**
+ * Uploads the site's own link preview: the picture (framed 1.91:1 in the photo editor) covers 1200×630 and goes
+ * as JPEG, its quality lowered step by step until it is under 300 KB (WhatsApp drops heavier previews).
+ */
+export async function uploadSiteOg(file: File) {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const source = scaled(bitmap, Math.round(bitmap.width * Math.max(SITE_OG.w / bitmap.width, SITE_OG.h / bitmap.height)));
+    const k = Math.max(SITE_OG.w / source.width, SITE_OG.h / source.height);
+    const out = document.createElement("canvas");
+    out.width = SITE_OG.w;
+    out.height = SITE_OG.h;
+    const ctx = out.getContext("2d")!;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(source, (SITE_OG.w - source.width * k) / 2, (SITE_OG.h - source.height * k) / 2, source.width * k, source.height * k);
+    let blob = await encode(out, 0.86, "image/jpeg");
+    for (const q of [0.78, 0.7, 0.6]) if (blob.size > SITE_OG.maxBytes) blob = await encode(out, q, "image/jpeg");
+    // A short cache: a replaced preview shows up within a minute.
+    await put(await createSiteOgUpload(), blob, true, "60");
+    await siteOgChanged();
   } finally {
     bitmap.close();
   }

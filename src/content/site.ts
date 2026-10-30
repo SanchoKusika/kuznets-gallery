@@ -7,6 +7,13 @@ import steklo from "@/assets/images/steklo.webp";
 export type CategoryKey = "home" | "kids" | "office" | "public";
 export type FormatKey = "sq" | "v" | "h";
 
+/** Title of the home page and of the site's link preview. */
+export const SITE_TITLE = "Kuznetsovs Gallery — принт-картины в Ташкенте";
+
+/** The site in one sentence: meta description of the home page, the gallery's description for search engines. */
+export const SITE_DESCRIPTION =
+  "Принт-картины, объединяющие традиционное и современное. В наличии и на заказ, от 90 000 сум, изготовление 3–7 дней, доставка по Узбекистану.";
+
 export const CONTACTS = {
   phones: [
     { href: "tel:+998903165913", label: "+998 90 316 59 13", name: "Алексей" },

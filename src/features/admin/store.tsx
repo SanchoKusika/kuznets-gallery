@@ -7,13 +7,14 @@ import { ensureCopies } from "./images";
 import type { AdminData, AdminUser, Product, ProductDraft, Req, ReqPatch, Review, Status } from "./model";
 import { STATUS_NAME, toDraft } from "./model";
 
-export type Tab = "dash" | "req" | "cat" | "price" | "rev";
+export type Tab = "dash" | "req" | "cat" | "price" | "rev" | "og";
 export const TABS: readonly (readonly [Tab, string])[] = [
   ["dash", "Обзор"],
   ["req", "Заявки"],
   ["cat", "Каталог"],
   ["price", "Прайс"],
   ["rev", "Отзывы"],
+  ["og", "Превью"],
 ];
 const TAB_KEY = "kz_admin_tab";
 const SWEEP_KEY = "kz_admin_sweep";

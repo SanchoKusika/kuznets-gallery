@@ -6,7 +6,8 @@ import { z } from "zod";
 import { fromProduct, requireAdmin, toRequest, toReview } from "@/features/admin/server";
 import { SOURCES, STATUSES, type Product, type Req, type ReqPatch, type Review } from "@/features/admin/model";
 import { CATALOG_TAG } from "@/lib/catalog";
-import { bucketKey, VARIANT_DIR, VARIANT_WIDTHS, variantKey } from "@/lib/images";
+import { OG_TAG } from "@/features/og/og";
+import { bucketKey, needsOgCopy, ogCopyKey, SITE_DIR, SITE_OG_KEY, VARIANT_DIR, VARIANT_WIDTHS, variantKey } from "@/lib/images";
 import { REVIEWS_TAG } from "@/lib/reviews";
 import { ADMIN_MARKER_COOKIE, AUTH_COOKIE_OPTIONS, REMEMBER_COOKIE } from "@/lib/supabase/cookies";
 import { sessionDb } from "@/lib/supabase/session";
@@ -213,8 +214,11 @@ export async function createImageUpload(fileName: string): Promise<{ path: strin
   return { path: data.path, url: data.signedUrl };
 }
 
-/** Signed URLs (overwriting) for the WebP copies of a bucket image (lib/images.ts), made in the browser. */
-export async function createVariantUploads(key: string): Promise<{ width: number; url: string }[]> {
+/**
+ * Signed URLs (overwriting) for the WebP copies of a bucket image and, unless it is a JPEG or PNG, its JPEG copy
+ * for link previews (lib/images.ts); the copies are made in the browser.
+ */
+export async function createVariantUploads(key: string): Promise<{ copies: { width: number; url: string }[]; og: string | null }> {
   const db = await requireAdmin();
   const k = z
     .string()
@@ -222,7 +226,12 @@ export async function createVariantUploads(key: string): Promise<{ width: number
     .regex(/^(?!_v\/)(?!.*\.\.)[\w\-./]+\.(jpe?g|png|webp)$/i)
     .parse(key);
   const bucket = db.storage.from("artworks");
-  return Promise.all(VARIANT_WIDTHS.map(async (width) => ({ width, url: must(await bucket.createSignedUploadUrl(variantKey(k, width), { upsert: true })).signedUrl })));
+  const signed = async (path: string) => must(await bucket.createSignedUploadUrl(path, { upsert: true })).signedUrl;
+  const [copies, og] = await Promise.all([
+    Promise.all(VARIANT_WIDTHS.map(async (width) => ({ width, url: await signed(variantKey(k, width)) }))),
+    needsOgCopy(k) ? signed(ogCopyKey(k)) : null,
+  ]);
+  return { copies, og };
 }
 
 /** A file stays this long after it was first seen unreferenced: a card still open, a deleted work «Вернуть» may bring back. */
@@ -261,7 +270,7 @@ export async function sweepStorage(seen: Record<string, number>): Promise<{ dele
   const stems = new Set([...used].map((key) => key.replace(/\.[^./]+$/, "")));
   const files = await listBucket(bucket, "");
   const unused = files.filter((f) =>
-    f.key.startsWith(VARIANT_DIR) ? !stems.has(f.key.slice(VARIANT_DIR.length).replace(/^\d+\//, "").replace(/\.webp$/, "")) : !used.has(f.key),
+    f.key.startsWith(SITE_DIR) ? false : f.key.startsWith(VARIANT_DIR) ? !stems.has(f.key.slice(VARIANT_DIR.length).replace(/^(\d+|og)\//, "").replace(/\.(webp|jpg)$/, "")) : !used.has(f.key),
   );
   const now = Date.now();
   const before = now - KEEP_MS;
@@ -291,6 +300,26 @@ async function listBucket(bucket: Bucket, prefix: string): Promise<{ key: string
   }
   for (const nested of await Promise.all(folders.map((key) => listBucket(bucket, key)))) files.push(...nested);
   return files;
+}
+
+// —— The site's link preview (app/opengraph-image.tsx is rebuilt from the `og` tag)
+
+/** Signed URL (overwriting) for the site's own link preview; the JPEG is made in the browser. */
+export async function createSiteOgUpload() {
+  const db = await requireAdmin();
+  return must(await db.storage.from("artworks").createSignedUploadUrl(SITE_OG_KEY, { upsert: true })).signedUrl;
+}
+
+export async function siteOgChanged() {
+  await requireAdmin();
+  updateTag(OG_TAG);
+}
+
+/** Back to the generated card. */
+export async function removeSiteOg() {
+  const db = await requireAdmin();
+  check(await db.storage.from("artworks").remove([SITE_OG_KEY]));
+  updateTag(OG_TAG);
 }
 
 // —— Reviews (the home page slider is rebuilt from the `reviews` tag)

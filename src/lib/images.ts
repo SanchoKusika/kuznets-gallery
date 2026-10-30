@@ -33,3 +33,26 @@ export function bucketKey(path: string) {
   if (path.startsWith(IMAGE_BASE)) return path.slice(IMAGE_BASE.length);
   return !path || /^(https?:|data:|\/)/.test(path) ? null : path;
 }
+
+/**
+ * Link previews (next/og) read JPEG and PNG, not WebP: an image stored in another format also gets a JPEG copy
+ * this wide, at `_v/og/<key without extension>.jpg` (made with the WebP copies).
+ */
+export const OG_COPY_WIDTH = 1200;
+
+export const needsOgCopy = (key: string) => !/\.(jpe?g|png)$/i.test(key);
+
+export const ogCopyKey = (key: string) => `${VARIANT_DIR}og/${key.replace(/\.[^./]+$/, "")}.jpg`;
+
+/** URL of an image next/og can read: a bucket JPEG or PNG as it is, any other bucket image by its JPEG copy. */
+export function ogImageUrl(path: string) {
+  const key = bucketKey(path);
+  if (!key) return imageUrl(path);
+  return IMAGE_BASE + (needsOgCopy(key) ? ogCopyKey(key) : key);
+}
+
+/** The site's own files in the bucket (outside `_v/`, never swept): the link preview set in the admin. */
+export const SITE_DIR = "site/";
+
+/** The link preview of the site uploaded in the admin («Превью»); while there is none, app/opengraph-image draws one. */
+export const SITE_OG_KEY = `${SITE_DIR}og.jpg`;

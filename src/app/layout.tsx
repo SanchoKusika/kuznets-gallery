@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { LOGO_INTRO_SCRIPT } from "@/components/ui/Logo/logo-intro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "@/content/site";
 import { MOTION_INIT_SCRIPT } from "@/features/motion/prefers-motion";
 import { THEME_INIT_SCRIPT } from "@/features/theme/constants";
 import { InlineScript } from "@/features/theme/InlineScript";
@@ -11,13 +12,15 @@ import "./globals.scss";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Kuznetsovs Gallery — принт-картины в Ташкенте",
+    default: SITE_TITLE,
     template: "%s — Kuznetsovs Gallery",
   },
-  description:
-    "Принт-картины, объединяющие традиционное и современное. В наличии и на заказ, от 90 000 сум, изготовление 3–7 дней, доставка по Узбекистану.",
+  description: SITE_DESCRIPTION,
   // Icons and the web manifest are files in app/: favicon.ico, icon.svg, apple-icon.png, manifest.ts.
   appleWebApp: { title: "Kuznetsovs Gallery" },
+  // Title and description come from each page; the picture from the nearest opengraph-image.tsx.
+  openGraph: { siteName: "Kuznetsovs Gallery", locale: "ru_RU", type: "website" },
+  twitter: { card: "summary_large_image" },
   robots: { index: INDEXABLE, follow: INDEXABLE },
 };
 
