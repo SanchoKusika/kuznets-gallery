@@ -144,7 +144,7 @@ export async function saveProduct(p: Product) {
   updateTag(CATALOG_TAG);
 }
 
-/** Whole products: undo of a delete or of a price change. */
+/** Whole products: undo of a delete or of a price change, catalogue order changes. */
 export async function restoreProducts(list: Product[]) {
   const db = await requireAdmin();
   check(await db.from("products").upsert(z.array(ProductSchema).max(1000).parse(list).map(fromProduct)));
@@ -169,6 +169,13 @@ export async function saveSizes(list: { code: string; sizes: Product["sizes"] }[
   const rows = z.array(ProductSchema.pick({ code: true, sizes: true })).max(1000).parse(list);
   if (rows.length) check(await db.rpc("set_product_sizes", { p_rows: rows }));
   updateTag(CATALOG_TAG);
+}
+
+/** «Обновить сайт»: the site's pages are rebuilt from the database, e.g. after edits made right in Supabase. */
+export async function refreshSite() {
+  await requireAdmin();
+  updateTag(CATALOG_TAG);
+  updateTag(REVIEWS_TAG);
 }
 
 /** Signed URL the browser uploads an artwork image to; returns the object key for `products.image`. */

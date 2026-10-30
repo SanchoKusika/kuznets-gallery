@@ -185,8 +185,23 @@
   }
 
   &__delete,
-  &__duplicate {
+  &__duplicate,
+  &__site-link {
     @include footer-link;
+  }
+
+  &__site-link {
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+
+  // «Изменения не сохранены» in place of «Удалить / Дублировать» while the card asks before closing.
+  &__unsaved {
+    font-size: 13px;
+    color: var(--accent);
   }
 
   &__delete {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PillSelect } from "@/components/admin/ui/PillSelect/PillSelect";
 import { Segmented } from "@/components/admin/ui/Segmented/Segmented";
 import { Switch } from "@/components/admin/ui/Switch/Switch";
@@ -32,11 +32,30 @@ type Props = { data: ReturnType<typeof sales>; options: ChartOptions; onChange: 
 export function SalesChart({ data, options, onChange }: Props) {
   const { tier } = useLayout();
   const [hover, setHover] = useState<number | null>(null);
+  // The last bar shown: the tooltip keeps its content while it fades out.
+  const [shown, setShown] = useState(0);
+  const plotRef = useRef<HTMLDivElement>(null);
   const n = data.bars.length;
   const hov = hover != null && hover < n ? hover : null;
-  const right = hov != null && hov < n * 0.6;
+  const at = hov ?? Math.min(shown, n - 1);
+  const right = at < n * 0.6;
   const gap = options.per === "30d" ? (tier === 0 ? 2 : 4) : options.per === "90d" ? 8 : tier === 0 ? 6 : 12;
-  const tip = hov != null ? data.bars[hov].tip : null;
+  const tip = n ? data.bars[at].tip : null;
+
+  const show = (i: number) => {
+    setHover(i);
+    setShown(i);
+  };
+
+  // A touch outside the plot hides the tooltip (there is no mouse to leave it).
+  useEffect(() => {
+    if (hov == null) return;
+    const onDown = (e: PointerEvent) => {
+      if (!plotRef.current?.contains(e.target as Node)) setHover(null);
+    };
+    addEventListener("pointerdown", onDown);
+    return () => removeEventListener("pointerdown", onDown);
+  }, [hov]);
 
   return (
     <section className={b()}>
@@ -90,7 +109,7 @@ export function SalesChart({ data, options, onChange }: Props) {
         )}
       </div>
 
-      <div className={b("plot", { narrow: tier === 0 })} onMouseLeave={() => setHover(null)}>
+      <div ref={plotRef} className={b("plot", { narrow: tier === 0 })} onMouseLeave={() => setHover(null)}>
         <span className={b("grid", { top: true })} />
         <span className={b("grid", { mid: true })} />
         <span className={b("y", { top: true })}>{data.yTop}</span>
@@ -98,15 +117,25 @@ export function SalesChart({ data, options, onChange }: Props) {
         <span className={b("y", { zero: true })}>0</span>
         <div className={b("bars", { gap })}>
           {data.bars.map((bar, i) => (
-            <div key={i} className={b("bar", { cmp: options.cmp })} onMouseEnter={() => setHover(i)} onClick={() => setHover(i)}>
+            <div
+              key={i}
+              className={b("bar", { cmp: options.cmp })}
+              onMouseEnter={() => show(i)}
+              // A tap on the bar that shows the tooltip hides it; the mouse has already shown it on enter.
+              onPointerDown={(e) => {
+                if (e.pointerType === "mouse") return;
+                if (hov === i) setHover(null);
+                else show(i);
+              }}
+            >
               <span className={b("prev-bar", { on: options.cmp })} style={{ height: `${bar.ph}%` }} />
               <span className={b("cur-bar", { hover: hov === i })} style={{ height: `${bar.h}%` }} />
             </div>
           ))}
         </div>
         <span className={b("base")} />
-        {tip && hov != null && (
-          <div className={b("tip", { right })} style={{ left: `${((right ? hov + 1 : hov) / n) * 100}%` }}>
+        {tip && (
+          <div className={b("tip", { right, on: hov != null })} style={{ left: `${((right ? at + 1 : at) / n) * 100}%` }} aria-hidden={hov == null}>
             <span className={b("tip-title")}>{tip.t}</span>
             <span className={b("tip-value")}>{tip.v}</span>
             {tip.n && <span className={b("tip-line")}>{tip.n}</span>}

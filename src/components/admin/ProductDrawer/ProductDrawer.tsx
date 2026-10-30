@@ -14,6 +14,7 @@ import { ADMIN_CATS, fromDraft, type ProductDraft } from "@/features/admin/model
 import { useAdmin, type ProductEdit } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import { imageUrl, isForeign } from "@/lib/images";
+import { routes } from "@/lib/routes";
 import s from "./ProductDrawer.module.scss";
 
 const b = bem(s, "product-card");
@@ -29,13 +30,14 @@ const onlyDigits = (v: string) => v.replace(/\D/g, "");
  * A picked or dropped file, and the current photo on «Редактировать», open in the photo editor first.
  */
 export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit | null }) {
-  const { closeDrawer, saveProd, deleteProds, duplicateProd, setDraft, toast } = useAdmin();
+  const { closeDrawer, confirmClose, discardDraft, saveProd, deleteProds, duplicateProd, setDraft, toast } = useAdmin();
   const [uploading, setUploading] = useState(false);
   // The photo in the editor; `n` mounts a fresh editor for every photo, the closed one stays to slide out.
   const [photo, setPhoto] = useState<{ source: File | string; n: number; open: boolean } | null>(null);
 
   if (!edit) return <Drawer open={false} onClose={closeDrawer} head="" footer={null}>{null}</Drawer>;
-  const { draft: e, isNew } = edit;
+  const { draft: e, initial, isNew } = edit;
+  const save = () => saveProd(fromDraft(e), isNew);
   const src = e.image ? imageUrl(e.image) : "";
 
   type SizeDraft = ProductDraft["sizes"][number];
@@ -73,6 +75,19 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
         covered={photo?.open}
         footerWrap
         footer={
+          confirmClose ? (
+            <>
+              <div className={b("secondary")}>
+                <span className={b("unsaved")}>Изменения не сохранены</span>
+              </div>
+              <div className={b("primary")}>
+                <DsButton variant="ghost" onClick={discardDraft}>
+                  Не сохранять
+                </DsButton>
+                <DsButton onClick={save}>Сохранить</DsButton>
+              </div>
+            </>
+          ) : (
           <>
             <div className={b("secondary")}>
               {!isNew && (
@@ -88,6 +103,12 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
                   <button type="button" className={b("duplicate")} onClick={duplicateProd}>
                     Дублировать
                   </button>
+                  {/* Hidden works have no page on the site. */}
+                  {!initial.hidden && (
+                    <a className={b("site-link")} href={routes.work(e.code.toLowerCase())} target="_blank" rel="noopener">
+                      На сайте ↗
+                    </a>
+                  )}
                 </>
               )}
             </div>
@@ -95,9 +116,10 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
               <DsButton variant="ghost" onClick={closeDrawer}>
                 Отмена
               </DsButton>
-              <DsButton onClick={() => saveProd(fromDraft(e), isNew)}>Сохранить</DsButton>
+              <DsButton onClick={save}>Сохранить</DsButton>
             </div>
           </>
+          )
         }
       >
         <label

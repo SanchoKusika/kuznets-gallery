@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, type DragEvent } from "react";
 import { Chip } from "@/components/admin/ui/Chip/Chip";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { PillSelect } from "@/components/admin/ui/PillSelect/PillSelect";
@@ -34,15 +34,22 @@ function sizeSummary(p: Product) {
   return { n: ss.length ? count(ss.length, SIZES) : "по запросу", range: range + extra };
 }
 
-/** «Каталог»: direction chips and «Скрытые», search, sort, bulk actions, 40 rows + «Показать ещё». */
+/**
+ * «Каталог»: direction chips and «Скрытые», search, sort, bulk actions, 40 rows + «Показать ещё».
+ * In the site's order of the whole catalogue (no filter, no search) rows are dragged to reorder the site.
+ */
 export function Catalog() {
   const { mode, tier } = useLayout();
-  const { products, openProd, setHidden, deleteProds, visit } = useAdmin();
+  const { products, openProd, setHidden, deleteProds, moveProds, moveProdsToTop, visit } = useAdmin();
   const [filter, setFilter] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("site");
   const [limit, setLimit] = useState(PAGE);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const dragCode = useRef<string | null>(null);
+  const [dragging, setDragging] = useState<string | null>(null);
+  // The row under the dragged one and the half of it: the row is dropped before or after it.
+  const [drop, setDrop] = useState<{ code: string; after: boolean } | null>(null);
   const [seenVisit, setSeenVisit] = useState(visit);
   if (visit !== seenVisit) {
     setSeenVisit(visit);
@@ -67,6 +74,32 @@ export function Catalog() {
   const bulk = (fn: (codes: string[]) => void) => {
     fn(selKeys);
     setSelected({});
+  };
+
+  // Reordering: only the full list in the site's order, and not on touch screens (the bottom tab bar layout).
+  const reorder = sort === "site" && filter === "all" && !q && mode !== "bar";
+  const endDrag = () => {
+    dragCode.current = null;
+    setDragging(null);
+    setDrop(null);
+  };
+  const dragOver = (e: DragEvent, code: string) => {
+    if (!dragCode.current) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    const r = e.currentTarget.getBoundingClientRect();
+    const after = e.clientY > r.top + r.height / 2;
+    if (drop?.code !== code || drop.after !== after) setDrop({ code, after });
+  };
+  const dropOn = (e: DragEvent) => {
+    e.preventDefault();
+    const code = dragCode.current;
+    const target = drop;
+    endDrag();
+    if (!code || !target || target.code === code) return;
+    const i = list.findIndex((p) => p.code === target.code);
+    const before = target.after ? (list.slice(i + 1).find((p) => p.code !== code)?.code ?? null) : target.code;
+    moveProds([code], before, "Порядок на сайте изменён");
   };
 
   return (
@@ -111,6 +144,9 @@ export function Catalog() {
             <button type="button" className={b("bulk-button")} onClick={() => bulk((c) => setHidden(c, true))}>
               Скрыть
             </button>
+            <button type="button" className={b("bulk-button")} title="Первыми на сайте" onClick={() => bulk(moveProdsToTop)}>
+              Наверх
+            </button>
             <button type="button" className={b("bulk-delete")} onClick={() => bulk(deleteProds)}>
               Удалить
             </button>
@@ -145,7 +181,29 @@ export function Catalog() {
           const sz = sizeSummary(p);
           const mp = minPrice(p);
           return (
-            <div key={p.code} className={b("row", { selected: sel })} onClick={() => openProd(p.code)}>
+            <div
+              key={p.code}
+              className={b("row", {
+                selected: sel,
+                draggable: reorder,
+                dragging: dragging === p.code,
+                "drop-before": drop?.code === p.code && !drop.after,
+                "drop-after": drop?.code === p.code && drop.after,
+              })}
+              onClick={() => openProd(p.code)}
+              draggable={reorder}
+              onDragStart={(e) => {
+                dragCode.current = p.code;
+                e.dataTransfer.effectAllowed = "move";
+                try {
+                  e.dataTransfer.setData("text/plain", p.code);
+                } catch {}
+                setTimeout(() => setDragging(p.code), 0);
+              }}
+              onDragEnd={endDrag}
+              onDragOver={(e) => dragOver(e, p.code)}
+              onDrop={dropOn}
+            >
               <button
                 type="button"
                 className={b("check", { on: sel })}
@@ -189,6 +247,7 @@ export function Catalog() {
       <div className={b("foot")}>
         <span className={b("shown")}>
           {`Показано ${Math.min(limit, list.length)} из ${list.length}`}
+          {reorder && list.length > 1 && " · перетащите строку, чтобы поменять порядок на сайте"}
         </span>
         {list.length > limit && (
           <DsButton variant="secondary" onClick={() => setLimit((l) => l + PAGE)}>

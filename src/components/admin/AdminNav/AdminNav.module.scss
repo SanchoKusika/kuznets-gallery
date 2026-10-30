@@ -86,8 +86,24 @@
     background: var(--accent);
   }
 
-  &__user {
+  // «Обновить сайт» opens the sidebar's bottom group: account, then «На сайт» and the theme.
+  &__refresh {
     margin-top: auto;
+    align-self: flex-start;
+    border: 0;
+    background: transparent;
+    padding: 6px 14px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-3);
+    transition: color 0.25s;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+
+  &__user {
     display: flex;
     align-items: center;
     gap: 10px;

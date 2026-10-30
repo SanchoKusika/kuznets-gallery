@@ -19,8 +19,11 @@ const TAB_KEY = "kz_admin_tab";
 export type ReqFilter = Status | "all";
 export type ReqView = "list" | "board";
 type Toast = { text: string; undo?: () => void };
-/** The product card: a draft of the product being edited or added. */
-export type ProductEdit = { draft: ProductDraft; isNew: boolean };
+/** The product card: a draft of the product being edited or added, and the draft as it was opened. */
+export type ProductEdit = { draft: ProductDraft; initial: ProductDraft; isNew: boolean };
+
+/** The card has changes that «Сохранить» has not written yet. */
+const isDirty = (e: ProductEdit | null) => !!e && JSON.stringify(e.draft) !== JSON.stringify(e.initial);
 
 function readTab(): Tab {
   try {
@@ -51,14 +54,16 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
   const [drawer, setDrawer] = useState<"req" | "prod" | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [edit, setEdit] = useState<ProductEdit | null>(null);
+  /** Closing a card with unsaved changes asks first (in the card's footer). */
+  const [confirmClose, setConfirmClose] = useState(false);
   const [toastState, setToastState] = useState<Toast | null>(null);
   const [toastOn, setToastOn] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Latest state for callbacks fired later (undo, debounced saves).
-  const latest = useRef({ products, requests, reviews });
+  const latest = useRef({ products, requests, reviews, drawer, edit });
   useEffect(() => {
-    latest.current = { products, requests, reviews };
+    latest.current = { products, requests, reviews, drawer, edit };
   });
 
   const toast = useCallback((text: string, undo?: () => void) => {
@@ -86,7 +91,20 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     window.scrollTo(0, 0);
   }, []);
 
-  const closeDrawer = useCallback(() => setDrawer(null), []);
+  /** Closes the open card; a product card with unsaved changes asks «Не сохранять / Сохранить» first. */
+  const closeDrawer = useCallback(() => {
+    const { drawer: open, edit: e } = latest.current;
+    if (open === "prod" && isDirty(e)) setConfirmClose(true);
+    else setDrawer(null);
+  }, []);
+
+  /** «Не сохранять»: the card closes, the draft is dropped. */
+  const discardDraft = useCallback(() => {
+    setConfirmClose(false);
+    setDrawer(null);
+  }, []);
+
+  const keepEditing = useCallback(() => setConfirmClose(false), []);
 
   // —— Requests: local state first, then a debounced save of the merged patch.
   const pending = useRef(new Map<string, ReqPatch>());
@@ -173,7 +191,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
         toast(`Картина ${code} удалена из каталога`);
         return;
       }
-      setEdit({ draft: toDraft(p), isNew: false });
+      const draft = toDraft(p);
+      setEdit({ draft, initial: draft, isNew: false });
+      setConfirmClose(false);
       setDrawer("prod");
     },
     [toast],
@@ -181,28 +201,30 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
 
   const newProd = useCallback(() => {
     const top = Math.min(0, ...latest.current.products.map((p) => p.sortOrder));
-    setEdit({
-      isNew: true,
-      draft: toDraft({ code: nextCode(), title: "", description: "", image: "", flatImage: "", sizes: [{ w: 50, h: 50, price: 310000 }], customSizes: [], categories: ["home", "all"], hidden: false, sortOrder: top - 1 }),
-    });
+    const draft = toDraft({ code: nextCode(), title: "", description: "", image: "", flatImage: "", sizes: [{ w: 50, h: 50, price: 310000 }], customSizes: [], categories: ["home", "all"], hidden: false, sortOrder: top - 1 });
+    setEdit({ isNew: true, draft, initial: draft });
+    setConfirmClose(false);
     setDrawer("prod");
   }, [nextCode]);
 
-  /** The product card edits a draft; «Сохранить» writes it. */
+  /** The product card edits a draft; «Сохранить» writes it. Editing on answers the «unsaved changes» question. */
   const setDraft = useCallback((patch: Partial<ProductDraft> | ((p: ProductDraft) => Partial<ProductDraft>)) => {
+    setConfirmClose(false);
     setEdit((e) => (e ? { ...e, draft: { ...e.draft, ...(typeof patch === "function" ? patch(e.draft) : patch) } } : e));
   }, []);
 
   /** «Дублировать»: the open card becomes a new product with the next code. */
   const duplicateProd = useCallback(() => {
     const top = Math.min(0, ...latest.current.products.map((p) => p.sortOrder));
-    setEdit((e) => (e ? { isNew: true, draft: { ...e.draft, code: nextCode(), title: `${e.draft.title} (копия)`, sortOrder: top - 1 } } : e));
+    // The copy is unsaved from the start: `initial` stays the original's draft.
+    setEdit((e) => (e ? { ...e, isNew: true, draft: { ...e.draft, code: nextCode(), title: `${e.draft.title} (копия)`, sortOrder: top - 1 } } : e));
     toast("Это копия — проверьте и сохраните");
   }, [nextCode, toast]);
 
   const saveProd = useCallback(
     (p: Product, isNew: boolean) => {
       setProducts((list) => (isNew ? [p, ...list] : list.map((x) => (x.code === p.code ? p : x))));
+      setConfirmClose(false);
       setDrawer(null);
       save(api.saveProduct(p));
       toast(isNew ? `Картина ${p.code} добавлена` : "Изменения сохранены");
@@ -235,6 +257,42 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     [save, toast],
   );
 
+  /**
+   * Catalogue order (drag-and-drop in «Каталог», «Наверх»): `codes` go, in their order, before `before`
+   * (null — to the end). The catalogue is renumbered 0…n−1; the changed products are written whole, with «Вернуть».
+   */
+  const moveProds = useCallback(
+    (codes: string[], before: string | null, message: string) => {
+      const list = [...latest.current.products].sort(byOrder);
+      const moving = list.filter((p) => codes.includes(p.code));
+      const rest = list.filter((p) => !codes.includes(p.code));
+      const at = before == null ? rest.length : rest.findIndex((p) => p.code === before);
+      if (!moving.length || at < 0) return;
+      const next = [...rest.slice(0, at), ...moving, ...rest.slice(at)].map((p, i) => (p.sortOrder === i ? p : { ...p, sortOrder: i }));
+      const old = new Map(list.map((p) => [p.code, p.sortOrder]));
+      const changed = next.filter((p) => old.get(p.code) !== p.sortOrder);
+      if (!changed.length) return;
+      setProducts(next);
+      save(api.restoreProducts(changed));
+      // Undo puts back only the order: other edits made meanwhile stay.
+      toast(message, () => {
+        const back = latest.current.products.filter((p) => changed.some((c) => c.code === p.code)).map((p) => ({ ...p, sortOrder: old.get(p.code)! }));
+        setProducts((all) => all.map((p) => back.find((x) => x.code === p.code) ?? p).sort(byOrder));
+        save(api.restoreProducts(back));
+      });
+    },
+    [save, toast],
+  );
+
+  /** «Наверх»: the selected products open the catalogue, in their current order. */
+  const moveProdsToTop = useCallback(
+    (codes: string[]) => {
+      const first = [...latest.current.products].sort(byOrder).find((p) => !codes.includes(p.code));
+      moveProds(codes, first?.code ?? null, codes.length > 1 ? `Наверх: ${count(codes.length, PICTURES)}` : "Картина поднята наверх");
+    },
+    [moveProds],
+  );
+
   /** Price changes: new sizes for the changed products, with «Вернуть». */
   const applySizes = useCallback(
     (next: Product[], message: string) => {
@@ -250,6 +308,11 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       });
     },
     [save, toast],
+  );
+
+  const refreshSite = useCallback(
+    () => void api.refreshSite().then(() => toast("Сайт обновлён"), () => toast(FAILED)),
+    [toast],
   );
 
   // —— Reviews: edits save after a pause, everything else at once.
@@ -317,14 +380,25 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     [save, toast],
   );
 
-  // Esc closes the drawer.
+  // Esc closes the drawer; with the «unsaved changes» question open it goes back to editing.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeDrawer();
+      if (e.key !== "Escape") return;
+      if (confirmClose) keepEditing();
+      else closeDrawer();
     };
     addEventListener("keydown", onKey);
     return () => removeEventListener("keydown", onKey);
-  }, [closeDrawer]);
+  }, [closeDrawer, confirmClose, keepEditing]);
+
+  // Leaving the page with unsaved changes in the open card: the browser asks.
+  const unsaved = drawer === "prod" && isDirty(edit);
+  useEffect(() => {
+    if (!unsaved) return;
+    const onLeave = (e: BeforeUnloadEvent) => e.preventDefault();
+    addEventListener("beforeunload", onLeave);
+    return () => removeEventListener("beforeunload", onLeave);
+  }, [unsaved]);
 
   return {
     admin,
@@ -348,6 +422,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     openId,
     edit,
     closeDrawer,
+    confirmClose,
+    discardDraft,
+    keepEditing,
     toast,
     toastState,
     toastOn,
@@ -365,11 +442,14 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     saveProd,
     deleteProds,
     setHidden,
+    moveProds,
+    moveProdsToTop,
     applySizes,
     updateReview,
     moveReview,
     addReview,
     deleteReview,
+    refreshSite,
   };
 }
 
