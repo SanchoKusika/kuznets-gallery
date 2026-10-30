@@ -196,7 +196,7 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
                         className={b("frame-input")}
                         value={it.framePrice == null ? "" : num(it.framePrice)}
                         onChange={(e) => {
-                          const d = digits(e.target.value);
+                          const d = digits(e.target.value).slice(0, 9); // the server takes up to 999 999 999
                           updItem(i, { framePrice: d ? +d : null });
                         }}
                         inputMode="numeric"
