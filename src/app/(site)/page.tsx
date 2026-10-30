@@ -43,7 +43,8 @@ export default async function HomePage() {
   });
 
   const ribbonTitles = [...new Set(items.map((p) => p.title))].slice(0, 14);
-  const minPrice = Math.min(...items.flatMap((p) => (p.minPrice ? [p.minPrice] : [])));
+  const prices = items.flatMap((p) => (p.minPrice ? [p.minPrice] : []));
+  const minPrice = prices.length ? Math.min(...prices) : null;
 
   return (
     <>

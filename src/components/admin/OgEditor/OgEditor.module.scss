@@ -84,37 +84,9 @@
     align-items: center;
   }
 
-  // «Загрузить свою»: a file input dressed as the primary pill button.
-  &__upload {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 12px 22px;
-    border-radius: 99px;
-    background: var(--ink);
-    color: var(--paper);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.25s;
-
-    &:hover {
-      background: var(--accent);
-      color: var(--on-accent);
-    }
-
-    &:has(:focus-visible) {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-  }
-
+  // The file input behind «Загрузить свою» (the button opens it).
   &__file {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
+    display: none;
   }
 
   // The chat: an incoming message with the link and its preview, at Telegram's preview width.

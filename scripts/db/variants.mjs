@@ -11,6 +11,8 @@ import { adminClient, must } from "./client.mjs";
 const BUCKET = "artworks";
 const WIDTHS = [256, 640, 1200, 2048];
 const DIR = "_v/";
+/** The site's own files (the link preview from the admin): no copies. */
+const SITE = "site/";
 const QUALITY = 80;
 const PARALLEL = 6;
 
@@ -40,7 +42,7 @@ async function list(prefix) {
 
 const all = await list("");
 const have = new Set(all.filter((k) => k.startsWith(DIR)));
-const images = all.filter((k) => !k.startsWith(DIR) && /\.(jpe?g|png|webp)$/i.test(k));
+const images = all.filter((k) => !k.startsWith(DIR) && !k.startsWith(SITE) && /\.(jpe?g|png|webp)$/i.test(k));
 
 let made = 0;
 let done = 0;

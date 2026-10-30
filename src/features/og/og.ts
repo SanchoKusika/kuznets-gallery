@@ -2,6 +2,7 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import type { ImageResponse } from "next/og";
+import { CATALOG_TAG } from "@/lib/catalog";
 import { IMAGE_BASE, SITE_OG_KEY } from "@/lib/images";
 
 // Link previews (app/**/opengraph-image.tsx): what next/og needs besides the layout. Each card is made inside
@@ -30,16 +31,20 @@ function imageSize(b: Uint8Array): { w: number; h: number } | null {
   return null;
 }
 
-/** An image as a data URI with its size; null when it is missing or not a JPEG or PNG (next/og reads no WebP). */
+/**
+ * An image as a data URI with its size; null when it is missing or not a JPEG or PNG (next/og reads no WebP).
+ * A miss is kept for minutes only (a copy may still be uploading), and every entry goes with the catalogue.
+ */
 export async function ogImage(url: string): Promise<{ src: string; w: number; h: number } | null> {
   "use cache";
-  cacheLife("max");
+  cacheTag(CATALOG_TAG);
   const res = await fetch(url).catch(() => null);
   const type = res?.headers.get("content-type") ?? "";
-  if (!res?.ok || !/^image\/(jpeg|png)/.test(type)) return null;
-  const bytes = new Uint8Array(await res.arrayBuffer());
-  const size = imageSize(bytes);
-  return size && { src: `data:${type};base64,${Buffer.from(bytes).toString("base64")}`, ...size };
+  const bytes = res?.ok && /^image\/(jpeg|png)/.test(type) ? new Uint8Array(await res.arrayBuffer()) : null;
+  const size = bytes && imageSize(bytes);
+  if (size) cacheLife("max");
+  else cacheLife("minutes");
+  return bytes && size ? { src: `data:${type};base64,${Buffer.from(bytes).toString("base64")}`, ...size } : null;
 }
 
 /** The link preview uploaded in the admin as base64 JPEG; null while there is none. */

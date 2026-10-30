@@ -11,7 +11,7 @@ const NAME = "Kuznetsovs Gallery";
 const GALLERY_ID = `${SITE_URL}/#gallery`;
 
 /** The site and the gallery as a place: name in results, address, phones, the map point, profiles elsewhere. */
-export function galleryData({ description, minPrice }: { description: string; minPrice: number }) {
+export function galleryData({ description, minPrice }: { description: string; minPrice: number | null }) {
   const [lng, lat] = GALLERY_LL;
   return {
     "@context": "https://schema.org",
@@ -25,7 +25,7 @@ export function galleryData({ description, minPrice }: { description: string; mi
         description,
         image: `${SITE_URL}/opengraph-image`,
         telephone: CONTACTS.phones.map((p) => p.href.replace("tel:", "")),
-        priceRange: `от ${formatPrice(minPrice)}`,
+        ...(minPrice && { priceRange: `от ${formatPrice(minPrice)}` }),
         address: {
           "@type": "PostalAddress",
           streetAddress: `${LOCATION.title}, ${LOCATION.lines[1].replace(/^У улицы/, "у улицы")}`,

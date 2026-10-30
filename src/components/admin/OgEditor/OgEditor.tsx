@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { removeSiteOg } from "@/app/admin/actions";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/content/site";
@@ -32,6 +32,7 @@ export function OgEditor() {
   const [custom, setCustom] = useState<boolean | null>(null);
   const [photo, setPhoto] = useState<{ source: File; n: number; open: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let alive = true;
@@ -94,19 +95,21 @@ export function OgEditor() {
         {/* eslint-disable-next-line @next/next/no-img-element -- the card as messengers get it, not a site image */}
         <div className={b("frame")}>{src && <img className={b("image")} src={src} alt="Картинка ссылки на сайт" />}</div>
         <div className={b("actions")}>
-          <label className={b("upload")}>
-            <input
-              className={b("file")}
-              type="file"
-              accept="image/*"
-              disabled={busy}
-              onChange={(ev: ChangeEvent<HTMLInputElement>) => {
-                pick(ev.target.files?.[0]);
-                ev.target.value = ""; // the same file can be picked again
-              }}
-            />
+          <input
+            ref={fileRef}
+            className={b("file")}
+            type="file"
+            accept="image/*"
+            tabIndex={-1}
+            aria-hidden="true"
+            onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+              pick(ev.target.files?.[0]);
+              ev.target.value = ""; // the same file can be picked again
+            }}
+          />
+          <DsButton onClick={() => fileRef.current?.click()} disabled={busy}>
             {custom ? "Заменить картинку" : "Загрузить свою"}
-          </label>
+          </DsButton>
           {custom && (
             <DsButton variant="ghost" onClick={reset} disabled={busy}>
               Вернуть стандартную
