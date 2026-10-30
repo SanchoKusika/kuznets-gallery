@@ -12,6 +12,11 @@ export type RequestItem = {
   h: number | null;
   price: number | null;
   frame: string;
+  /**
+   * Price of the framing per piece when it is not the canvas on a stretcher (baget, glass are «расчёт отдельно»):
+   * entered by the manager in the admin panel; null or absent — not counted yet. The site never sends it.
+   */
+  framePrice?: number | null;
   qty: number;
 };
 

@@ -1,7 +1,7 @@
 // Dashboard numbers — a port of the prototype's renderVals() analytics (design/Admin.dc.html).
 // Pure functions over requests and products; dates are local, as in the prototype.
 
-import { ADMIN_CATS, ACTIVE, SOURCES, type Product, type Req, type Source, reqTotal } from "./model";
+import { ADMIN_CATS, ACTIVE, SOURCES, type Product, type Req, type Source, lineTotal, reqTotal } from "./model";
 import { D, dshort, fmtM, fmtP, fmtS, num, ORDERS, PICTURES, count } from "./format";
 
 export type Period = "30d" | "90d" | "12m";
@@ -164,7 +164,7 @@ export function sales(requests: Req[], products: Product[], o: ChartOptions) {
     for (const it of q.items) {
       const cs = (catOf.get(it.code) ?? []).filter((c) => dirAcc.has(c));
       if (!cs.length) continue;
-      const v = ((it.price || 0) * (it.qty || 1)) / cs.length;
+      const v = (lineTotal(it) ?? 0) / cs.length;
       const qq = (it.qty || 1) / cs.length;
       for (const c of cs) {
         const acc = dirAcc.get(c)!;
@@ -188,7 +188,7 @@ export function sales(requests: Req[], products: Product[], o: ChartOptions) {
       if (!it.code) continue;
       const a = popAcc.get(it.code) ?? { code: it.code, title: it.title, image: it.image, q: 0, r: 0 };
       a.q += it.qty || 1;
-      a.r += (it.price || 0) * (it.qty || 1);
+      a.r += lineTotal(it) ?? 0;
       popAcc.set(it.code, a);
     }
   }

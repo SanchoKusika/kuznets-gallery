@@ -78,15 +78,27 @@ export type AdminUser = { name: string; login: string };
 
 export type AdminData = { products: Product[]; requests: Req[]; reviews: Review[] };
 
-/** Total of a request; `q` — some lines are priced on request (prototype `reqTotal`). */
+/** The framing is priced separately (baget, glass): anything but the canvas on a stretcher, which is in the price. */
+export const separateFrame = (i: RequestItem) => FRAME_NAMES.includes(i.frame) && i.frame !== FRAME_NAMES[0];
+
+/** A line's sum: the size's price plus the framing the manager entered, times the quantity; null — priced on request. */
+export const lineTotal = (i: RequestItem) => (i.price == null ? null : (i.price + (separateFrame(i) ? (i.framePrice ?? 0) : 0)) * (i.qty || 1));
+
+/**
+ * Total of a request (prototype `reqTotal`, plus the framing): `q` — some lines are priced on request,
+ * `f` — some framing is priced separately and not entered yet.
+ */
 export function reqTotal(r: Req) {
   let t = 0;
   let q = false;
+  let f = false;
   for (const i of r.items) {
-    if (i.price == null) q = true;
-    else t += i.price * (i.qty || 1);
+    const line = lineTotal(i);
+    if (line == null) q = true;
+    else t += line;
+    if (separateFrame(i) && i.framePrice == null) f = true;
   }
-  return { t, q };
+  return { t, q, f };
 }
 
 /** Lowest standard price of a product (prototype `minP`). */

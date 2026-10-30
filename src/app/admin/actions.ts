@@ -23,6 +23,7 @@ const Item = z.object({
   h: z.number().int().positive().nullable(),
   price: z.number().int().nonnegative().nullable(),
   frame: text(100),
+  framePrice: z.number().int().nonnegative().max(1e9).nullable().optional(),
   qty: z.number().int().min(1).max(999),
 });
 const Note = z.object({ at: z.number(), text: text(2000) });
