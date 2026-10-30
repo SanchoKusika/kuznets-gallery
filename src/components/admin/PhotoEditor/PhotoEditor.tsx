@@ -29,6 +29,8 @@ type Props = {
   source: File | string;
   /** Caption at the top, e.g. "KZ-001 · Фото". */
   caption: string;
+  /** A fixed frame instead of the choice of ratios, e.g. ["1,91 : 1", 1200 / 630] for a link preview. */
+  frame?: readonly [label: string, ratio: number];
   onCancel: () => void;
   /** Uploads the result (a picked file goes as it is when nothing was changed). */
   onDone: (file: File) => Promise<void>;
@@ -70,12 +72,13 @@ function cropToFile(canvas: HTMLCanvasElement, crop: PercentCrop, name: string) 
  * Mounted anew for every photo (it slides in) and kept while closed, so it slides out with its content.
  * Photos come prepared, so it is a safety net: an unchanged file is uploaded as it is.
  */
-export function PhotoEditor({ open, source, caption, onCancel, onDone }: Props) {
+export function PhotoEditor({ open, source, caption, frame, onCancel, onDone }: Props) {
   const { toast } = useAdmin();
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [failed, setFailed] = useState(false);
   const [rotation, setRotation] = useState(0);
-  const [aspect, setAspect] = useState<number | undefined>(undefined);
+  const locked = frame?.[1];
+  const [aspect, setAspect] = useState<number | undefined>(locked);
   const [crop, setCrop] = useState<PercentCrop>(FULL);
   const [pending, setPending] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -84,14 +87,18 @@ export function PhotoEditor({ open, source, caption, onCancel, onDone }: Props) 
     const url = typeof source === "string" ? source : URL.createObjectURL(source);
     let alive = true;
     loadImage(url).then(
-      (img) => alive && setImage(img),
+      (img) => {
+        if (!alive) return;
+        setImage(img);
+        if (locked) setCrop(fit(locked, img.naturalWidth, img.naturalHeight));
+      },
       () => alive && setFailed(true),
     );
     return () => {
       alive = false;
       if (typeof source !== "string") URL.revokeObjectURL(url);
     };
-  }, [source]);
+  }, [source, locked]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -128,16 +135,22 @@ export function PhotoEditor({ open, source, caption, onCancel, onDone }: Props) 
     if (canvas) setCrop(fit(a, canvas.width, canvas.height));
   };
 
+  /** The whole picture, or the largest centred frame when the frame is fixed (`w`×`h` — the turned canvas). */
+  const whole = (w: number, h: number) => (locked ? fit(locked, w, h) : FULL);
+
   const turn = (deg: number) => {
-    setRotation((r) => (r + deg + 360) % 360);
-    setAspect(undefined);
-    setCrop(FULL);
+    const next = (rotation + deg + 360) % 360;
+    setRotation(next);
+    setAspect(locked);
+    if (!image) return setCrop(FULL);
+    const [w, h] = next % 180 ? [image.naturalHeight, image.naturalWidth] : [image.naturalWidth, image.naturalHeight];
+    setCrop(whole(w, h));
   };
 
   const reset = () => {
     setRotation(0);
-    setAspect(undefined);
-    setCrop(FULL);
+    setAspect(locked);
+    setCrop(image ? whole(image.naturalWidth, image.naturalHeight) : FULL);
   };
 
   const save = async () => {
@@ -189,7 +202,7 @@ export function PhotoEditor({ open, source, caption, onCancel, onDone }: Props) 
       </div>
       <div className={b("tools")}>
         <div className={b("aspects")}>
-          {ASPECTS.map(([label, a]) => (
+          {(frame ? [frame] : ASPECTS).map(([label, a]) => (
             <Chip key={label} label={label} active={aspect === a} onClick={() => pickAspect(a)} />
           ))}
         </div>

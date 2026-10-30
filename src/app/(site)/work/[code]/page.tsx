@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { BackToCollection } from "@/components/work/BackToCollection/BackToCollection";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { NeighbourWorks } from "@/components/work/NeighbourWorks/NeighbourWorks";
 import { RelatedWorks } from "@/components/work/RelatedWorks/RelatedWorks";
 import { WorkDetails } from "@/components/work/WorkDetails/WorkDetails";
@@ -9,6 +10,7 @@ import { MeditationTrigger } from "@/features/meditation/Meditation";
 import { bem } from "@/lib/bem";
 import { getCatalog, toCard } from "@/lib/catalog";
 import { routes } from "@/lib/routes";
+import { artworkData } from "@/lib/structured-data";
 import s from "./page.module.scss";
 
 const b = bem(s, "work-page");
@@ -27,11 +29,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!work) return {};
   return {
     title: `${work.title} — принт-картина ${work.code}`,
-    description: work.description || "Принт-картина на холсте. В наличии и на заказ, доставка по Узбекистану.",
-    openGraph: { images: [work.src] },
+    description: describe(work),
     alternates: { canonical: routes.work(work.slug) },
   };
 }
+
+/** Meta description: the work's own text, or a general one. */
+const describe = (work: { description: string }) => work.description || "Принт-картина на холсте. В наличии и на заказ, доставка по Узбекистану.";
 
 /** The visible catalogue and the artwork with this URL segment in it (codes are case-insensitive). */
 async function findArtwork(slug: string) {
@@ -65,6 +69,7 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
 
   return (
     <main>
+      <JsonLd data={artworkData(work, describe(work))} />
       <div className={b("crumbs")}>
         <BackToCollection label={categoryName} className={b("back")} />
         <MeditationTrigger />

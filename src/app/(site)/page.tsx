@@ -11,10 +11,12 @@ import { pickTryOn } from "@/components/home/TryOn/pick";
 import { TryOn } from "@/components/home/TryOn/TryOn";
 import { WaveRibbon } from "@/components/home/WaveRibbon/WaveRibbon";
 import { Faq } from "@/components/sections/Faq/Faq";
-import { CATS } from "@/content/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { CATS, SITE_DESCRIPTION } from "@/content/site";
 import { getCatalog, inCategory, toCard } from "@/lib/catalog";
 import { getReviews } from "@/lib/reviews";
 import { routes } from "@/lib/routes";
+import { galleryData } from "@/lib/structured-data";
 
 export const metadata: Metadata = { alternates: { canonical: routes.home } };
 
@@ -41,10 +43,13 @@ export default async function HomePage() {
   });
 
   const ribbonTitles = [...new Set(items.map((p) => p.title))].slice(0, 14);
+  const prices = items.flatMap((p) => (p.minPrice ? [p.minPrice] : []));
+  const minPrice = prices.length ? Math.min(...prices) : null;
 
   return (
     <>
       <main>
+        <JsonLd data={galleryData({ description: SITE_DESCRIPTION, minPrice })} />
         <Hero thumbs={heroThumbs} total={items.length} />
         <HeroWord />
         <WaveRibbon titles={ribbonTitles} />
