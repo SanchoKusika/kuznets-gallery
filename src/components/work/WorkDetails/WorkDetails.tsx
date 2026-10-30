@@ -59,7 +59,7 @@ export function WorkDetails({ code, image, title, description, src, formatName, 
   return (
     <section className={b()} data-reveal>
       <div ref={imageRef} className={b("image")}>
-        <Media src={src} alt={title} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
+        <Media src={src} alt={`«${title}» — принт-картина на холсте`} sizes="(width >= 960px) 50vw, 100vw" className={b("media")} imgClassName={b("image-img")} placeholder={placeholder} onLoad={() => setPlaceholder(undefined)} eager />
       </div>
 
       <div className={b("info")}>
