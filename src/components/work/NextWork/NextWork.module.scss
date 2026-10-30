@@ -1,7 +1,7 @@
 @use "mixins" as *;
 
 // Phone: the picture on top, the text under it; from 700px the text on the left and the picture
-// on the right, at most 520px square (the height of the old dark banner).
+// on the right in a square of 45% of the width, at most 520px (the height of the old dark banner).
 .next-work {
   margin: var(--section-gap) var(--gutter) 0;
   display: grid;
@@ -12,7 +12,7 @@
   cursor: pointer;
 
   @include from(700) {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, min(520px, 45%));
     gap: clamp(24px, 4vw, 64px);
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
@@ -97,8 +97,10 @@
     }
   }
 
+  // No well behind the picture: a photo that isn't square sits whole in the square, without bands.
   &__media {
     aspect-ratio: 1;
+    background: none;
 
     @include below(700) {
       order: -1;
@@ -106,6 +108,7 @@
   }
 
   &__img {
+    object-fit: contain;
     transition: transform 1.2s var(--ease-out);
 
     .next-work:hover & {
