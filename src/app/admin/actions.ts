@@ -144,7 +144,7 @@ export async function saveProduct(p: Product) {
   updateTag(CATALOG_TAG);
 }
 
-/** Whole products: undo of a delete or of a price change, catalogue order changes. */
+/** Whole products: undo of a delete or of a price change. */
 export async function restoreProducts(list: Product[]) {
   const db = await requireAdmin();
   check(await db.from("products").upsert(z.array(ProductSchema).max(1000).parse(list).map(fromProduct)));
@@ -160,6 +160,20 @@ export async function deleteProducts(codes: string[]) {
 export async function setProductsHidden(codes: string[], hidden: boolean) {
   const db = await requireAdmin();
   check(await db.from("products").update({ hidden: z.boolean().parse(hidden) }).in("code", Codes.parse(codes)));
+  updateTag(CATALOG_TAG);
+}
+
+/**
+ * Catalogue order (drag-and-drop, «Наверх» and their undo): only `sort_order` of existing products changes, so edits
+ * made elsewhere (another tab, right in Supabase) are not overwritten. One update per product, a few at a time.
+ */
+export async function saveOrder(list: { code: string; sortOrder: number }[]) {
+  const db = await requireAdmin();
+  const rows = z.array(z.object({ code: z.string().max(20), sortOrder: z.number().int() })).max(1000).parse(list);
+  for (let i = 0; i < rows.length; i += 20) {
+    const results = await Promise.all(rows.slice(i, i + 20).map((r) => db.from("products").update({ sort_order: r.sortOrder }).eq("code", r.code)));
+    results.forEach(check);
+  }
   updateTag(CATALOG_TAG);
 }
 

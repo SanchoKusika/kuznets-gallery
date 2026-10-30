@@ -222,7 +222,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
   }, [nextCode, toast]);
 
   const saveProd = useCallback(
-    (p: Product, isNew: boolean) => {
+    (draft: Product, isNew: boolean) => {
+      // The card keeps the position it opened with; the catalogue may have been reordered since (or undone).
+      const p = isNew ? draft : { ...draft, sortOrder: latest.current.products.find((x) => x.code === draft.code)?.sortOrder ?? draft.sortOrder };
       setProducts((list) => (isNew ? [p, ...list] : list.map((x) => (x.code === p.code ? p : x))));
       setConfirmClose(false);
       setDrawer(null);
@@ -259,7 +261,7 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
 
   /**
    * Catalogue order (drag-and-drop in «Каталог», «Наверх»): `codes` go, in their order, before `before`
-   * (null — to the end). The catalogue is renumbered 0…n−1; the changed products are written whole, with «Вернуть».
+   * (null — to the end). The catalogue is renumbered 0…n−1; only the changed positions are written, with «Вернуть».
    */
   const moveProds = useCallback(
     (codes: string[], before: string | null, message: string) => {
@@ -268,17 +270,20 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       const rest = list.filter((p) => !codes.includes(p.code));
       const at = before == null ? rest.length : rest.findIndex((p) => p.code === before);
       if (!moving.length || at < 0) return;
-      const next = [...rest.slice(0, at), ...moving, ...rest.slice(at)].map((p, i) => (p.sortOrder === i ? p : { ...p, sortOrder: i }));
+      const moved = [...rest.slice(0, at), ...moving, ...rest.slice(at)];
+      // Dropped where it was: nothing to renumber or save.
+      if (moved.every((p, i) => p === list[i])) return;
+      const next = moved.map((p, i) => (p.sortOrder === i ? p : { ...p, sortOrder: i }));
       const old = new Map(list.map((p) => [p.code, p.sortOrder]));
       const changed = next.filter((p) => old.get(p.code) !== p.sortOrder);
+      const changedCodes = new Set(changed.map((p) => p.code));
       if (!changed.length) return;
       setProducts(next);
-      save(api.restoreProducts(changed));
+      save(api.saveOrder(changed.map((p) => ({ code: p.code, sortOrder: p.sortOrder }))));
       // Undo puts back only the order: other edits made meanwhile stay.
       toast(message, () => {
-        const back = latest.current.products.filter((p) => changed.some((c) => c.code === p.code)).map((p) => ({ ...p, sortOrder: old.get(p.code)! }));
-        setProducts((all) => all.map((p) => back.find((x) => x.code === p.code) ?? p).sort(byOrder));
-        save(api.restoreProducts(back));
+        setProducts((all) => all.map((p) => (changedCodes.has(p.code) ? { ...p, sortOrder: old.get(p.code)! } : p)).sort(byOrder));
+        save(api.saveOrder(changed.map((p) => ({ code: p.code, sortOrder: old.get(p.code)! }))));
       });
     },
     [save, toast],
