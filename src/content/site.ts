@@ -24,6 +24,13 @@ export const CONTACTS = {
 
 export const PRIMARY_PHONE = CONTACTS.phones[0];
 
+/** Opening hours: Thursday to Monday, 10:00–19:00 (Tuesday and Wednesday closed). `schema` — schema.org days. */
+export const HOURS = {
+  days: "Чт–Пн",
+  time: "10:00–19:00",
+  schema: { dayOfWeek: ["Thursday", "Friday", "Saturday", "Sunday", "Monday"], opens: "10:00", closes: "19:00" },
+} as const;
+
 /** Footer «Как нас найти» block; the map itself is in `features/map`. */
 export const LOCATION = {
   title: "махалля Сайрам",
