@@ -12,12 +12,18 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 10px 10px 10px 20px;
+  // Text alone sits centred in a pill as tall as one with «Вернуть»; the button keeps a 10px inset on the right.
+  min-height: 51px;
+  padding: 10px 20px;
   background: var(--ink);
   color: var(--paper);
   border-radius: 99px;
   font-size: 14px;
   max-width: calc(100vw - 32px);
+
+  &--action {
+    padding-right: 10px;
+  }
 
   &--on {
     transform: translateX(-50%);

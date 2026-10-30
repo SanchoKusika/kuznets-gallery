@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
-import { NextWork } from "@/components/work/NextWork/NextWork";
 import { BackToCollection } from "@/components/work/BackToCollection/BackToCollection";
+import { NeighbourWorks } from "@/components/work/NeighbourWorks/NeighbourWorks";
 import { RelatedWorks } from "@/components/work/RelatedWorks/RelatedWorks";
 import { WorkDetails } from "@/components/work/WorkDetails/WorkDetails";
 import { CATS, FMT } from "@/content/site";
@@ -51,8 +51,9 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
   if (!work) notFound();
   if (code !== work.slug) permanentRedirect(routes.work(work.slug)); // /work/KZ-001 → /work/kz-001
 
-  // The catalogue from the next work on, wrapping around; the first of it is the "next work" teaser.
+  // The catalogue from the next work on, wrapping around: the first is the next work, the last the previous one.
   const [next, ...rest] = [...items.slice(index + 1), ...items.slice(0, index)];
+  const prev = rest.at(-1) ?? next;
   const category = CATS.find((c) => c.k === work.categories[0]);
   // Uncategorised works fall back to the catalogue's "all" tag, as in the prototype.
   const tag = category?.k ?? "all";
@@ -77,7 +78,7 @@ export default async function WorkPage({ params }: PageProps<"/work/[code]">) {
         formatName={FMT[work.format]}
         sizes={work.sizes}
       />
-      <NextWork card={toCard(next ?? work)} />
+      <NeighbourWorks prev={toCard(prev ?? work)} next={toCard(next ?? work)} />
       <RelatedWorks category={categoryName} cards={related} />
     </main>
   );
