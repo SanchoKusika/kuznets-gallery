@@ -63,6 +63,27 @@
     text-wrap: balance;
   }
 
+  // Opening hours under the address: the days and time in the footer's ink, the days off muted.
+  &__hours {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    padding-top: 4px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  &__hours-open {
+    @include tabular;
+    font-weight: 500;
+  }
+
+  &__hours-closed {
+    font-size: 14px;
+    color: var(--ink-4);
+  }
+
   &__metro {
     display: flex;
     flex-direction: column;
