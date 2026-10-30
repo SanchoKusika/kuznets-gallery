@@ -1,5 +1,5 @@
-import gift from "@/assets/images/gift.jpg";
-import officeCafe from "@/assets/images/office-cafe.jpg";
+import gift from "@/assets/images/gift.webp";
+import officeCafe from "@/assets/images/office-cafe.webp";
 import { Media } from "@/components/ui/Media/Media";
 import { bem } from "@/lib/bem";
 import s from "./Occasions.module.scss";

@@ -1,8 +1,8 @@
 // Site content — copied 1:1 from the prototype's script constants.
 
-import baget from "@/assets/images/baget.jpg";
-import holst from "@/assets/images/holst.jpg";
-import steklo from "@/assets/images/steklo.jpg";
+import baget from "@/assets/images/baget.webp";
+import holst from "@/assets/images/holst.webp";
+import steklo from "@/assets/images/steklo.webp";
 
 export type CategoryKey = "home" | "kids" | "office" | "public";
 export type FormatKey = "sq" | "v" | "h";

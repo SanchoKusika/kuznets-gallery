@@ -19,7 +19,7 @@ export function Clients() {
             <span className={b("name")}>{name}</span>
             {CLIENT_LOGOS[name] && (
               <Image
-                src={`/assets/clients/${CLIENT_LOGOS[name]}.jpg`}
+                src={`/assets/clients/${CLIENT_LOGOS[name]}.webp`}
                 alt=""
                 width={300}
                 height={100}

@@ -65,6 +65,7 @@ function Shell({ edit, tab: tabParam }: { edit?: string; tab?: string }) {
       sessionStorage.removeItem(GREETING_KEY);
     } catch {}
     if (greet) store.toast(`Здравствуйте, ${admin.name}`);
+    store.sweepOnce();
     // Once, on entering the panel.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

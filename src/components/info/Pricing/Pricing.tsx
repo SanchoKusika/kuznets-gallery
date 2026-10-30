@@ -1,4 +1,4 @@
-import cafePortrait from "@/assets/images/cafe-portrait.jpg";
+import cafePortrait from "@/assets/images/cafe-portrait.webp";
 import { Media } from "@/components/ui/Media/Media";
 import { FMT, type FormatKey } from "@/content/site";
 import { bem } from "@/lib/bem";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import holst from "@/assets/images/holst.jpg";
+import holst from "@/assets/images/holst.webp";
 import { Categories } from "@/components/home/Categories/Categories";
 import { Clients } from "@/components/home/Clients/Clients";
 import { Framing } from "@/components/home/Framing/Framing";
