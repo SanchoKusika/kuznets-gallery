@@ -12,7 +12,7 @@ const b = bem(s, "cursor");
 const BIG = s["cursor__dot--big"];
 const SHOWN = s["cursor__preview--shown"];
 
-/** Optimised image for the preview well (≤ 280px square). */
+/** The preview well's picture (≤ 280px square), the WebP copy the image loader picks. */
 function previewImage(src: string) {
   const { props } = getImageProps({ src, alt: "", width: 280, height: 280, sizes: "min(280px, 22vw)", unoptimized: isForeign(src) });
   return props;

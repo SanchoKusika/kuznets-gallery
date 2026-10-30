@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useState, type ChangeEvent, type DragEvent } from "react";
-import { createImageUpload } from "@/app/admin/actions";
+import { useEffect, useEffectEvent, useState, type ChangeEvent, type DragEvent } from "react";
 import { Chip } from "@/components/admin/ui/Chip/Chip";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { Drawer, DrawerLabel } from "@/components/admin/ui/Drawer/Drawer";
 import { Field } from "@/components/admin/ui/Field/Field";
 import { Switch } from "@/components/admin/ui/Switch/Switch";
 import { num } from "@/features/admin/format";
+import { checkFile, uploadImage } from "@/features/admin/images";
 import { ADMIN_CATS, fromDraft, type ProductDraft } from "@/features/admin/model";
 import { useAdmin, type ProductEdit } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
@@ -27,13 +27,39 @@ const onlyDigits = (v: string) => v.replace(/\D/g, "");
 /**
  * Product card in the drawer: image (path, link or an uploaded file), title, description, directions,
  * sizes with prices, sizes on request and visibility. Nothing is saved until «Сохранить».
- * A picked or dropped file, and the current photo on «Редактировать», open in the photo editor first.
+ * A picked, dropped or pasted (Ctrl+V) file, and the current photo on «Редактировать», open in the photo editor
+ * first; the result goes up as WebP with its copies (features/admin/images.ts).
  */
 export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit | null }) {
   const { closeDrawer, confirmClose, discardDraft, saveProd, deleteProds, duplicateProd, setDraft, toast } = useAdmin();
   const [uploading, setUploading] = useState(false);
+  // A file is dragged over the picture.
+  const [over, setOver] = useState(false);
   // The photo in the editor; `n` mounts a fresh editor for every photo, the closed one stays to slide out.
   const [photo, setPhoto] = useState<{ source: File | string; n: number; open: boolean } | null>(null);
+
+  const editPhoto = (source: File | string) => setPhoto((p) => ({ source, n: (p?.n ?? 0) + 1, open: true }));
+  const pick = (file: File | undefined) => {
+    if (!file) return;
+    const problem = checkFile(file);
+    if (problem) toast(problem);
+    else editPhoto(file);
+  };
+  const onPasteFile = useEffectEvent(pick);
+
+  const editing = !!photo?.open;
+  // Ctrl+V of a copied picture while the card is open (the editor takes over once it opens).
+  useEffect(() => {
+    if (!open || editing) return;
+    const onPaste = (ev: ClipboardEvent) => {
+      const file = [...(ev.clipboardData?.files ?? [])].find((f) => f.type.startsWith("image/"));
+      if (!file) return;
+      ev.preventDefault();
+      onPasteFile(file);
+    };
+    addEventListener("paste", onPaste);
+    return () => removeEventListener("paste", onPaste);
+  }, [open, editing]);
 
   if (!edit) return <Drawer open={false} onClose={closeDrawer} head="" footer={null}>{null}</Drawer>;
   const { draft: e, initial, isNew } = edit;
@@ -43,28 +69,20 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
   type SizeDraft = ProductDraft["sizes"][number];
   const setSize = (i: number, patch: Partial<SizeDraft>) => setDraft((x) => ({ sizes: x.sizes.map((z, j) => (j === i ? { ...z, ...patch } : z)) }));
 
-  /** Uploads the editor's result straight to Storage through a signed URL and puts the new key into the path field. */
+  /** Uploads the editor's result straight to Storage (WebP and its copies) and puts the new key into the path field. */
   const upload = async (file: File) => {
     setUploading(true);
     try {
-      const { path, url } = await createImageUpload(file.name);
-      const body = new FormData();
-      body.append("cacheControl", "31536000");
-      body.append("", file);
-      const res = await fetch(url, { method: "PUT", body, headers: { "x-upsert": "false" } });
-      if (!res.ok) throw new Error(String(res.status));
-      setDraft({ image: path });
+      setDraft({ image: await uploadImage(file) });
       closePhoto();
     } catch {
-      toast("Не удалось загрузить изображение — JPG, PNG или WebP до 15 МБ");
+      toast("Не удалось загрузить изображение — проверьте соединение и попробуйте ещё раз");
     } finally {
       setUploading(false);
     }
   };
 
-  const editPhoto = (source: File | string) => setPhoto((p) => ({ source, n: (p?.n ?? 0) + 1, open: true }));
   const closePhoto = () => setPhoto((p) => p && { ...p, open: false });
-  const pick = (file: File | undefined) => file && editPhoto(file);
 
   return (
     <>
@@ -123,22 +141,30 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
         }
       >
         <label
-          className={b("preview", { busy: uploading })}
-          title="Нажмите или перетащите файл, чтобы загрузить изображение"
-          onDragOver={(ev: DragEvent) => ev.preventDefault()}
+          className={b("preview", { busy: uploading, over })}
+          title="Нажмите, перетащите файл или вставьте картинку (Ctrl+V), чтобы загрузить изображение"
+          onDragOver={(ev: DragEvent) => {
+            ev.preventDefault();
+            if (!over) setOver(true);
+          }}
+          onDragLeave={(ev: DragEvent) => {
+            if (!ev.currentTarget.contains(ev.relatedTarget as Node | null)) setOver(false);
+          }}
           onDrop={(ev: DragEvent) => {
             ev.preventDefault();
+            setOver(false);
             pick(ev.dataTransfer.files[0]);
           }}
         >
-          <input className={b("file")} type="file" accept="image/jpeg,image/png,image/webp" onChange={(ev: ChangeEvent<HTMLInputElement>) => {
+          <input className={b("file")} type="file" accept="image/*" onChange={(ev: ChangeEvent<HTMLInputElement>) => {
               pick(ev.target.files?.[0]);
               ev.target.value = ""; // the same file can be picked again
             }}
           />
           {src ? (
             <>
-              <Image className={b("preview-img")} src={src} alt="" fill sizes="(max-width: 620px) 100vw, 620px" unoptimized={isForeign(src)} />
+              {/* The file itself, not its copies: a path typed by hand has none until «Сохранить». */}
+              <Image className={b("preview-img")} src={src} alt="" fill sizes="(max-width: 620px) 100vw, 620px" unoptimized />
               {!isForeign(src) && (
                 <button
                   type="button"
@@ -153,7 +179,7 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
               )}
             </>
           ) : (
-            <span className={b("no-image")}>{uploading ? "Загрузка…" : "Нет изображения"}</span>
+            <span className={b("no-image")}>{uploading ? "Загрузка…" : over ? "Отпустите, чтобы загрузить" : "Нет изображения — нажмите, перетащите или вставьте (Ctrl+V)"}</span>
           )}
         </label>
         <Field label="Изображение — путь в uploads или ссылка" className={b("field")}>

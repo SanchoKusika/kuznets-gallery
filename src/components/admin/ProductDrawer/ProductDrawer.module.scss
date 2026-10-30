@@ -15,6 +15,16 @@
     &--busy {
       opacity: 0.5;
     }
+
+    // A file dragged over it: an accent frame inside the picture.
+    &--over::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: 1;
+      border: 2px dashed var(--accent);
+      pointer-events: none;
+    }
   }
 
   &__file {
@@ -42,6 +52,8 @@
 
   &__no-image {
     @include caption(12px);
+    padding: 0 24px;
+    text-align: center;
   }
 
   &__field {

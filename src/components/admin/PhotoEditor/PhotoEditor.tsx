@@ -6,6 +6,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import { Chip } from "@/components/admin/ui/Chip/Chip";
 import { Drawer } from "@/components/admin/ui/Drawer/Drawer";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
+import { baseName, canvasToFile } from "@/features/admin/images";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import s from "./PhotoEditor.module.scss";
@@ -20,9 +21,6 @@ const ASPECTS: readonly (readonly [string, number | undefined])[] = [
   ["4:3", 4 / 3],
   ["3:2", 3 / 2],
 ];
-/** Edited photos are saved as JPEG at full resolution, the long side capped. */
-const MAX_SIDE = 4000;
-const QUALITY = 0.92;
 const FULL: PercentCrop = { unit: "%", x: 0, y: 0, width: 100, height: 100 };
 
 type Props = {
@@ -51,26 +49,19 @@ const fit = (aspect: number | undefined, w: number, h: number): PercentCrop =>
 
 const isWhole = (c: PercentCrop) => c.x < 0.5 && c.y < 0.5 && c.width > 99.5 && c.height > 99.5;
 
-const baseName = (source: File | string) =>
-  (typeof source === "string" ? source.split("/").pop()! : source.name).replace(/\.[^.]+$/, "") || "kartina";
+const sourceName = (source: File | string) => baseName(typeof source === "string" ? source.split("/").pop()! : source.name);
 
-/** The framed part of the canvas as a JPEG file. */
-async function cropToFile(canvas: HTMLCanvasElement, crop: PercentCrop, name: string) {
+/** The framed part of the canvas as a WebP file (the long side capped, as every upload). */
+function cropToFile(canvas: HTMLCanvasElement, crop: PercentCrop, name: string) {
   const sx = (crop.x / 100) * canvas.width;
   const sy = (crop.y / 100) * canvas.height;
-  const sw = (crop.width / 100) * canvas.width;
-  const sh = (crop.height / 100) * canvas.height;
-  const k = Math.min(1, MAX_SIDE / Math.max(sw, sh));
+  const sw = Math.max(1, Math.round((crop.width / 100) * canvas.width));
+  const sh = Math.max(1, Math.round((crop.height / 100) * canvas.height));
   const out = document.createElement("canvas");
-  out.width = Math.max(1, Math.round(sw * k));
-  out.height = Math.max(1, Math.round(sh * k));
-  const ctx = out.getContext("2d")!;
-  ctx.fillStyle = "#fff"; // JPEG has no alpha: transparent parts turn white, not black
-  ctx.fillRect(0, 0, out.width, out.height);
-  ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, out.width, out.height);
-  const blob = await new Promise<Blob | null>((resolve) => out.toBlob(resolve, "image/jpeg", QUALITY));
-  if (!blob) throw new Error("encode");
-  return new File([blob], `${name}.jpg`, { type: "image/jpeg" });
+  out.width = sw;
+  out.height = sh;
+  out.getContext("2d")!.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+  return canvasToFile(out, name);
 }
 
 /**
@@ -157,7 +148,7 @@ export function PhotoEditor({ open, source, caption, onCancel, onDone }: Props) 
     if (!changed && typeof source === "string") return onCancel();
     setPending(true);
     try {
-      const file = changed ? await cropToFile(canvas, crop, baseName(source)) : (source as File);
+      const file = changed ? await cropToFile(canvas, crop, sourceName(source)) : (source as File);
       await onDone(file);
     } catch {
       toast("Не удалось подготовить изображение");

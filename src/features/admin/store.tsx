@@ -3,6 +3,7 @@
 import { createContext, use, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import * as api from "@/app/admin/actions";
 import { D, isoDay, count, PICTURES } from "./format";
+import { ensureCopies } from "./images";
 import type { AdminData, AdminUser, Product, ProductDraft, Req, ReqPatch, Review, Status } from "./model";
 import { STATUS_NAME, toDraft } from "./model";
 
@@ -15,6 +16,9 @@ export const TABS: readonly (readonly [Tab, string])[] = [
   ["rev", "Отзывы"],
 ];
 const TAB_KEY = "kz_admin_tab";
+const SWEEP_KEY = "kz_admin_sweep";
+/** Unreferenced files of the bucket and when the panel first saw them (sweepStorage). */
+const SEEN_KEY = "kz_admin_unused";
 
 export type ReqFilter = Status | "all";
 export type ReqView = "list" | "board";
@@ -228,7 +232,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       setProducts((list) => (isNew ? [p, ...list] : list.map((x) => (x.code === p.code ? p : x))));
       setConfirmClose(false);
       setDrawer(null);
-      save(api.saveProduct(p));
+      // A path typed by hand gets its WebP copies before the site shows it; the work is saved anyway.
+      const copies = Promise.all([p.image, p.flatImage].map(ensureCopies)).catch(() => toast("Картина сохранена, но фото не найдено по этому пути — проверьте путь"));
+      save(copies.then(() => api.saveProduct(p)));
       toast(isNew ? `Картина ${p.code} добавлена` : "Изменения сохранены");
     },
     [save, toast],
@@ -319,6 +325,27 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     () => void api.refreshSite().then(() => toast("Сайт обновлён"), () => toast(FAILED)),
     [toast],
   );
+
+  /**
+   * Storage cleanup (actions.ts sweepStorage) once per browser session, in the background. The browser keeps when
+   * each unreferenced file was first seen, so a file goes only after a day unreferenced.
+   */
+  const sweepOnce = useCallback(() => {
+    let seen: Record<string, number> = {};
+    try {
+      if (sessionStorage.getItem(SWEEP_KEY)) return;
+      sessionStorage.setItem(SWEEP_KEY, "1");
+      seen = JSON.parse(localStorage.getItem(SEEN_KEY) ?? "{}");
+    } catch {}
+    void api.sweepStorage(seen).then(
+      (r) => {
+        try {
+          localStorage.setItem(SEEN_KEY, JSON.stringify(r.seen));
+        } catch {}
+      },
+      () => {},
+    );
+  }, []);
 
   // —— Reviews: edits save after a pause, everything else at once.
   const reviewTimer = useRef(new Map<string, ReturnType<typeof setTimeout>>());
@@ -455,6 +482,7 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     addReview,
     deleteReview,
     refreshSite,
+    sweepOnce,
   };
 }
 

@@ -63,7 +63,7 @@ function layoutFor(width: number, height: number) {
   };
 }
 
-/** The tile's picture as the optimizer serves it (a card-sized one, the same as in the collection). */
+/** The tile's picture as the image loader serves it (a card-sized copy, the same as in the collection). */
 function tileImage(src: string) {
   return getImageProps({ src, alt: "", width: 400, height: 500, sizes: "300px", unoptimized: isForeign(src) }).props;
 }
