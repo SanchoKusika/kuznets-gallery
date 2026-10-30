@@ -29,7 +29,7 @@ export function galleryData({ description, minPrice }: { description: string; mi
         ...(minPrice && { priceRange: `от ${formatPrice(minPrice)}` }),
         address: {
           "@type": "PostalAddress",
-          streetAddress: `${LOCATION.title}, ${LOCATION.lines[1].replace(/^У улицы/, "у улицы")}`,
+          streetAddress: LOCATION.street,
           addressLocality: "Ташкент",
           addressRegion: "Мирзо-Улугбекский район",
           addressCountry: "UZ",

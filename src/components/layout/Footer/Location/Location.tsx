@@ -2,7 +2,7 @@
 
 import { useRef, type ReactNode } from "react";
 import { Icon } from "@/components/ui/Icon/Icon";
-import { LOCATION } from "@/content/site";
+import { HOURS, LOCATION } from "@/content/site";
 import { MapPlaceholder } from "@/features/map/MapPlaceholder";
 import { METRO } from "@/features/map/places";
 import { useGalleryMap } from "@/features/map/useGalleryMap";
@@ -12,7 +12,7 @@ import s from "./Location.module.scss";
 const b = bem(s, "location");
 
 /**
- * Footer «Как нас найти»: address, nearest metro, navigator links and the styled map. `children`
+ * Footer «Как нас найти»: address and opening hours, nearest metro, navigator links and the styled map. `children`
  * (the footer's link columns) go under the address; from 900px the map spans both. `mapKey` is
  * the Yandex Maps key, read on the server (`YANDEX_MAPS_KEY`).
  */
@@ -30,6 +30,10 @@ export function Location({ mapKey, children }: { mapKey: string | undefined; chi
             {LOCATION.lines.map((l) => (
               <span key={l}>{l}</span>
             ))}
+          </div>
+          <div className={b("hours")}>
+            <span className={b("hours-open")}>{HOURS.open}</span>
+            <span className={b("hours-closed")}>{HOURS.closed}</span>
           </div>
         </div>
 

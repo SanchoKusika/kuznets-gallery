@@ -26,20 +26,16 @@ export const PRIMARY_PHONE = CONTACTS.phones[0];
 
 /** Opening hours: Thursday to Monday, 10:00–19:00 (Tuesday and Wednesday closed). `schema` — schema.org days. */
 export const HOURS = {
-  days: "Чт–Пн",
-  time: "10:00–19:00",
+  open: "Чт–Пн, 10:00–19:00",
+  closed: "Вт и ср — выходной",
   schema: { dayOfWeek: ["Thursday", "Friday", "Saturday", "Sunday", "Monday"], opens: "10:00", closes: "19:00" },
 } as const;
 
-/** Footer «Как нас найти» block; the map itself is in `features/map`. */
+/** Footer «Как нас найти» block; the map itself is in `features/map`. `street` — the address for search engines. */
 export const LOCATION = {
-  title: "махалля Сайрам",
-  lines: [
-    "Мирзо-Улугбекский район, Ташкент",
-    "У улицы Зиёлилар, рядом с каналом Салар",
-    "Остановка «Westminster International School» — 280 м",
-    "Соседи — Ingredi.uz, Mysofa.Uz, Bukva.uz",
-  ],
+  title: "Ташкент, махалля Сайрам",
+  lines: ["Мирзо-Улугбекский район", "у улицы Зиёлилар, рядом с каналом Салар"],
+  street: "махалля Сайрам, у улицы Зиёлилар",
   coords: "41.3352° N · 69.3191° E",
   navigators: [
     { n: "Яндекс Карты", href: "https://yandex.uz/maps/org/kuznetsovs_gallery/182570160096/" },
