@@ -108,6 +108,7 @@ src/
   app/admin/            /admin: вход и панель; actions.ts — Server Actions панели (каждый проверяет сессию)
   app/api/requests/     POST /api/requests: zod-валидация, запись через функцию БД submit_request
   app/api/admin/badge/  GET: число новых заявок для плашки админа (проверяет сессию)
+  app/api/hangable/     GET: работы для «Повесить что‑нибудь» на 404 (статичный, обновляется по тегу catalog)
   app/api/cron/keepalive/
                         GET: ежедневный запрос к базе, чтобы Supabase не засыпал (Vercel Cron)
   proxy.ts              обновляет сессию админа перед /admin и /api/admin
@@ -119,7 +120,7 @@ src/
   components/work/      WorkDetails, NeighbourWorks (предыдущая и следующая), RelatedWorks
   components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
-  components/not-found/ страница 404: рама-маятник, этикетка
+  components/not-found/ страница 404: рама-маятник, этикетка (работы для рамы грузит сама, из /api/hangable)
   components/admin/     админка: вход, навигация, обзор и график, заявки (список, доска, карточка),
                         каталог, карточка товара и редактор фото, прайс, отзывы; ui/ — примитивы дизайн-системы
   features/admin/       модель, состояние панели (store), аналитика обзора, форматирование, серверная часть

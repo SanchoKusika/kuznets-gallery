@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button/Button";
 import { Logo } from "@/components/ui/Logo/Logo";
 import { Media } from "@/components/ui/Media/Media";
@@ -33,14 +33,26 @@ function message(fixes: number, art: HangableWork | null) {
 
 /**
  * 404 (prototype `404.dc.html`): "4 [frame] 4" with the frame swinging on a nail, "Поправить раму",
- * "Повесить что‑нибудь" (a random work from the catalogue) and the museum plate.
+ * "Повесить что‑нибудь" (a random work from the catalogue, `GET /api/hangable` — loaded here, not passed in: the
+ * root not-found rides in every page's payload) and the museum plate.
  */
-export function NotFound({ pool }: { pool: HangableWork[] }) {
+export function NotFound() {
   const slotRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const pendulum = usePendulum(slotRef, frameRef, s["not-found__frame--grabbing"]);
   const [fixes, setFixes] = useState(0);
   const [art, setArt] = useState<HangableWork | null>(null);
+  const [pool, setPool] = useState<HangableWork[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    fetch(routes.hangable)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((works: HangableWork[]) => alive && setPool(works), () => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const straighten = () => {
     pendulum.straighten();

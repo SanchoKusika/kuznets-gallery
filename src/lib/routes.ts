@@ -7,6 +7,8 @@ export const routes = {
   work: (slug: string) => `/work/${slug}`,
   info: "/info",
   admin: "/admin",
+  /** The 404's pool of works to hang (app/api/hangable). */
+  hangable: "/api/hangable",
 } as const;
 
 export type Section = "home" | "catalog" | "work" | "info" | null;
