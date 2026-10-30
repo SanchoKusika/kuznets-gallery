@@ -19,7 +19,7 @@ export function NeighbourWorks({ prev, next }: { prev: ArtworkCard; next: Artwor
       {SIDES.map(([side, label, arrow, cursor]) => {
         const card = cards[side];
         return (
-          <WorkLink key={side} href={card.href} className={b("link", { [side]: true })} data-cursor={cursor}>
+          <WorkLink key={side} href={card.href} className={b("link", { next: side === "next" })} data-cursor={cursor}>
             <Media src={card.src} sizes="(width >= 700px) 160px, 45vw" className={b("media")} imgClassName={b("img")} />
             <span className={b("text")}>
               <span className={b("label")}>
