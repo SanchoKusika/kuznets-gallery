@@ -116,7 +116,7 @@ src/
   components/layout/    Header, StaggeredMenu, Footer
   components/home/      секции главной
   components/catalog/   Collection, ArtworkCard, ArtworkRow
-  components/work/      WorkDetails, NextWork, RelatedWorks
+  components/work/      WorkDetails, NeighbourWorks (предыдущая и следующая), RelatedWorks
   components/info/      секции «Покупателям»: Pricing, Steps, FramingOptions
   components/sections/  общие секции: Faq, FrameCards
   components/not-found/ страница 404: рама-маятник, этикетка

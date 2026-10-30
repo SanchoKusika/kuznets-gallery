@@ -1,0 +1,96 @@
+@use "mixins" as *;
+
+// Two halves between hairlines. From 700px: thumbnail beside the text, the next work mirrored on the right
+// behind a divider. Phone: two columns, each a square picture with the code and the title under it.
+.neighbour-works {
+  margin: var(--section-gap) var(--gutter) 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+
+  @include from(700) {
+    gap: 0;
+    padding-top: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  &__link {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+
+    @include from(700) {
+      flex-direction: row;
+      align-items: center;
+      gap: clamp(16px, 2vw, 32px);
+      padding: clamp(20px, 2.4vw, 32px) clamp(16px, 2.4vw, 40px) clamp(20px, 2.4vw, 32px) 0;
+    }
+
+    &--next {
+      text-align: right;
+
+      @include from(700) {
+        flex-direction: row-reverse;
+        padding: clamp(20px, 2.4vw, 32px) 0 clamp(20px, 2.4vw, 32px) clamp(16px, 2.4vw, 40px);
+        border-left: 1px solid var(--line);
+      }
+    }
+  }
+
+  &__media {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 1;
+
+    @include from(700) {
+      width: clamp(96px, 9vw, 160px);
+    }
+  }
+
+  &__img {
+    @include zoom(0.9s, 1.06);
+
+    .neighbour-works__link:hover & {
+      transform: scale(1.06);
+    }
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  &__label {
+    @include label(12px);
+    color: var(--ink-3);
+    transition: color 0.25s;
+
+    .neighbour-works__link:hover & {
+      color: var(--accent);
+    }
+  }
+
+  // «Предыдущая · » / «Следующая · »: on phones the arrow says it.
+  &__label-word {
+    @include below(700) {
+      display: none;
+    }
+  }
+
+  &__title {
+    font-size: clamp(20px, 3.2vw, 56px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    line-height: 0.95;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+}
