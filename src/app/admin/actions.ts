@@ -163,12 +163,33 @@ export async function setProductsHidden(codes: string[], hidden: boolean) {
   updateTag(CATALOG_TAG);
 }
 
+/**
+ * Catalogue order (drag-and-drop, «Наверх» and their undo): only `sort_order` of existing products changes, so edits
+ * made elsewhere (another tab, right in Supabase) are not overwritten. One update per product, a few at a time.
+ */
+export async function saveOrder(list: { code: string; sortOrder: number }[]) {
+  const db = await requireAdmin();
+  const rows = z.array(z.object({ code: z.string().max(20), sortOrder: z.number().int() })).max(1000).parse(list);
+  for (let i = 0; i < rows.length; i += 20) {
+    const results = await Promise.all(rows.slice(i, i + 20).map((r) => db.from("products").update({ sort_order: r.sortOrder }).eq("code", r.code)));
+    results.forEach(check);
+  }
+  updateTag(CATALOG_TAG);
+}
+
 /** New sizes of several products at once (price list changes and their undo); only existing rows change. */
 export async function saveSizes(list: { code: string; sizes: Product["sizes"] }[]) {
   const db = await requireAdmin();
   const rows = z.array(ProductSchema.pick({ code: true, sizes: true })).max(1000).parse(list);
   if (rows.length) check(await db.rpc("set_product_sizes", { p_rows: rows }));
   updateTag(CATALOG_TAG);
+}
+
+/** «Обновить сайт»: the site's pages are rebuilt from the database, e.g. after edits made right in Supabase. */
+export async function refreshSite() {
+  await requireAdmin();
+  updateTag(CATALOG_TAG);
+  updateTag(REVIEWS_TAG);
 }
 
 /** Signed URL the browser uploads an artwork image to; returns the object key for `products.image`. */

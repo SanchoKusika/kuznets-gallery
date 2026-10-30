@@ -56,7 +56,7 @@ const ICONS: Record<Tab, ReactNode> = {
  */
 export function AdminNav() {
   const { mode } = useLayout();
-  const { admin, tab, setTab, requests, products, reviews } = useAdmin();
+  const { admin, tab, setTab, requests, products, reviews, refreshSite } = useAdmin();
   const fresh = requests.filter((r) => r.status === "new").length;
   const initial = (admin.name.trim()[0] || "·").toUpperCase();
   const counts: Partial<Record<Tab, number | "">> = { req: fresh || "", cat: products.length, rev: reviews.length };
@@ -81,6 +81,9 @@ export function AdminNav() {
             </button>
           ))}
         </nav>
+        <button type="button" className={b("refresh")} title="Показать на сайте правки, сделанные прямо в базе" onClick={refreshSite}>
+          ↻ Обновить сайт
+        </button>
         <div className={b("user")}>
           <span className={b("avatar")}>{initial}</span>
           <span className={b("name")}>{admin.name}</span>
@@ -109,7 +112,7 @@ export function AdminNav() {
       {k === "req" && fresh > 0 && <span className={b("badge")}>{fresh > 99 ? "99+" : fresh}</span>}
     </button>
   ));
-  const account = <Account name={admin.name} initial={initial} below={mode === "bar"} />;
+  const account = <Account name={admin.name} initial={initial} below={mode === "bar"} onRefresh={refreshSite} />;
 
   if (mode === "rail") {
     return (
@@ -145,8 +148,8 @@ export function AdminNav() {
   );
 }
 
-/** Avatar with a popover «На сайт / Выйти» (rail and top bar). */
-function Account({ name, initial, below }: { name: string; initial: string; below: boolean }) {
+/** Avatar with a popover «На сайт / Обновить сайт / Выйти» (rail and top bar). */
+function Account({ name, initial, below, onRefresh }: { name: string; initial: string; below: boolean; onRefresh: () => void }) {
   const [open, setOpen] = useState(false);
   return (
     <div className={b("account")}>
@@ -161,6 +164,16 @@ function Account({ name, initial, below }: { name: string; initial: string; belo
             <Link href={routes.home} className={b("menu-item")}>
               На сайт
             </Link>
+            <button
+              type="button"
+              className={b("menu-item")}
+              onClick={() => {
+                setOpen(false);
+                onRefresh();
+              }}
+            >
+              Обновить сайт
+            </button>
             <button type="button" className={b("menu-item")} onClick={() => signOut()}>
               Выйти
             </button>
