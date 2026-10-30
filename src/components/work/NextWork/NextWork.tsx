@@ -1,20 +1,30 @@
 import { Media } from "@/components/ui/Media/Media";
 import { WorkLink } from "@/components/ui/WorkLink/WorkLink";
+import { FMT } from "@/content/site";
 import { bem } from "@/lib/bem";
 import type { ArtworkCard } from "@/lib/catalog";
 import s from "./NextWork.module.scss";
 
 const b = bem(s, "next-work");
 
-/** Dark full-width teaser of the next artwork in the catalogue. */
+/** Teaser of the next artwork in the catalogue: title, description and price beside the whole picture. */
 export function NextWork({ card }: { card: ArtworkCard }) {
   return (
     <WorkLink href={card.href} className={b()} data-cursor="Далее">
-      <Media src={card.src} sizes="100vw" className={b("media")} imgClassName={b("img")} />
       <div className={b("text")}>
-        <span className={b("label")}>Следующая работа · {card.code}</span>
-        <span className={b("title")}>{card.title}</span>
+        <div className={b("intro")}>
+          <span className={b("label")}>Следующая работа</span>
+          <span className={b("title")}>{card.title}</span>
+          {card.description && <span className={b("description")}>{card.description}</span>}
+        </div>
+        <div className={b("meta")}>
+          <span className={b("facts")}>{`${card.code} · ${FMT[card.format]} · ${card.from}`}</span>
+          <span className={b("arrow")} aria-hidden="true">
+            →
+          </span>
+        </div>
       </div>
+      <Media src={card.src} sizes="(width >= 1240px) 520px, (width >= 700px) 45vw, 100vw" className={b("media")} imgClassName={b("img")} />
     </WorkLink>
   );
 }
