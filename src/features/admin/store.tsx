@@ -17,6 +17,8 @@ export const TABS: readonly (readonly [Tab, string])[] = [
 ];
 const TAB_KEY = "kz_admin_tab";
 const SWEEP_KEY = "kz_admin_sweep";
+/** Unreferenced files of the bucket and when the panel first saw them (sweepStorage). */
+const SEEN_KEY = "kz_admin_unused";
 
 export type ReqFilter = Status | "all";
 export type ReqView = "list" | "board";
@@ -324,13 +326,25 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     [toast],
   );
 
-  /** Storage cleanup (actions.ts sweepStorage) once per browser session, in the background. */
+  /**
+   * Storage cleanup (actions.ts sweepStorage) once per browser session, in the background. The browser keeps when
+   * each unreferenced file was first seen, so a file goes only after a day unreferenced.
+   */
   const sweepOnce = useCallback(() => {
+    let seen: Record<string, number> = {};
     try {
       if (sessionStorage.getItem(SWEEP_KEY)) return;
       sessionStorage.setItem(SWEEP_KEY, "1");
+      seen = JSON.parse(localStorage.getItem(SEEN_KEY) ?? "{}");
     } catch {}
-    void api.sweepStorage().catch(() => {});
+    void api.sweepStorage(seen).then(
+      (r) => {
+        try {
+          localStorage.setItem(SEEN_KEY, JSON.stringify(r.seen));
+        } catch {}
+      },
+      () => {},
+    );
   }, []);
 
   // —— Reviews: edits save after a pause, everything else at once.

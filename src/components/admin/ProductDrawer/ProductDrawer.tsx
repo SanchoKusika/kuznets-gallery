@@ -163,7 +163,8 @@ export function ProductDrawer({ open, edit }: { open: boolean; edit: ProductEdit
           />
           {src ? (
             <>
-              <Image className={b("preview-img")} src={src} alt="" fill sizes="(max-width: 620px) 100vw, 620px" unoptimized={isForeign(src)} />
+              {/* The file itself, not its copies: a path typed by hand has none until «Сохранить». */}
+              <Image className={b("preview-img")} src={src} alt="" fill sizes="(max-width: 620px) 100vw, 620px" unoptimized />
               {!isForeign(src) && (
                 <button
                   type="button"

@@ -224,20 +224,33 @@ export async function createVariantUploads(key: string): Promise<{ width: number
   return Promise.all(VARIANT_WIDTHS.map(async (width) => ({ width, url: must(await bucket.createSignedUploadUrl(variantKey(k, width), { upsert: true })).signedUrl })));
 }
 
-/** An unreferenced file stays this long: an upload in a card still open, a deleted work «Вернуть» may bring back. */
+/** A file stays this long after it was first seen unreferenced: a card still open, a deleted work «Вернуть» may bring back. */
 const KEEP_MS = 24 * 3600 * 1000;
+const PAGE = 1000;
+
+/** Every row of a select (PostgREST returns at most 1000 at a time). */
+async function selectAll<T>(query: (from: number, to: number) => PromiseLike<{ data: T[] | null; error: unknown }>) {
+  const rows: T[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const page = must(await query(from, from + PAGE - 1));
+    rows.push(...page);
+    if (page.length < PAGE) return rows;
+  }
+}
 
 /**
- * Storage keeps only files a work or a request refers to, with their copies: the rest older than a day is
- * deleted (replaced photos, uploads of cards closed unsaved, deleted works). Runs once per admin session.
- * Returns how many files went.
+ * Storage keeps only files a work or a request refers to, with their copies. A file is deleted once it has been
+ * unreferenced for a day (replaced photos, uploads of cards closed unsaved, deleted works): `seen` — when the
+ * panel first saw each unreferenced file, kept in the admin's browser — comes in, the updated one goes back.
+ * Runs once per admin session.
  */
-export async function sweepStorage(): Promise<number> {
+export async function sweepStorage(seen: Record<string, number>): Promise<{ deleted: number; seen: Record<string, number> }> {
   const db = await requireAdmin();
+  const since = z.record(z.string().max(500), z.number()).parse(seen);
   const bucket = db.storage.from("artworks");
   const [products, requests] = await Promise.all([
-    must(await db.from("products").select("image, flat_image")),
-    must(await db.from("requests").select("items")),
+    selectAll((from, to) => db.from("products").select("image, flat_image").order("code").range(from, to)),
+    selectAll((from, to) => db.from("requests").select("items").order("id").range(from, to)),
   ]);
   const used = new Set(
     [...products.flatMap((p) => [p.image, p.flat_image]), ...requests.flatMap((r) => (r.items as { image?: string }[]).map((i) => i.image))]
@@ -246,32 +259,37 @@ export async function sweepStorage(): Promise<number> {
   );
   const stems = new Set([...used].map((key) => key.replace(/\.[^./]+$/, "")));
   const files = await listBucket(bucket, "");
-  const before = Date.now() - KEEP_MS;
-  const stale = files.filter((f) => {
-    if (!(Date.parse(f.at) <= before)) return false; // no upload time: kept
-    if (!f.key.startsWith(VARIANT_DIR)) return !used.has(f.key);
-    return !stems.has(f.key.slice(VARIANT_DIR.length).replace(/^\d+\//, "").replace(/\.webp$/, ""));
-  });
+  const unused = files.filter((f) =>
+    f.key.startsWith(VARIANT_DIR) ? !stems.has(f.key.slice(VARIANT_DIR.length).replace(/^\d+\//, "").replace(/\.webp$/, "")) : !used.has(f.key),
+  );
+  const now = Date.now();
+  const before = now - KEEP_MS;
+  // Unreferenced for a day by the panel's own record, and uploaded over a day ago (no upload time: kept).
+  const stale = unused.filter((f) => (since[f.key] ?? now) <= before && Date.parse(f.at) <= before);
   // A mistake here would empty the catalogue's pictures: refuse anything that looks like most of the bucket.
   if (!used.size || stale.length > Math.max(50, files.length * 0.25)) throw new Error(`sweep refused: ${stale.length} of ${files.length}`);
   for (let i = 0; i < stale.length; i += 100) check(await bucket.remove(stale.slice(i, i + 100).map((f) => f.key)));
-  return stale.length;
+  const gone = new Set(stale.map((f) => f.key));
+  return { deleted: stale.length, seen: Object.fromEntries(unused.filter((f) => !gone.has(f.key)).map((f) => [f.key, since[f.key] ?? now])) };
 }
 
 type Bucket = ReturnType<Awaited<ReturnType<typeof requireAdmin>>["storage"]["from"]>;
 
-/** Every file under `prefix` with its upload time (folders are listed one by one). */
+/** Every file under `prefix` with its upload time (Storage lists one folder at a time: subfolders go in parallel). */
 async function listBucket(bucket: Bucket, prefix: string): Promise<{ key: string; at: string }[]> {
   const files: { key: string; at: string }[] = [];
-  for (let offset = 0; ; offset += 1000) {
-    const page = must(await bucket.list(prefix, { limit: 1000, offset }));
+  const folders: string[] = [];
+  for (let offset = 0; ; offset += PAGE) {
+    const page = must(await bucket.list(prefix, { limit: PAGE, offset }));
     for (const f of page) {
       const key = prefix ? `${prefix}/${f.name}` : f.name;
-      if (f.id == null) files.push(...(await listBucket(bucket, key)));
+      if (f.id == null) folders.push(key);
       else files.push({ key, at: f.created_at ?? "" });
     }
-    if (page.length < 1000) return files;
+    if (page.length < PAGE) break;
   }
+  for (const nested of await Promise.all(folders.map((key) => listBucket(bucket, key)))) files.push(...nested);
+  return files;
 }
 
 // —— Reviews (the home page slider is rebuilt from the `reviews` tag)

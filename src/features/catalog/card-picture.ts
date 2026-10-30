@@ -1,6 +1,6 @@
 /**
  * The picture a card already shows, handed to the artwork page it opens: the page shows it under its
- * photo until the photo comes from the image optimizer (up to a couple of seconds on a first view),
+ * photo until the photo arrives (its larger WebP copy; a moment on a first view),
  * instead of an empty box. The card's file is the whole picture (the card only crops it), so it
  * fits the photo's frame exactly.
  */
