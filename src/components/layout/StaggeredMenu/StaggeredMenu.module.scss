@@ -44,14 +44,18 @@
   &__item {
     overflow: hidden;
     padding-bottom: 0.06em;
+    display: flex;
+    flex-direction: column;
     font-size: clamp(46px, 12.5vw, 104px);
     line-height: 1.02;
   }
 
   &__link {
-    display: inline-flex;
-    align-items: flex-start;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 14px;
+    padding-block: 0.06em;
     cursor: pointer;
     font-weight: 600;
     letter-spacing: -0.065em;
@@ -70,14 +74,26 @@
     transform-origin: 50% 100%;
   }
 
-  &__num {
-    @include tabular;
-    font-size: 13px;
+  &__arrow {
+    font-size: 0.4em;
     font-weight: 400;
     letter-spacing: 0;
-    line-height: 1;
-    margin-top: 0.55em;
     color: var(--accent);
+    transform: translateX(-6px);
+    transition: transform 0.25s;
+  }
+
+  &__link:hover &__arrow,
+  &__link--current &__arrow {
+    transform: none;
+  }
+
+  // Line under each link; draws in from the left when the menu opens.
+  &__rule {
+    display: block;
+    height: 1px;
+    background: var(--line-medium);
+    transform-origin: left;
   }
 
   &__contact {
@@ -99,6 +115,11 @@
     gap: 12px 28px;
     font-size: 16px;
     font-weight: 500;
+  }
+
+  &__contact-note {
+    font-size: 14px;
+    color: var(--ink-4);
   }
 
   &__contact-link {
