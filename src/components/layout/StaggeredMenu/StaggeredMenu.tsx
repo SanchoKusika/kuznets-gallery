@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, type MouseEvent } from "react";
-import { CONTACTS } from "@/content/site";
+import { CONTACTS, HOURS, LOCATION } from "@/content/site";
 import { prefersMotion } from "@/features/motion/prefers-motion";
 import { bem } from "@/lib/bem";
 import { routes, type Section } from "@/lib/routes";
@@ -52,8 +52,8 @@ export function StaggeredMenu({ section, closing, onClosed, onNavigate, onContac
         easing: EASE_OUT_QUART,
       }),
     );
-    q("num").forEach((el, i) =>
-      run(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 600, delay: itemsStart + 100 + i * 80, easing: EASE_OUT_CUBIC }),
+    q("rule").forEach((el, i) =>
+      run(el, [{ transform: "scaleX(0)" }, { transform: "none" }], { duration: 800, delay: itemsStart + 200 + i * 100, easing: EASE_OUT_QUART }),
     );
     q("title").forEach((el) =>
       run(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 500, delay: socialsStart, easing: EASE_OUT_CUBIC }),
@@ -105,16 +105,17 @@ export function StaggeredMenu({ section, closing, onClosed, onNavigate, onContac
       <div className={b("layer", { accent: true })} data-sm="layer" />
       <div className={b("panel")} data-sm="panel">
         <nav className={b("nav")} aria-label="Меню">
-          {items.map((item, i) => (
+          {items.map((item) => (
             <div key={item.href} className={b("item")}>
               <Link href={item.href} className={b("link", { current: item.current })} onClick={onNavigate}>
                 <span className={b("label")} data-sm="label">
                   {item.label}
                 </span>
-                <span className={b("num")} data-sm="num">
-                  0{i + 1}
+                <span className={b("arrow")} aria-hidden="true">
+                  →
                 </span>
               </Link>
+              <span className={b("rule")} data-sm="rule" />
             </div>
           ))}
           <div className={b("item")}>
@@ -122,10 +123,11 @@ export function StaggeredMenu({ section, closing, onClosed, onNavigate, onContac
               <span className={b("label")} data-sm="label">
                 контакты
               </span>
-              <span className={b("num")} data-sm="num">
-                04
+              <span className={b("arrow")} aria-hidden="true">
+                →
               </span>
             </a>
+            <span className={b("rule")} data-sm="rule" />
           </div>
         </nav>
         <div className={b("contact")}>
@@ -142,6 +144,9 @@ export function StaggeredMenu({ section, closing, onClosed, onNavigate, onContac
               Instagram
             </a>
           </div>
+          <span className={b("contact-note")} data-sm="link">
+            {LOCATION.title} · {HOURS.open}
+          </span>
         </div>
       </div>
     </div>

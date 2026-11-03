@@ -10,6 +10,8 @@
   gap: clamp(28px, 3.5vw, 48px);
 
   &__grid {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 24px 32px;
@@ -112,6 +114,7 @@
     letter-spacing: -0.075em;
     line-height: 0.78;
     margin-left: -0.04em;
+    pointer-events: none;
   }
 
   &__wordmark-accent {
