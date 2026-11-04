@@ -105,6 +105,9 @@ export function reqTotal(r: Pick<Req, "items" | "dealTotal">) {
   return { t: deal ? r.dealTotal! : lines, lines, deal, q: !deal && q, f: !deal && f };
 }
 
+/** Lines in one request at most (the server refuses more). */
+export const MAX_ITEMS = 1000;
+
 /** A line of the manager's own (a custom print), not from the catalogue: it has no code. */
 export const isCustom = (i: RequestItem) => !i.code;
 

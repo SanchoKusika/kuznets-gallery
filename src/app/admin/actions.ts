@@ -4,7 +4,7 @@ import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { fromProduct, requireAdmin, toRequest, toReview } from "@/features/admin/server";
-import { SOURCES, STATUSES, type Product, type Req, type ReqPatch, type Review } from "@/features/admin/model";
+import { MAX_ITEMS, SOURCES, STATUSES, type Product, type Req, type ReqPatch, type Review } from "@/features/admin/model";
 import { CATALOG_TAG } from "@/lib/catalog";
 import { OG_TAG } from "@/features/og/og";
 import { bucketKey, needsOgCopy, ogCopyKey, SITE_DIR, SITE_OG_KEY, VARIANT_DIR, VARIANT_WIDTHS, variantKey } from "@/lib/images";
@@ -28,6 +28,7 @@ const Item = z.object({
   qty: z.number().int().min(1).max(9999),
   original: text(1000).optional(),
   note: text(500).optional(),
+  id: text(40).optional(),
 });
 const Note = z.object({ at: z.number(), text: text(2000) });
 const ProductSchema = z.object({
@@ -52,7 +53,7 @@ const PatchSchema = z
     comment: text(2000),
     due: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]),
     notes: z.array(Note).max(200),
-    items: z.array(Item).max(1000),
+    items: z.array(Item).max(MAX_ITEMS),
     dealTotal: z.number().int().nonnegative().max(1e11).nullable(),
   })
   .partial() satisfies z.ZodType<ReqPatch>;

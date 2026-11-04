@@ -13,25 +13,29 @@ type Props = {
   image: string;
   /** Rendered width for the image loader, e.g. "64px". */
   sizes: string;
-  /** A custom print: a picked or dropped file goes up as its picture (WebP with copies). */
-  onImage?: (key: string) => void;
+  /**
+   * A custom print: a picked or dropped file goes up as its picture (WebP with copies). Called as the upload starts,
+   * it returns where the uploaded picture goes — the line may have moved by then.
+   */
+  onUpload?: () => (key: string) => void;
   className?: string;
 };
 
 /** Picture of a request line; a custom print's one is picked, dropped or replaced right here. */
-export function ItemThumb({ image, sizes, onImage, className }: Props) {
+export function ItemThumb({ image, sizes, onUpload, className }: Props) {
   const { toast } = useAdmin();
   const [busy, setBusy] = useState(false);
   const [over, setOver] = useState(false);
-  if (!onImage) return <Thumb image={image} sizes={sizes} className={className} />;
+  if (!onUpload) return <Thumb image={image} sizes={sizes} className={className} />;
 
   const take = async (file: File | undefined) => {
     if (!file || busy) return;
     const problem = checkFile(file);
     if (problem) return toast(problem);
     setBusy(true);
+    const done = onUpload();
     try {
-      onImage(await uploadImage(file));
+      done(await uploadImage(file));
     } catch {
       toast("Не удалось загрузить изображение — проверьте соединение и попробуйте ещё раз");
     } finally {

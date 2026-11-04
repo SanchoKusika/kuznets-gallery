@@ -11,8 +11,8 @@ import { SearchField } from "@/components/admin/ui/SearchField/SearchField";
 import { count, fmtP, num, PICTURES } from "@/features/admin/format";
 import { checkFile, uploadImage } from "@/features/admin/images";
 import { useLayout } from "@/features/admin/layout";
-import { FRAME_NAMES, isCustom, lineTotal, pieces, separateFrame, type Product, type Req } from "@/features/admin/model";
-import { CUSTOM_TITLE, customItem, fromFileName, fromProduct, parseTable, priceList, resize, type PriceList } from "@/features/admin/order";
+import { FRAME_NAMES, MAX_ITEMS, isCustom, lineTotal, pieces, separateFrame, type Product, type Req } from "@/features/admin/model";
+import { CUSTOM_TITLE, customItem, fromFileName, fromProduct, lineId, parseTable, priceList, resize, type PriceList } from "@/features/admin/order";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import { plural } from "@/lib/format";
@@ -64,23 +64,28 @@ export function OrderEditor({ r }: { r: Req }) {
     [id, updateReq],
   );
   const patch = useCallback((i: number, p: Patch) => setItems((items) => items.map((it, j) => (j === i ? { ...it, ...p } : it))), [setItems]);
+  const patchLine = useCallback((lid: string, p: Patch) => setItems((items) => items.map((it) => (it.id === lid ? { ...it, ...p } : it))), [setItems]);
   const toggle = useCallback((i: number) => setSelected((sel) => new Set(sel.has(i) ? [...sel].filter((x) => x !== i) : [...sel, i])), []);
 
-  /** Lines go to the end of the list; filters are reset so they are in sight. */
+  /** Lines go to the end of the list (up to MAX_ITEMS); filters are reset so they are in sight. */
   const append = useCallback(
     (added: RequestItem[], focus?: boolean) => {
       if (!added.length) return;
       let at = 0;
+      let cut = 0;
       setItems((items) => {
         at = items.length;
-        return [...items, ...added];
+        const fit = added.slice(0, Math.max(0, MAX_ITEMS - items.length));
+        cut = added.length - fit.length;
+        return [...items, ...fit];
       });
+      if (cut) toast(`В заявке не больше ${num(MAX_ITEMS)} позиций — не добавлено: ${cut}`);
       setFilter("all");
       setQuery("");
       // A custom print added by hand: its title takes the focus once the row is there.
-      if (focus) requestAnimationFrame(() => document.querySelector<HTMLInputElement>(`[data-row="${at}"] input`)?.focus());
+      if (focus) requestAnimationFrame(() => document.querySelector<HTMLInputElement>(`[data-row="${at}"] input[aria-label="Название"]`)?.focus());
     },
-    [setItems],
+    [setItems, toast],
   );
 
   /** Removes lines with «Вернуть» (the list as it was: edits made since are dropped with it). */
@@ -102,7 +107,8 @@ export function OrderEditor({ r }: { r: Req }) {
   const duplicate = useCallback(
     (idx: readonly number[]) => {
       const copy = new Set(idx);
-      setItems((items) => items.flatMap((it, j) => (copy.has(j) ? [it, { ...it }] : [it])));
+      // The copy is a line of its own: it does not share the original's id.
+      setItems((items) => items.flatMap((it, j) => (copy.has(j) ? [it, { ...it, id: undefined }] : [it])));
       setSelected(new Set());
     },
     [setItems],
@@ -116,6 +122,11 @@ export function OrderEditor({ r }: { r: Req }) {
     if (upload) return;
     const ok = files.filter((f) => !checkFile(f));
     if (ok.length < files.length) toast(`Пропущено файлов: ${files.length - ok.length} — нужны JPG, PNG или WebP до 40 МБ`);
+    const room = MAX_ITEMS - r.items.length;
+    if (ok.length > room) {
+      toast(`В заявке не больше ${num(MAX_ITEMS)} позиций — загружу ${Math.max(0, room)} из ${ok.length}`);
+      ok.splice(Math.max(0, room));
+    }
     if (!ok.length) return;
     setUpload({ done: 0, total: ok.length });
     const results: (RequestItem | null | undefined)[] = Array.from({ length: ok.length });
@@ -323,6 +334,7 @@ export function OrderEditor({ r }: { r: Req }) {
             prices={prices}
             selected={selected.has(i)}
             patch={patch}
+            patchLine={patchLine}
             toggle={toggle}
             remove={removeOne}
             duplicate={duplicateOne}
@@ -400,17 +412,25 @@ type RowProps = {
   prices: PriceList;
   selected: boolean;
   patch: (i: number, p: Patch) => void;
+  /** A change of the line by its id (a picture finishing its upload after the list changed). */
+  patchLine: (id: string, p: Patch) => void;
   toggle: (i: number) => void;
   remove: (i: number) => void;
   duplicate: (i: number) => void;
 };
 
 /** One line of the table; re-renders only when its own line changes. */
-const Row = memo(function Row({ it, i, product, prices, selected, patch, toggle, remove, duplicate }: RowProps) {
+const Row = memo(function Row({ it, i, product, prices, selected, patch, patchLine, toggle, remove, duplicate }: RowProps) {
   // Details (note, link to the original) are open while there is something in them, unless closed by hand.
   const [more, setMore] = useState<boolean | null>(null);
   const own = isCustom(it);
   const set = (p: Patch) => patch(i, p);
+  // An upload starting: the line gets an id, the picture goes to the line with it.
+  const claim = () => {
+    const lid = it.id ?? lineId();
+    if (!it.id) set({ id: lid });
+    return (image: string) => patchLine(lid, { image });
+  };
   const v = it.w ? `${it.w}x${it.h}` : "";
   const opts = (product?.sizes ?? []).map((z) => ({ v: `${z.w}x${z.h}`, l: `${z.w} × ${z.h} см` }));
   if (!opts.some((o) => o.v === v)) opts.unshift({ v, l: v ? `${it.w} × ${it.h} см` : "по запросу" });
@@ -421,7 +441,7 @@ const Row = memo(function Row({ it, i, product, prices, selected, patch, toggle,
       <button type="button" className={b("check", { on: selected })} aria-label="Выбрать" onClick={() => toggle(i)}>
         {selected ? "✓" : ""}
       </button>
-      <ItemThumb image={it.image} sizes="56px" className={b("thumb")} onImage={own ? (image) => set({ image }) : undefined} />
+      <ItemThumb image={it.image} sizes="56px" className={b("thumb")} onUpload={own ? claim : undefined} />
       <div className={b("name")}>
         {own ? (
           <input className={b("title-input")} value={it.title} onChange={(e) => set({ title: e.target.value.slice(0, 200) })} placeholder={CUSTOM_TITLE} aria-label="Название" />

@@ -10,7 +10,7 @@ import { Field } from "@/components/admin/ui/Field/Field";
 import { NumInput } from "@/components/admin/ui/NumInput/NumInput";
 import { count, dstr, fmtP, hm, num, PICTURES } from "@/features/admin/format";
 import { FRAME_NAMES, SOURCES, STATUSES, digits, isCustom, lineTotal, pieces, separateFrame, type Source } from "@/features/admin/model";
-import { CUSTOM_TITLE, customItem, fromProduct, priceList, resize } from "@/features/admin/order";
+import { CUSTOM_TITLE, customItem, fromProduct, lineId, priceList, resize } from "@/features/admin/order";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import { plural } from "@/lib/format";
@@ -164,7 +164,21 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
           if (!opts.some((o) => o.v === v)) opts.unshift({ v, l: v ? `${it.w} × ${it.h} см` : "Размер по запросу" });
           return (
             <div key={i} className={b("item")}>
-              <ItemThumb image={it.image} sizes="64px" className={b("item-thumb")} onImage={own ? (image) => updItem(i, { image }) : undefined} />
+              <ItemThumb
+                image={it.image}
+                sizes="64px"
+                className={b("item-thumb")}
+                onUpload={
+                  own
+                    ? () => {
+                        // The line may move while the picture goes up: it gets an id, the picture goes to the line with it.
+                        const lid = it.id ?? lineId();
+                        if (!it.id) updItem(i, { id: lid });
+                        return (image) => upd((x) => ({ items: x.items.map((y) => (y.id === lid ? { ...y, image } : y)) }));
+                      }
+                    : undefined
+                }
+              />
               <div className={b("item-body")}>
                 <div className={b("item-head")}>
                   <div className={b("item-name")}>

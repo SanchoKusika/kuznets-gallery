@@ -20,6 +20,9 @@ export function fromProduct(p: Product, size?: { w: number; h: number }): Reques
 
 export const CUSTOM_TITLE = "Свой принт";
 
+/** A short id for a line (see RequestItem.id). */
+export const lineId = () => crypto.randomUUID().slice(0, 8);
+
 /** A custom print: no code; the price comes from the price list when the size is a standard one. */
 export function customItem(prices: PriceList, fields: Partial<RequestItem> = {}): RequestItem {
   const w = fields.w ?? null;
@@ -54,7 +57,7 @@ export function fromFileName(name: string) {
     .replace(/[_\s]+/g, " ")
     .replace(/^[\s\-.]+|[\s\-.]+$/g, "")
     .trim();
-  return { title: title ? title.charAt(0).toUpperCase() + title.slice(1) : CUSTOM_TITLE, w: z?.w ?? null, h: z?.h ?? null };
+  return { title: title ? (title.charAt(0).toUpperCase() + title.slice(1)).slice(0, 200) : CUSTOM_TITLE, w: z?.w ?? null, h: z?.h ?? null };
 }
 
 /** Framing by a word of it: «багет», «стекло» / «рамка», «холст». */
@@ -93,7 +96,7 @@ export function parseTable(text: string, products: Product[], prices: PriceList)
     for (const c of cells) {
       const code = c.toUpperCase().match(/^KZ-\d{3,}$/)?.[0];
       if (code && byCode.has(code)) product = byCode.get(code);
-      else if (/^https?:\/\//i.test(c)) original = c;
+      else if (/^https?:\/\//i.test(c)) original = c.slice(0, 1000);
       else if (NUMBER.test(c)) {
         const n = +c.replace(/\D/g, "");
         if (n >= 1000) price ??= n;
