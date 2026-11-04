@@ -17,6 +17,11 @@ html[data-scroll-lock] {
   overflow: hidden;
 }
 
+// The request drawer: the page stays locked, its scrollbar track stays so the layout does not shift.
+html[data-scroll-lock="keep"] {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   background: var(--paper);
