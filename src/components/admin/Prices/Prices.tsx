@@ -5,7 +5,7 @@ import { Chip } from "@/components/admin/ui/Chip/Chip";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { count, num, PICTURES } from "@/features/admin/format";
 import { useLayout } from "@/features/admin/layout";
-import type { Product } from "@/features/admin/model";
+import { standardSizes, type StdSize } from "@/features/admin/model";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import s from "./Prices.module.scss";
@@ -14,28 +14,6 @@ const b = bem(s, "prices");
 
 const PCT_CHIPS = [-10, 5, 10, 15, 20];
 const ROUNDS = [1000, 5000, 10000];
-
-type StdSize = { key: string; w: number; h: number; n: number; mode: number; others: number };
-
-/** Standard sizes with the most common price of each (prototype `sizeList`). */
-function standardSizes(products: Product[]): StdSize[] {
-  const map = new Map<string, { w: number; h: number; n: number; prices: Map<number, number> }>();
-  for (const p of products)
-    for (const z of p.sizes) {
-      if (z.price == null) continue;
-      const key = `${z.w}×${z.h}`;
-      const m = map.get(key) ?? { w: z.w, h: z.h, n: 0, prices: new Map() };
-      m.n++;
-      m.prices.set(z.price, (m.prices.get(z.price) ?? 0) + 1);
-      map.set(key, m);
-    }
-  return [...map]
-    .map(([key, m]) => {
-      const byCount = [...m.prices].sort((a, z) => z[1] - a[1]);
-      return { key, w: m.w, h: m.h, n: m.n, mode: byCount[0][0], others: byCount.length - 1 };
-    })
-    .sort((a, z) => a.w * a.h - z.w * z.h);
-}
 
 /** «Прайс»: prices of standard sizes and a percentage change of every price, both with «Вернуть». */
 export function Prices() {

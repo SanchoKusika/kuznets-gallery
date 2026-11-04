@@ -18,6 +18,12 @@ export type RequestItem = {
    */
   framePrice?: number | null;
   qty: number;
+  /** Link to the print-ready original (Google Drive, Telegram…); the admin panel only. */
+  original?: string;
+  /** The manager's note on the line; the admin panel only. */
+  note?: string;
+  /** The line's own id, given when a picture starts uploading to it (the line may move meanwhile); the admin panel only. */
+  id?: string;
 };
 
 export type RequestPayload = { name: string; phone: string; comment: string; items: RequestItem[] };

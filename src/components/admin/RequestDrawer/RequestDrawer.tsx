@@ -1,19 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { CatalogPicker } from "@/components/admin/CatalogPicker/CatalogPicker";
+import { ItemThumb } from "@/components/admin/ItemThumb/ItemThumb";
+import { OrderTotal } from "@/components/admin/OrderTotal/OrderTotal";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { Drawer, DrawerLabel } from "@/components/admin/ui/Drawer/Drawer";
 import { Field } from "@/components/admin/ui/Field/Field";
-import { SearchField } from "@/components/admin/ui/SearchField/SearchField";
-import { Thumb } from "@/components/admin/ui/Thumb/Thumb";
+import { NumInput } from "@/components/admin/ui/NumInput/NumInput";
 import { count, dstr, fmtP, hm, num, PICTURES } from "@/features/admin/format";
-import { FRAME_NAMES, SOURCES, STATUSES, digits, lineTotal, minPrice, reqTotal, separateFrame, type Source } from "@/features/admin/model";
+import { FRAME_NAMES, SOURCES, STATUSES, digits, isCustom, lineTotal, pieces, separateFrame, type Source } from "@/features/admin/model";
+import { CUSTOM_TITLE, customItem, fromProduct, lineId, priceList, resize } from "@/features/admin/order";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
+import { plural } from "@/lib/format";
 import type { RequestItem } from "@/lib/request";
 import s from "./RequestDrawer.module.scss";
 
 const b = bem(s, "request-card");
+
+/** Longer orders show a summary here and are edited on the whole screen. */
+const DRAWER_ITEMS = 8;
 
 const TrashIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -25,21 +32,20 @@ const TrashIcon = () => (
 
 /** Request card in the drawer: status, client, items, due date, comment and manager notes; saves as you type. */
 export function RequestDrawer({ open, id }: { open: boolean; id: string | null }) {
-  const { requests, products, updateReq, setStatus, deleteReq, closeDrawer } = useAdmin();
+  const { requests, products, updateReq, setStatus, deleteReq, closeDrawer, openOrder, orderId } = useAdmin();
+  const prices = useMemo(() => priceList(products), [products]);
   const found = requests.find((x) => x.id === id);
   // A deleted request keeps its card on screen while the drawer slides out.
   const [last, setLast] = useState(found);
   if (found && found !== last) setLast(found);
   const r = found ?? (last?.id === id ? last : undefined);
   const [picking, setPicking] = useState(false);
-  const [pq, setPq] = useState("");
   const [note, setNote] = useState("");
   const [seenId, setSeenId] = useState(id);
   // A newly opened request starts with the search closed and an empty note (prototype openReq).
   if (id !== seenId) {
     setSeenId(id);
     setPicking(false);
-    setPq("");
     setNote("");
   }
   if (!open && picking) setPicking(false);
@@ -54,10 +60,9 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
   const upd = (patch: Parameters<typeof updateReq>[1]) => updateReq(r.id, patch);
   const updItem = (i: number, patch: Partial<RequestItem>) => upd((x) => ({ items: x.items.map((it, j) => (j === i ? { ...it, ...patch } : it)) }));
   const cur = STATUSES.findIndex((x) => x.k === r.status);
-  const total = reqTotal(r);
   const phone = digits(r.phone);
-  const query = pq.trim().toLowerCase();
-  const results = products.filter((p) => !query || `${p.title} ${p.code}`.toLowerCase().includes(query)).slice(0, 6);
+  const long = r.items.length > DRAWER_ITEMS;
+  const custom = r.items.filter(isCustom).length;
   const addNote = () => {
     const text = note.trim();
     if (!text) return;
@@ -139,43 +144,86 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
 
       <DrawerLabel gap={40}>
         <span>Состав заказа</span>
-        <span>{r.items.length ? count(r.items.reduce((a, i) => a + (i.qty || 1), 0), PICTURES) : ""}</span>
+        <span>{r.items.length ? count(pieces(r.items), PICTURES) : ""}</span>
       </DrawerLabel>
+      {long && (
+        <div className={b("summary")}>
+          <span className={b("summary-text")}>
+            {`${r.items.length} ${plural(r.items.length, "позиция", "позиции", "позиций")}`}
+            {custom ? ` · ${custom} ${plural(custom, "свой принт", "своих принта", "своих принтов")}` : ""}
+          </span>
+          <span className={b("summary-what")}>{r.items.slice(0, 3).map((i) => i.title).join(", ") + (r.items.length > 3 ? "…" : "")}</span>
+        </div>
+      )}
       <div className={b("items")}>
-        {r.items.map((it, i) => {
-          const prod = products.find((p) => p.code === it.code);
+        {(long ? [] : r.items).map((it, i) => {
+          const own = isCustom(it);
+          const prod = own ? undefined : products.find((p) => p.code === it.code);
           const v = it.w ? `${it.w}x${it.h}` : "";
           const opts = (prod?.sizes ?? []).map((z) => ({ v: `${z.w}x${z.h}`, l: `${z.w} × ${z.h} см · ${fmtP(z.price)}` }));
           if (!opts.some((o) => o.v === v)) opts.unshift({ v, l: v ? `${it.w} × ${it.h} см` : "Размер по запросу" });
           return (
             <div key={i} className={b("item")}>
-              <Thumb image={it.image} sizes="64px" className={b("item-thumb")} />
+              <ItemThumb
+                image={it.image}
+                sizes="64px"
+                className={b("item-thumb")}
+                onUpload={
+                  own
+                    ? () => {
+                        // The line may move while the picture goes up: it gets an id, the picture goes to the line with it.
+                        const lid = it.id ?? lineId();
+                        if (!it.id) updItem(i, { id: lid });
+                        return (image) => upd((x) => ({ items: x.items.map((y) => (y.id === lid ? { ...y, image } : y)) }));
+                      }
+                    : undefined
+                }
+              />
               <div className={b("item-body")}>
                 <div className={b("item-head")}>
                   <div className={b("item-name")}>
-                    <div className={b("item-title")}>{it.title}</div>
-                    <div className={b("item-code")}>{it.code || "—"}</div>
+                    {own ? (
+                      <input className={b("item-title", { input: true })} value={it.title} onChange={(e) => updItem(i, { title: e.target.value.slice(0, 200) })} placeholder={CUSTOM_TITLE} aria-label="Название" />
+                    ) : (
+                      <div className={b("item-title")}>{it.title}</div>
+                    )}
+                    <div className={b("item-code")}>{own ? CUSTOM_TITLE : it.code}</div>
                   </div>
                   <button type="button" className={b("item-remove")} aria-label="Убрать" onClick={() => upd((x) => ({ items: x.items.filter((_, j) => j !== i) }))}>
                     ✕
                   </button>
                 </div>
                 <div className={b("item-controls")}>
-                  <select
-                    className={b("item-select")}
-                    aria-label="Размер"
-                    value={v}
-                    onChange={(e) => {
-                      const z = prod?.sizes.find((z) => `${z.w}x${z.h}` === e.target.value);
-                      if (z) updItem(i, { w: z.w, h: z.h, price: z.price });
-                    }}
-                  >
-                    {opts.map((o) => (
-                      <option key={o.v} value={o.v}>
-                        {o.l}
-                      </option>
-                    ))}
-                  </select>
+                  {own ? (
+                    <>
+                      <span className={b("pill")}>
+                        <NumInput className={b("pill-input", { size: true })} value={it.w} onChange={(w) => updItem(i, resize(prices, it, w, it.h))} digits={4} placeholder="Ш" aria-label="Ширина, см" />
+                        ×
+                        <NumInput className={b("pill-input", { size: true })} value={it.h} onChange={(h) => updItem(i, resize(prices, it, it.w, h))} digits={4} placeholder="В" aria-label="Высота, см" />
+                        см
+                      </span>
+                      <span className={b("pill", { empty: it.price == null })}>
+                        <NumInput className={b("pill-input")} value={it.price} onChange={(price) => updItem(i, { price })} placeholder="цена за шт." aria-label="Цена за штуку" />
+                        сум
+                      </span>
+                    </>
+                  ) : (
+                    <select
+                      className={b("item-select")}
+                      aria-label="Размер"
+                      value={v}
+                      onChange={(e) => {
+                        const z = prod?.sizes.find((z) => `${z.w}x${z.h}` === e.target.value);
+                        if (z) updItem(i, { w: z.w, h: z.h, price: z.price });
+                      }}
+                    >
+                      {opts.map((o) => (
+                        <option key={o.v} value={o.v}>
+                          {o.l}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                   <select
                     className={b("item-select")}
                     aria-label="Оформление"
@@ -211,7 +259,7 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
                       −
                     </button>
                     <span className={b("qty-value")}>{it.qty || 1}</span>
-                    <button type="button" className={b("qty-button")} aria-label="Больше" onClick={() => updItem(i, { qty: (it.qty || 1) + 1 })}>
+                    <button type="button" className={b("qty-button")} aria-label="Больше" onClick={() => updItem(i, { qty: Math.min(9999, (it.qty || 1) + 1) })}>
                       +
                     </button>
                   </div>
@@ -222,53 +270,32 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
           );
         })}
       </div>
-      {picking && (
-        <div className={b("picker")}>
-          <SearchField value={pq} onChange={setPq} placeholder="Найти картину по названию или коду" />
-          {results.map((p) => {
-            const mp = minPrice(p);
-            return (
-              <button
-                key={p.code}
-                type="button"
-                className={b("result")}
-                onClick={() => {
-                  const z = p.sizes[0];
-                  upd((x) => ({ items: [...x.items, { code: p.code, title: p.title, image: p.image, w: z?.w ?? null, h: z?.h ?? null, price: z?.price ?? null, frame: FRAME_NAMES[0], qty: 1 }] }));
-                  setPicking(false);
-                  setPq("");
-                }}
-              >
-                <Thumb image={p.image} sizes="40px" className={b("result-thumb")} />
-                <span className={b("result-title")}>
-                  {p.title}
-                  <span className={b("result-code")}>{p.code}</span>
-                </span>
-                <span className={b("result-price")}>{mp != null ? `от ${fmtP(mp)}` : "по запросу"}</span>
-              </button>
-            );
-          })}
-        </div>
+      {picking && !long && (
+        <CatalogPicker
+          onPick={(p) => {
+            upd((x) => ({ items: [...x.items, fromProduct(p)] }));
+            setPicking(false);
+          }}
+        />
       )}
-      <button
-        type="button"
-        className={b("pick")}
-        onClick={() => {
-          setPicking((v) => !v);
-          setPq("");
-        }}
-      >
-        {picking ? "Скрыть поиск" : "+ Добавить картину"}
-      </button>
-      <div className={b("total")}>
-        <div>
-          <div className={b("total-label")}>Итого</div>
-          <div className={b("total-note")}>
-            {total.q ? "Часть позиций — цена по запросу" : total.f ? "Без оформления: впишите сумму у позиции" : "Доставка — отдельно"}
-          </div>
-        </div>
-        <div className={b("total-value")}>{total.t ? fmtP(total.t) : "по запросу"}</div>
+      <div className={b("adds")}>
+        {!long && (
+          <>
+            <button type="button" className={b("pick")} onClick={() => setPicking((v) => !v)}>
+              {picking ? "Скрыть поиск" : "+ Добавить картину"}
+            </button>
+            <button type="button" className={b("pick")} title="Картина не из каталога: своё название, размер и цена" onClick={() => upd((x) => ({ items: [...x.items, customItem(prices)] }))}>
+              + Свой принт
+            </button>
+          </>
+        )}
+        {orderId !== r.id && (
+          <button type="button" className={b("pick", { open: true })} onClick={() => openOrder(r.id)}>
+            {long ? "Открыть состав заказа →" : "На весь экран →"}
+          </button>
+        )}
       </div>
+      <OrderTotal r={r} />
 
       <DrawerLabel gap={40}>Детали</DrawerLabel>
       <div className={b("grid")}>

@@ -1,0 +1,535 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.order-editor {
+  position: relative;
+
+  // —— Summary: counters and the total
+  &__summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 2px;
+  }
+
+  &__stat {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  &__stat-label {
+    @include caption;
+  }
+
+  &__stat-value {
+    @include tabular;
+    font-weight: 600;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.05em;
+
+    &--alert {
+      color: var(--accent);
+    }
+  }
+
+  &__total {
+    @include card;
+    margin: 0;
+  }
+
+  // —— Adding lines
+  &__adds {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  &__add {
+    @include soft-pill;
+    position: relative;
+    padding: 10px 18px;
+    font-size: 14px;
+
+    &--on {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    &--busy {
+      cursor: progress;
+      background: var(--paper-3);
+      color: var(--ink);
+    }
+  }
+
+  &__file {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &__hint {
+    flex: 1 1 260px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--ink-3);
+  }
+
+  // Rows pasted from a spreadsheet, with a preview of what they become.
+  &__paste {
+    @include card;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  &__paste-hint {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  &__paste-input {
+    @include tabular;
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    tab-size: 12;
+
+    &:focus {
+      border-color: var(--accent);
+    }
+  }
+
+  &__preview {
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  &__preview-row {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 64px minmax(0, 1fr);
+    gap: 12px;
+    padding: 7px 0;
+    border-top: 1px solid var(--line-soft);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  &__preview-title {
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__preview-more {
+    @include caption(11px);
+    padding-top: 8px;
+  }
+
+  &__paste-foot {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  // —— Filters and search
+  &__toolbar {
+    @include toolbar;
+  }
+
+  &__chips {
+    @include chip-row;
+  }
+
+  &__search {
+    flex: 0 1 320px;
+    min-width: 200px;
+  }
+
+  // Ink pill with bulk changes, as in the catalogue, but under the table and stuck to the bottom of the window:
+  // selecting a line does not push the table down. Above the tab bar on phones.
+  &__bulk {
+    position: sticky;
+    bottom: 16px;
+    z-index: 15;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 20px;
+    padding: 8px 8px 8px 20px;
+    margin-top: 12px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 24px;
+
+    &--bar {
+      bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+  }
+
+  &__bulk-count {
+    @include label(12px);
+  }
+
+  &__bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  &__bulk-select,
+  &__bulk-field {
+    border: 0;
+    background: color-mix(in srgb, var(--paper) 14%, transparent);
+    color: inherit;
+    border-radius: 99px;
+    font-size: 14px;
+  }
+
+  &__bulk-select {
+    padding: 8px 14px;
+    cursor: pointer;
+    outline: none;
+
+    option {
+      color: var(--ink);
+      background: var(--paper);
+    }
+  }
+
+  &__bulk-field {
+    display: flex;
+    align-items: center;
+    padding-left: 14px;
+  }
+
+  &__bulk-input {
+    @include pill-input(96px);
+    font-size: 14px;
+    color: inherit;
+
+    &--qty {
+      width: 56px;
+    }
+
+    &::placeholder {
+      color: color-mix(in srgb, var(--paper) 55%, transparent);
+    }
+  }
+
+  &__bulk-button,
+  &__bulk-clear {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+  }
+
+  &__bulk-button {
+    padding: 8px 14px;
+    border-radius: 99px;
+    font-size: 14px;
+  }
+
+  &__bulk-clear {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
+
+  &__bulk-delete {
+    border: 0;
+    background: var(--accent);
+    color: var(--on-accent);
+    padding: 8px 16px;
+    border-radius: 99px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  // —— Table: one row per line on wide content; narrower — the controls wrap under the title.
+  &__table {
+    @include table-shell;
+  }
+
+  &__thead,
+  &__row {
+    display: grid;
+    gap: 8px 14px;
+    align-items: center;
+  }
+
+  &__table--tier-wide &__thead,
+  &__table--tier-wide &__row {
+    grid-template-columns: 18px 56px minmax(0, 1.6fr) 150px minmax(0, 1.5fr) 86px 140px 116px 64px;
+  }
+
+  &__table--tier-narrow &__row {
+    grid-template-columns: 18px 56px minmax(0, 1fr) auto;
+  }
+
+  &__thead {
+    @include caption;
+    padding: 12px 0;
+  }
+
+  &__right {
+    text-align: right;
+  }
+
+  &__row {
+    padding: 10px 12px;
+    margin: 0 -12px;
+    border-top: 1px solid var(--line-soft);
+    transition: background 0.25s;
+
+    &:hover {
+      background: var(--paper-3);
+    }
+
+    &--selected {
+      background: var(--paper-selected);
+    }
+  }
+
+  &__check {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--ink-3);
+    background: transparent;
+    color: var(--paper);
+    padding: 0;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+
+    &--on {
+      background: var(--ink);
+    }
+  }
+
+  &__thumb {
+    width: 56px;
+    height: 56px;
+  }
+
+  &__name {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__title-input {
+    @include underline-input(2px 0 4px, 15px);
+    font-weight: 500;
+  }
+
+  &__code {
+    @include meta(11px);
+    display: flex;
+    gap: 10px;
+  }
+
+  &__original {
+    color: var(--ink-2);
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &__controls {
+    display: contents;
+  }
+
+  &__table--tier-narrow &__controls {
+    grid-column: 3 / -1;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__table--tier-narrow &__tools {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  // Phones: the controls and the details take the whole width under the picture.
+  &__table--phone &__controls,
+  &__table--phone &__details {
+    grid-column: 1 / -1;
+  }
+
+  &__select {
+    border: 0;
+    background: var(--paper);
+    padding: 6px 10px;
+    border-radius: 99px;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  &__frame {
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &__pill {
+    @include pill-field;
+    width: fit-content;
+  }
+
+  &__pill-input {
+    @include pill-input(84px);
+
+    &--size {
+      width: 38px;
+      text-align: center;
+    }
+
+    &--qty {
+      width: 36px;
+    }
+  }
+
+  &__sum {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  &__table--tier-narrow &__sum {
+    margin-left: auto;
+  }
+
+  &__tools {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2px;
+  }
+
+  &__tool {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    color: var(--ink-3);
+    font-size: 14px;
+
+    &:hover,
+    &--on {
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    &--remove:hover {
+      color: var(--accent);
+    }
+  }
+
+  // Note and the link to the original, under the line.
+  &__details {
+    grid-column: 3 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 8px 20px;
+  }
+
+  &__detail-input {
+    @include underline-input(4px 0 6px, 13px);
+    flex: 1 1 240px;
+    width: auto;
+  }
+
+  &__detail-button {
+    @include footer-link;
+    font-size: 13px;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+
+  &__empty {
+    @include empty(23.92px, 28px 0);
+  }
+
+  &__foot {
+    @include list-foot;
+  }
+
+  &__shown {
+    @include caption(12px);
+  }
+
+  // A pack of files dragged over the screen.
+  &--over {
+    cursor: copy;
+  }
+
+  &__drop {
+    @include serif;
+    position: fixed;
+    inset: 12px;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    border: 2px dashed var(--accent);
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    font-size: 28px;
+    pointer-events: none;
+  }
+}

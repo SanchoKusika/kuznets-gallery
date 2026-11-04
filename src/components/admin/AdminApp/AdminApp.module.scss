@@ -48,6 +48,18 @@
     @include caption(12px);
   }
 
+  // «← Заявки» over the heading of an order on the whole screen.
+  &__back {
+    @include footer-link;
+    display: block;
+    margin-bottom: 10px;
+    padding: 0;
+
+    &:hover {
+      color: var(--ink);
+    }
+  }
+
   &__title {
     margin: 14px 0 0;
     font-weight: 600;
