@@ -9,7 +9,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
     gap: 2px;
-    margin-bottom: 24px;
+    margin-bottom: 2px;
   }
 
   &__stats {
@@ -45,6 +45,50 @@
   &__total {
     @include card;
     margin: 0;
+  }
+
+  // «Готово 112 из 497 картин · 23%»: the whole width under the summary; ink fill, accent once all is made.
+  &__progress {
+    @include card;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  &__progress-label {
+    @include caption;
+  }
+
+  &__progress-value {
+    @include tabular;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__progress-track {
+    height: 8px;
+    border-radius: 99px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--ink);
+    transition: width 0.4s var(--ease-out);
+
+    &--full {
+      background: var(--accent);
+    }
   }
 
   // —— Adding lines
@@ -87,71 +131,6 @@
     font-size: 12px;
     line-height: 1.45;
     color: var(--ink-3);
-  }
-
-  // Rows pasted from a spreadsheet, with a preview of what they become.
-  &__paste {
-    @include card;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  &__paste-hint {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--ink-2);
-  }
-
-  &__paste-input {
-    @include tabular;
-    width: 100%;
-    border: 1px solid var(--line);
-    background: var(--paper);
-    padding: 10px 12px;
-    font-size: 13px;
-    line-height: 1.5;
-    resize: vertical;
-    outline: none;
-    tab-size: 12;
-
-    &:focus {
-      border-color: var(--accent);
-    }
-  }
-
-  &__preview {
-    max-height: 320px;
-    overflow-y: auto;
-  }
-
-  &__preview-row {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) 64px minmax(0, 1fr);
-    gap: 12px;
-    padding: 7px 0;
-    border-top: 1px solid var(--line-soft);
-    font-size: 13px;
-    color: var(--ink-2);
-  }
-
-  &__preview-title {
-    color: var(--ink);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &__preview-more {
-    @include caption(11px);
-    padding-top: 8px;
-  }
-
-  &__paste-foot {
-    display: flex;
-    justify-content: flex-end;
   }
 
   // —— Filters and search
@@ -266,13 +245,10 @@
     font-weight: 500;
   }
 
-  // —— Table. No rules: lines are paper-2 strips with a 2px gap of paper between them (the rhythm of the summary
-  // above), every control is a 32px paper pill, so a line is one even row. Wide content — one line per row;
-  // narrower — the controls wrap under the title.
+  // —— Table: a paper-2 shell, lines separated by a rule as in the request list; every control is a 32px paper
+  // pill, so a line is one even row. Wide content — one line per row; narrower — the controls wrap under the title.
   &__table {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    @include table-shell;
   }
 
   &__thead,
@@ -280,12 +256,11 @@
     display: grid;
     column-gap: 14px;
     align-items: center;
-    padding: 10px 14px;
   }
 
   &__table--tier-wide &__thead,
   &__table--tier-wide &__row {
-    grid-template-columns: 18px 48px minmax(0, 1.5fr) 132px minmax(0, 1.4fr) 76px 124px 112px 60px;
+    grid-template-columns: 18px 48px minmax(0, 1.5fr) 132px minmax(0, 1.4fr) 76px 124px 112px 88px;
   }
 
   &__table--tier-narrow &__row {
@@ -295,7 +270,7 @@
 
   &__thead {
     @include caption;
-    padding-block: 6px 8px;
+    padding: 12px 0;
   }
 
   &__right {
@@ -303,7 +278,9 @@
   }
 
   &__row {
-    background: var(--paper-2);
+    padding: 10px 12px;
+    margin: 0 -12px;
+    border-top: 1px solid var(--line-soft);
     transition: background 0.2s;
 
     &:hover {
@@ -537,6 +514,42 @@
     display: flex;
     justify-content: flex-end;
     gap: 2px;
+  }
+
+  // «Готово» of a line: an empty circle, ink with a check once made.
+  &__done {
+    width: 24px;
+    height: 24px;
+    margin: 2px 4px 2px 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--ink-4);
+    border-radius: 50%;
+    background: transparent;
+    color: transparent;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      border-color 0.2s,
+      color 0.2s;
+
+    &:hover {
+      border-color: var(--ink);
+      color: var(--ink-3);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    &--on,
+    &--on:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+    }
   }
 
   &__tool {

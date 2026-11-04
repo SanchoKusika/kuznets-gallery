@@ -29,6 +29,7 @@ const Item = z.object({
   original: text(1000).optional(),
   note: text(500).optional(),
   id: text(40).optional(),
+  done: z.boolean().optional(),
 });
 const Note = z.object({ at: z.number(), text: text(2000) });
 const ProductSchema = z.object({

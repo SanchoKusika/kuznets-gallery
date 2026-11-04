@@ -22,6 +22,8 @@ export type RequestItem = {
   original?: string;
   /** The manager's note on the line; the admin panel only. */
   note?: string;
+  /** The line is made (the order's progress); the admin panel only. */
+  done?: boolean;
   /** The line's own id, given when a picture starts uploading to it (the line may move meanwhile); the admin panel only. */
   id?: string;
 };
