@@ -185,7 +185,6 @@ export function OrderEditor({ r }: { r: Req }) {
     return () => removeEventListener("beforeunload", onLeave);
   }, [upload]);
 
-
   const q = query.trim().toLowerCase();
   const test = FILTERS.find((f) => f.k === filter)!.test;
   const rows = r.items
