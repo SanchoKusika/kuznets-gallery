@@ -22,6 +22,8 @@ export const STATUS_NAME = Object.fromEntries(STATUSES.map((s) => [s.k, s.n])) a
 export const ACTIVE: readonly Status[] = ["contact", "mockup", "prod", "ship"];
 export const SOURCES: readonly Source[] = ["Сайт", "Instagram", "Telegram", "Телефон"];
 export const FRAME_NAMES: readonly string[] = FRAMES.map((f) => f.n);
+/** Short names of the framing for narrow selects (the order table). */
+export const FRAME_SHORT: Readonly<Record<string, string>> = Object.fromEntries(FRAME_NAMES.map((n, i) => [n, ["Холст на подрамнике", "Холст + багет", "Под стеклом"][i] ?? n]));
 
 /** Directions with the admin's names and short labels (prototype `CATS` of the admin). */
 export const ADMIN_CATS: readonly { k: CategoryKey; n: string; s: string }[] = [

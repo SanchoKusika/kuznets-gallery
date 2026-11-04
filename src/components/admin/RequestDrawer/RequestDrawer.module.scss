@@ -211,17 +211,6 @@
     gap: 8px 12px;
   }
 
-  &__item-select {
-    border: 0;
-    background: var(--paper);
-    padding: 6px 10px;
-    border-radius: 99px;
-    font-size: 13px;
-    cursor: pointer;
-    outline: none;
-    max-width: 100%;
-  }
-
   // «+ 250 000 сум» beside the framing; a custom print's size and price.
   &__frame-price,
   &__pill {

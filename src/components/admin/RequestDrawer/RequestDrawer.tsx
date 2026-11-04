@@ -8,6 +8,7 @@ import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { Drawer, DrawerLabel } from "@/components/admin/ui/Drawer/Drawer";
 import { Field } from "@/components/admin/ui/Field/Field";
 import { NumInput } from "@/components/admin/ui/NumInput/NumInput";
+import { PillSelect } from "@/components/admin/ui/PillSelect/PillSelect";
 import { count, dstr, fmtP, hm, num, PICTURES } from "@/features/admin/format";
 import { FRAME_NAMES, SOURCES, STATUSES, digits, isCustom, lineTotal, pieces, separateFrame, type Source } from "@/features/admin/model";
 import { CUSTOM_TITLE, customItem, fromProduct, lineId, priceList, resize } from "@/features/admin/order";
@@ -21,6 +22,7 @@ const b = bem(s, "request-card");
 
 /** Longer orders show a summary here and are edited on the whole screen. */
 const DRAWER_ITEMS = 8;
+const FRAME_OPTIONS = FRAME_NAMES.map((f) => ({ v: f, l: f }));
 
 const TrashIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -208,35 +210,25 @@ export function RequestDrawer({ open, id }: { open: boolean; id: string | null }
                       </span>
                     </>
                   ) : (
-                    <select
-                      className={b("item-select")}
+                    <PillSelect
+                      size="sm"
                       aria-label="Размер"
+                      options={opts}
                       value={v}
-                      onChange={(e) => {
-                        const z = prod?.sizes.find((z) => `${z.w}x${z.h}` === e.target.value);
+                      onChange={(val) => {
+                        const z = prod?.sizes.find((z) => `${z.w}x${z.h}` === val);
                         if (z) updItem(i, { w: z.w, h: z.h, price: z.price });
                       }}
-                    >
-                      {opts.map((o) => (
-                        <option key={o.v} value={o.v}>
-                          {o.l}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   )}
-                  <select
-                    className={b("item-select")}
+                  <PillSelect
+                    size="sm"
                     aria-label="Оформление"
+                    options={FRAME_OPTIONS}
                     value={FRAME_NAMES.includes(it.frame) ? it.frame : FRAME_NAMES[0]}
                     // Back to the canvas on a stretcher: its framing is in the price, the entered sum goes.
-                    onChange={(e) => updItem(i, { frame: e.target.value, ...(e.target.value === FRAME_NAMES[0] && { framePrice: null }) })}
-                  >
-                    {FRAME_NAMES.map((f) => (
-                      <option key={f} value={f}>
-                        {f}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(frame) => updItem(i, { frame, ...(frame === FRAME_NAMES[0] && { framePrice: null }) })}
+                  />
                   {separateFrame(it) && (
                     <label className={b("frame-price", { empty: it.framePrice == null })} title="Оформление за штуку: багет или рамка со стеклом считаются отдельно">
                       <span>+</span>
