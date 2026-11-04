@@ -64,6 +64,7 @@ export const toRequest = (r: Tables<"requests">): Req => ({
   due: r.due ?? "",
   notes: (r.notes as { at: string; text: string }[]).map((n): Note => ({ at: Date.parse(n.at), text: n.text })),
   items: r.items as RequestItem[],
+  dealTotal: r.deal_total ?? null,
 });
 
 export const toReview = (r: Tables<"reviews">): Review => ({ id: r.id, name: r.name, text: r.text, hidden: r.hidden, sortOrder: r.sort_order });

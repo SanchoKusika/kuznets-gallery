@@ -7,7 +7,7 @@ import { getAdmin, loadAdminData } from "@/features/admin/server";
 
 export const metadata: Metadata = { title: "Админ-панель", robots: { index: false, follow: false } };
 
-/** /admin — sign-in or the panel. `?edit=KZ-001` opens a product card, `?tab=req` a section. */
+/** /admin — sign-in or the panel. `?edit=KZ-001` opens a product card, `?tab=req` a section, `?order=1049` a request's items. */
 export default function AdminPage({ searchParams }: PageProps<"/admin">) {
   return (
     <Suspense>
@@ -23,5 +23,5 @@ async function Admin({ searchParams }: { searchParams: PageProps<"/admin">["sear
   if (!session) return <Login />;
   const [data, params] = await Promise.all([loadAdminData(session.db), searchParams]);
   const one = (v: string | string[] | undefined) => (typeof v === "string" ? v : undefined);
-  return <AdminApp admin={session.admin} data={data} edit={one(params.edit)} tab={one(params.tab)} />;
+  return <AdminApp admin={session.admin} data={data} edit={one(params.edit)} tab={one(params.tab)} order={one(params.order)} />;
 }

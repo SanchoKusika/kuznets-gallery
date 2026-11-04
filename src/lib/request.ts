@@ -18,6 +18,10 @@ export type RequestItem = {
    */
   framePrice?: number | null;
   qty: number;
+  /** Link to the print-ready original (Google Drive, Telegram…); the admin panel only. */
+  original?: string;
+  /** The manager's note on the line; the admin panel only. */
+  note?: string;
 };
 
 export type RequestPayload = { name: string; phone: string; comment: string; items: RequestItem[] };

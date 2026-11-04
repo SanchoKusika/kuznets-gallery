@@ -65,6 +65,7 @@ export type Database = {
           comment: string;
           company: string;
           created_at: string;
+          deal_total: number | null;
           due: string | null;
           id: string;
           items: Json;
@@ -80,6 +81,7 @@ export type Database = {
           comment?: string;
           company?: string;
           created_at?: string;
+          deal_total?: number | null;
           due?: string | null;
           id?: string;
           items?: Json;
@@ -95,6 +97,7 @@ export type Database = {
           comment?: string;
           company?: string;
           created_at?: string;
+          deal_total?: number | null;
           due?: string | null;
           id?: string;
           items?: Json;

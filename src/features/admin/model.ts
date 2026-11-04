@@ -67,6 +67,8 @@ export type Req = {
   due: string;
   notes: Note[];
   items: RequestItem[];
+  /** The total agreed with the client (a discount, a bargain); null — the sum of the lines. */
+  dealTotal: number | null;
 };
 
 /** Fields of a request the admin edits. */
@@ -85,20 +87,50 @@ export const separateFrame = (i: RequestItem) => FRAME_NAMES.includes(i.frame) &
 export const lineTotal = (i: RequestItem) => (i.price == null ? null : (i.price + (separateFrame(i) ? (i.framePrice ?? 0) : 0)) * (i.qty || 1));
 
 /**
- * Total of a request (prototype `reqTotal`, plus the framing): `q` — some lines are priced on request,
- * `f` — some framing is priced separately and not entered yet.
+ * Total of a request (prototype `reqTotal`, plus the framing): `lines` — the sum of the lines, `q` — some lines are
+ * priced on request, `f` — some framing is priced separately and not entered yet. A total agreed with the client
+ * replaces the sum (`deal`), and then nothing is missing.
  */
-export function reqTotal(r: Req) {
-  let t = 0;
+export function reqTotal(r: Pick<Req, "items" | "dealTotal">) {
+  let lines = 0;
   let q = false;
   let f = false;
   for (const i of r.items) {
     const line = lineTotal(i);
     if (line == null) q = true;
-    else t += line;
+    else lines += line;
     if (separateFrame(i) && i.framePrice == null) f = true;
   }
-  return { t, q, f };
+  const deal = r.dealTotal != null;
+  return { t: deal ? r.dealTotal! : lines, lines, deal, q: !deal && q, f: !deal && f };
+}
+
+/** A line of the manager's own (a custom print), not from the catalogue: it has no code. */
+export const isCustom = (i: RequestItem) => !i.code;
+
+/** Pieces in a request: the sum of the quantities. */
+export const pieces = (items: readonly RequestItem[]) => items.reduce((a, i) => a + (i.qty || 1), 0);
+
+export type StdSize = { key: string; w: number; h: number; n: number; mode: number; others: number };
+
+/** Standard sizes with the most common price of each (prototype `sizeList`). */
+export function standardSizes(products: Product[]): StdSize[] {
+  const map = new Map<string, { w: number; h: number; n: number; prices: Map<number, number> }>();
+  for (const p of products)
+    for (const z of p.sizes) {
+      if (z.price == null) continue;
+      const key = `${z.w}×${z.h}`;
+      const m = map.get(key) ?? { w: z.w, h: z.h, n: 0, prices: new Map() };
+      m.n++;
+      m.prices.set(z.price, (m.prices.get(z.price) ?? 0) + 1);
+      map.set(key, m);
+    }
+  return [...map]
+    .map(([key, m]) => {
+      const byCount = [...m.prices].sort((a, z) => z[1] - a[1]);
+      return { key, w: m.w, h: m.h, n: m.n, mode: byCount[0][0], others: byCount.length - 1 };
+    })
+    .sort((a, z) => a.w * a.h - z.w * z.h);
 }
 
 /** Lowest standard price of a product (prototype `minP`). */

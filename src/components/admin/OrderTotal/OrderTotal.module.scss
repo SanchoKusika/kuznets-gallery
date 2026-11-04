@@ -1,0 +1,90 @@
+@use "mixins" as *;
+@use "admin" as *;
+
+.order-total {
+  margin-top: 24px;
+
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px 16px;
+  }
+
+  &__label {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  &__note {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  &__value {
+    margin-left: auto;
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+  }
+
+  // «Своя итоговая цена»: a quiet underline row; accent once a total is agreed.
+  &__deal {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--ink-3);
+
+    &:focus-within,
+    &--set {
+      border-bottom-color: var(--accent);
+    }
+  }
+
+  &__deal-label {
+    white-space: nowrap;
+  }
+
+  &__deal-input {
+    @include tabular;
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    padding: 4px 0;
+    background: transparent;
+    font-size: 15px;
+    color: var(--ink);
+    text-align: right;
+    outline: none;
+
+    &::placeholder {
+      font-size: 13px;
+    }
+  }
+
+  &__deal-unit {
+    color: var(--ink-3);
+  }
+
+  &__deal-reset {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-3);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}

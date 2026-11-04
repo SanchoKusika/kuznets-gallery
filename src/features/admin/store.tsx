@@ -58,6 +58,8 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
   // Which card is open; the last request and product stay set so a closing card slides out with its content.
   const [drawer, setDrawer] = useState<"req" | "prod" | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
+  /** A request whose items are open on the whole screen (large orders) instead of a section. */
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [edit, setEdit] = useState<ProductEdit | null>(null);
   /** Closing a card with unsaved changes asks first (in the card's footer). */
   const [confirmClose, setConfirmClose] = useState(false);
@@ -88,6 +90,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
   const save = useCallback((p: Promise<unknown>) => void p.catch(() => toast(FAILED)), [toast]);
 
   const setTab = useCallback((t: Tab) => {
+    // Leaving an order open on the whole screen: its address goes too.
+    if (history.state?.kzOrder) history.replaceState(null, "", location.pathname);
+    setOrderId(null);
     setTabState(t);
     setVisit((v) => v + 1);
     try {
@@ -126,7 +131,10 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       const r = latest.current.requests.find((x) => x.id === id);
       if (!r) return;
       const p = typeof patch === "function" ? patch(r) : patch;
-      setRequests((list) => list.map((x) => (x.id === id ? { ...x, ...p } : x)));
+      const apply = (list: Req[]) => list.map((x) => (x.id === id ? { ...x, ...p } : x));
+      // Updates that come faster than a render (uploads finishing together) build on each other.
+      latest.current.requests = apply(latest.current.requests);
+      setRequests(apply);
       pending.current.set(id, { ...pending.current.get(id), ...p });
       clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(flush, SAVE_DELAY);
@@ -162,6 +170,7 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
       pending.current.delete(id);
       setRequests((list) => list.filter((x) => x.id !== id));
       setDrawer(null);
+      setOrderId((o) => (o === id ? null : o));
       save(api.deleteRequest(id));
       toast(`Заявка № ${r.no} удалена`, () => {
         setRequests((list) => [...list, r].sort((a, z) => z.at - a.at || z.no - a.no));
@@ -182,6 +191,36 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     },
     [setStatus, toast, updateReq],
   );
+
+  /**
+   * The items of a request on the whole screen. The address gets `?order=<№>` (a reload or a link opens it again),
+   * and the browser's «Назад» goes back to the list.
+   */
+  const openOrder = useCallback((id: string) => {
+    const r = latest.current.requests.find((x) => x.id === id);
+    if (!r) return;
+    setDrawer(null);
+    setOrderId(id);
+    history.pushState({ kzOrder: r.no }, "", `${location.pathname}?order=${r.no}`);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const closeOrder = useCallback(() => {
+    if (history.state?.kzOrder) history.back();
+    else {
+      setOrderId(null);
+      history.replaceState(null, "", location.pathname);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onPop = () => {
+      const no = history.state?.kzOrder;
+      setOrderId(no ? (latest.current.requests.find((x) => x.no === no)?.id ?? null) : null);
+    };
+    addEventListener("popstate", onPop);
+    return () => removeEventListener("popstate", onPop);
+  }, []);
 
   // —— Catalogue
   const nextCode = useCallback(
@@ -453,6 +492,9 @@ function useAdminState(admin: AdminUser, initial: AdminData) {
     },
     drawer,
     openId,
+    orderId,
+    openOrder,
+    closeOrder,
     edit,
     closeDrawer,
     confirmClose,

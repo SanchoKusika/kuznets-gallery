@@ -25,7 +25,9 @@ const Item = z.object({
   price: z.number().int().nonnegative().nullable(),
   frame: text(100),
   framePrice: z.number().int().nonnegative().max(1e9).nullable().optional(),
-  qty: z.number().int().min(1).max(999),
+  qty: z.number().int().min(1).max(9999),
+  original: text(1000).optional(),
+  note: text(500).optional(),
 });
 const Note = z.object({ at: z.number(), text: text(2000) });
 const ProductSchema = z.object({
@@ -50,7 +52,8 @@ const PatchSchema = z
     comment: text(2000),
     due: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]),
     notes: z.array(Note).max(200),
-    items: z.array(Item).max(100),
+    items: z.array(Item).max(1000),
+    dealTotal: z.number().int().nonnegative().max(1e11).nullable(),
   })
   .partial() satisfies z.ZodType<ReqPatch>;
 const ReviewSchema = z.object({ id: z.uuid(), name: text(100), text: text(1000), hidden: z.boolean(), sortOrder: z.number().int() }) satisfies z.ZodType<Review>;
@@ -68,10 +71,11 @@ const must = <T>({ data, error }: { data: T; error: unknown }): NonNullable<T> =
 };
 
 const toRow = (p: ReqPatch) => {
-  const { notes, due, ...rest } = p;
+  const { notes, due, dealTotal, ...rest } = p;
   return {
     ...rest,
     ...(due !== undefined && { due: due || null }),
+    ...(dealTotal !== undefined && { deal_total: dealTotal }),
     ...(notes && { notes: notes.map((n) => ({ at: new Date(n.at).toISOString(), text: n.text })) }),
   };
 };
@@ -127,8 +131,9 @@ export async function deleteRequest(id: string) {
 /** Undo of a delete: the same id, number and date. */
 export async function restoreRequest(r: Req) {
   const db = await requireAdmin();
-  const { id, no, at, ...fields } = r;
-  const patch = PatchSchema.parse(fields);
+  const { id, no, at, dealTotal, ...fields } = r;
+  // No agreed total is the column's default: it is left out.
+  const patch = PatchSchema.parse({ ...fields, ...(dealTotal != null && { dealTotal }) });
   check(
     await db.from("requests").insert({
       ...toRow(patch),
