@@ -37,6 +37,9 @@ const FILTERS: readonly { k: Filter; n: string; test: (i: RequestItem) => boolea
 
 type Patch = Partial<RequestItem>;
 
+/** The event comes from an open drawer over the screen (the photo editor, the request card). */
+const inDialog = (target: EventTarget | null) => target instanceof Element && !!target.closest('[role="dialog"]');
+
 const isLink = (v: string | undefined) => !!v && /^https?:\/\/\S+$/i.test(v.trim());
 
 /**
@@ -163,10 +166,10 @@ export function OrderEditor({ r }: { r: Req }) {
   };
   const onPasteFiles = useEffectEvent((files: File[]) => void uploadFiles(files));
 
-  // Ctrl+V of copied pictures (not into a field): they go up as custom prints.
+  // Ctrl+V of copied pictures (not into a field, no drawer open): they go up as custom prints.
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
-      if ((e.target as HTMLElement | null)?.closest("input, textarea")) return;
+      if ((e.target as HTMLElement | null)?.closest("input, textarea") || document.querySelector('[role="dialog"][aria-modal="true"]')) return;
       const files = [...(e.clipboardData?.files ?? [])].filter((f) => f.type.startsWith("image/"));
       if (!files.length) return;
       e.preventDefault();
@@ -208,7 +211,7 @@ export function OrderEditor({ r }: { r: Req }) {
       onDragOver={(e: DragEvent) => {
         if (!e.dataTransfer.types.includes("Files")) return;
         e.preventDefault();
-        if (!over) setOver(true);
+        if (!over && !inDialog(e.target)) setOver(true);
       }}
       onDragLeave={(e: DragEvent) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOver(false);
@@ -217,7 +220,8 @@ export function OrderEditor({ r }: { r: Req }) {
         if (!e.dataTransfer.files.length) return;
         e.preventDefault();
         setOver(false);
-        void uploadFiles([...e.dataTransfer.files]);
+        // A file dropped on the photo editor or the request card (they render inside this screen) is not a new line.
+        if (!inDialog(e.target)) void uploadFiles([...e.dataTransfer.files]);
       }}
     >
       <div className={b("summary")}>
