@@ -122,7 +122,7 @@ export function OgEditor() {
         </p>
       </section>
 
-      <section className={b("card", { telegram: true })}>
+      <section className={b("card")}>
         <h2 className={b("title")}>Так ссылка выглядит в Telegram</h2>
         <div className={b("chat")}>
           <div className={b("bubble")}>

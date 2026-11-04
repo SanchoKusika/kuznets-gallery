@@ -3,6 +3,12 @@
   display: inline-flex;
   align-items: center;
   flex: none;
+  min-width: 0;
+
+  &--block {
+    display: flex;
+    flex: 1 1 auto;
+  }
 
   &__select {
     appearance: none;
@@ -13,6 +19,14 @@
     font-size: 13px;
     cursor: pointer;
     outline: none;
+    min-width: 0;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    transition: background 0.2s;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 2px var(--accent);
+    }
 
     &--paper {
       background: var(--paper);
@@ -21,11 +35,39 @@
     &--soft {
       background: var(--paper-2);
     }
+
+    // On the ink bulk bar: a lighter ink, paper text; the list itself stays on paper.
+    &--ink {
+      background: color-mix(in srgb, var(--paper) 14%, transparent);
+      color: var(--paper);
+
+      option {
+        color: var(--ink);
+        background: var(--paper);
+      }
+    }
+
+    &--sm {
+      height: 32px;
+      padding: 0 30px 0 12px;
+    }
+  }
+
+  &--block &__select {
+    width: 100%;
+  }
+
+  &__select--ink + &__chevron {
+    color: var(--paper);
   }
 
   &__chevron {
     position: absolute;
     right: 14px;
     pointer-events: none;
+
+    &--sm {
+      right: 11px;
+    }
   }
 }

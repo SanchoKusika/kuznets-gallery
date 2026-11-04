@@ -7,11 +7,12 @@ import { OrderTotal } from "@/components/admin/OrderTotal/OrderTotal";
 import { Chip } from "@/components/admin/ui/Chip/Chip";
 import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { NumInput } from "@/components/admin/ui/NumInput/NumInput";
+import { PillSelect } from "@/components/admin/ui/PillSelect/PillSelect";
 import { SearchField } from "@/components/admin/ui/SearchField/SearchField";
 import { count, fmtP, num, PICTURES } from "@/features/admin/format";
 import { checkFile, uploadImage } from "@/features/admin/images";
 import { useLayout } from "@/features/admin/layout";
-import { FRAME_NAMES, MAX_ITEMS, isCustom, lineTotal, pieces, separateFrame, type Product, type Req } from "@/features/admin/model";
+import { FRAME_NAMES, FRAME_SHORT, MAX_ITEMS, isCustom, lineTotal, pieces, separateFrame, type Product, type Req } from "@/features/admin/model";
 import { CUSTOM_TITLE, customItem, fromFileName, fromProduct, lineId, parseTable, priceList, resize, type PriceList } from "@/features/admin/order";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
@@ -35,6 +36,9 @@ const FILTERS: readonly { k: Filter; n: string; test: (i: RequestItem) => boolea
 ];
 
 type Patch = Partial<RequestItem>;
+
+/** The event comes from an open drawer over the screen (the photo editor, the request card). */
+const inDialog = (target: EventTarget | null) => target instanceof Element && !!target.closest('[role="dialog"]');
 
 const isLink = (v: string | undefined) => !!v && /^https?:\/\/\S+$/i.test(v.trim());
 
@@ -162,10 +166,10 @@ export function OrderEditor({ r }: { r: Req }) {
   };
   const onPasteFiles = useEffectEvent((files: File[]) => void uploadFiles(files));
 
-  // Ctrl+V of copied pictures (not into a field): they go up as custom prints.
+  // Ctrl+V of copied pictures (not into a field, no drawer open): they go up as custom prints.
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
-      if ((e.target as HTMLElement | null)?.closest("input, textarea")) return;
+      if ((e.target as HTMLElement | null)?.closest("input, textarea") || document.querySelector('[role="dialog"][aria-modal="true"]')) return;
       const files = [...(e.clipboardData?.files ?? [])].filter((f) => f.type.startsWith("image/"));
       if (!files.length) return;
       e.preventDefault();
@@ -207,7 +211,7 @@ export function OrderEditor({ r }: { r: Req }) {
       onDragOver={(e: DragEvent) => {
         if (!e.dataTransfer.types.includes("Files")) return;
         e.preventDefault();
-        if (!over) setOver(true);
+        if (!over && !inDialog(e.target)) setOver(true);
       }}
       onDragLeave={(e: DragEvent) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOver(false);
@@ -216,7 +220,8 @@ export function OrderEditor({ r }: { r: Req }) {
         if (!e.dataTransfer.files.length) return;
         e.preventDefault();
         setOver(false);
-        void uploadFiles([...e.dataTransfer.files]);
+        // A file dropped on the photo editor or the request card (they render inside this screen) is not a new line.
+        if (!inDialog(e.target)) void uploadFiles([...e.dataTransfer.files]);
       }}
     >
       <div className={b("summary")}>
@@ -253,7 +258,7 @@ export function OrderEditor({ r }: { r: Req }) {
         <button type="button" className={b("add", { on: panel === "paste" })} onClick={() => setPanel((p) => (p === "paste" ? null : "paste"))}>
           Вставить таблицу
         </button>
-        <span className={b("hint")}>Картинки можно перетащить сюда или вставить (Ctrl+V): каждая станет позицией, название и размер — из имени файла</span>
+        <span className={b("hint")}>или перетащите картинки на страницу: каждая станет позицией, название и размер возьмутся из имени файла</span>
       </div>
 
       {panel === "catalog" && <CatalogPicker limit={8} onPick={(p) => append([fromProduct(p)])} />}
@@ -307,14 +312,7 @@ export function OrderEditor({ r }: { r: Req }) {
       <div className={b("table", { tier: tier === 2 ? "wide" : "narrow", phone: tier === 0 })}>
         {tier === 2 && (
           <div className={b("thead")}>
-            <button
-              type="button"
-              className={b("check", { on: allSel })}
-              aria-label="Выбрать все"
-              onClick={() => setSelected(allSel ? new Set() : new Set(rows.map((x) => x.i)))}
-            >
-              {allSel ? "✓" : ""}
-            </button>
+            <Check on={allSel} label="Выбрать все" onClick={() => setSelected(allSel ? new Set() : new Set(rows.map((x) => x.i)))} />
             <span />
             <span>Картина</span>
             <span>Размер</span>
@@ -346,21 +344,15 @@ export function OrderEditor({ r }: { r: Req }) {
         <div className={b("bulk", { bar: mode === "bar" })}>
           <span className={b("bulk-count")}>{`Выбрано: ${sel.length}`}</span>
           <div className={b("bulk-actions")}>
-            <select
-              className={b("bulk-select")}
+            <PillSelect
+              tone="ink"
+              size="sm"
               aria-label="Оформление выбранных"
+              placeholder="Оформление"
+              options={FRAME_OPTIONS}
               value=""
-              onChange={(e) => bulk({ frame: e.target.value, ...(e.target.value === FRAME_NAMES[0] && { framePrice: null }) })}
-            >
-              <option value="" disabled>
-                Оформление…
-              </option>
-              {FRAME_NAMES.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
+              onChange={(frame) => bulk({ frame, ...(frame === FRAME_NAMES[0] && { framePrice: null }) })}
+            />
             <span className={b("bulk-field")}>
               <NumInput className={b("bulk-input")} value={bulkPrice} onChange={setBulkPrice} placeholder="цена за шт." aria-label="Цена за штуку для выбранных" />
               <button type="button" className={b("bulk-button")} disabled={bulkPrice == null} onClick={() => bulk({ price: bulkPrice })}>
@@ -419,13 +411,26 @@ type RowProps = {
   duplicate: (i: number) => void;
 };
 
+const FRAME_OPTIONS = FRAME_NAMES.map((f) => ({ v: f, l: FRAME_SHORT[f] ?? f }));
+
+/** Square check box of a line or of the whole list. */
+function Check({ on, label, onClick }: { on: boolean; label: string; onClick: () => void }) {
+  return (
+    <button type="button" className={b("check", { on })} aria-label={label} aria-pressed={on} onClick={onClick}>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M5 12.5l4.5 4.5L19 7.5" />
+      </svg>
+    </button>
+  );
+}
+
 /** One line of the table; re-renders only when its own line changes. */
 const Row = memo(function Row({ it, i, product, prices, selected, patch, patchLine, toggle, remove, duplicate }: RowProps) {
   // Details (note, link to the original) are open while there is something in them, unless closed by hand.
   const [more, setMore] = useState<boolean | null>(null);
   const own = isCustom(it);
   const set = (p: Patch) => patch(i, p);
-  // An upload starting: the line gets an id, the picture goes to the line with it.
+  // A picture opening in the editor: the line gets an id, the uploaded picture goes to the line with it.
   const claim = () => {
     const lid = it.id ?? lineId();
     if (!it.id) set({ id: lid });
@@ -435,20 +440,19 @@ const Row = memo(function Row({ it, i, product, prices, selected, patch, patchLi
   const opts = (product?.sizes ?? []).map((z) => ({ v: `${z.w}x${z.h}`, l: `${z.w} × ${z.h} см` }));
   if (!opts.some((o) => o.v === v)) opts.unshift({ v, l: v ? `${it.w} × ${it.h} см` : "по запросу" });
   const details = more ?? (!!it.note || !!it.original);
+  const line = lineTotal(it);
 
   return (
     <div className={b("row", { selected })} data-row={i}>
-      <button type="button" className={b("check", { on: selected })} aria-label="Выбрать" onClick={() => toggle(i)}>
-        {selected ? "✓" : ""}
-      </button>
-      <ItemThumb image={it.image} sizes="56px" className={b("thumb")} onUpload={own ? claim : undefined} />
+      <Check on={selected} label="Выбрать" onClick={() => toggle(i)} />
+      <ItemThumb image={it.image} sizes="48px" className={b("thumb")} onUpload={own ? claim : undefined} caption={it.title || CUSTOM_TITLE} />
       <div className={b("name")}>
         {own ? (
           <input className={b("title-input")} value={it.title} onChange={(e) => set({ title: e.target.value.slice(0, 200) })} placeholder={CUSTOM_TITLE} aria-label="Название" />
         ) : (
           <span className={b("title")}>{it.title}</span>
         )}
-        <span className={b("code")}>
+        <span className={b("sub")}>
           {own ? CUSTOM_TITLE : it.code}
           {isLink(it.original) && (
             <a className={b("original")} href={it.original!.trim()} target="_blank" rel="noreferrer">
@@ -459,71 +463,70 @@ const Row = memo(function Row({ it, i, product, prices, selected, patch, patchLi
       </div>
       <div className={b("controls")}>
         {own ? (
-          <span className={b("pill", { empty: !it.w || !it.h })}>
-            <NumInput className={b("pill-input", { size: true })} value={it.w} onChange={(w) => set(resize(prices, it, w, it.h))} digits={4} placeholder="Ш" aria-label="Ширина, см" />
-            ×
-            <NumInput className={b("pill-input", { size: true })} value={it.h} onChange={(h) => set(resize(prices, it, it.w, h))} digits={4} placeholder="В" aria-label="Высота, см" />
-            см
+          <span className={b("field", { size: true, empty: !it.w || !it.h })}>
+            <NumInput className={b("input", { size: true })} value={it.w} onChange={(w) => set(resize(prices, it, w, it.h))} digits={4} placeholder="Ш" aria-label="Ширина, см" />
+            <span className={b("unit")}>×</span>
+            <NumInput className={b("input", { size: true })} value={it.h} onChange={(h) => set(resize(prices, it, it.w, h))} digits={4} placeholder="В" aria-label="Высота, см" />
+            <span className={b("unit")}>см</span>
           </span>
         ) : (
-          <select
-            className={b("select")}
+          <PillSelect
+            size="sm"
+            block
+            className={b("size-select")}
             aria-label="Размер"
+            options={opts}
             value={v}
-            onChange={(e) => {
-              const z = product?.sizes.find((z) => `${z.w}x${z.h}` === e.target.value);
+            onChange={(val) => {
+              const z = product?.sizes.find((z) => `${z.w}x${z.h}` === val);
               if (z) set({ w: z.w, h: z.h, price: z.price });
             }}
-          >
-            {opts.map((o) => (
-              <option key={o.v} value={o.v}>
-                {o.l}
-              </option>
-            ))}
-          </select>
+          />
         )}
         <span className={b("frame")}>
-          <select
-            className={b("select")}
+          <PillSelect
+            size="sm"
+            block
             aria-label="Оформление"
+            options={FRAME_OPTIONS}
             value={FRAME_NAMES.includes(it.frame) ? it.frame : FRAME_NAMES[0]}
-            onChange={(e) => set({ frame: e.target.value, ...(e.target.value === FRAME_NAMES[0] && { framePrice: null }) })}
-          >
-            {FRAME_NAMES.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
+            onChange={(frame) => set({ frame, ...(frame === FRAME_NAMES[0] && { framePrice: null }) })}
+          />
           {separateFrame(it) && (
-            <span className={b("pill", { empty: it.framePrice == null })} title="Оформление за штуку: багет или рамка со стеклом считаются отдельно">
-              +
-              <NumInput className={b("pill-input")} value={it.framePrice ?? null} onChange={(framePrice) => set({ framePrice })} placeholder="оформление" aria-label="Цена оформления за штуку" />
+            <span className={b("field", { frame: true, empty: it.framePrice == null })} title="Багет или рамка со стеклом за штуку — считаются отдельно">
+              <span className={b("unit")}>+</span>
+              <NumInput className={b("input")} value={it.framePrice ?? null} onChange={(framePrice) => set({ framePrice })} placeholder="рамка" aria-label="Цена оформления за штуку" />
             </span>
           )}
         </span>
-        <span className={b("pill")}>
-          <NumInput className={b("pill-input", { qty: true })} value={it.qty || 1} onChange={(qty) => set({ qty: qty! })} min={1} digits={4} aria-label="Количество" />
-          шт.
+        <span className={b("field", { qty: true })}>
+          <NumInput className={b("input")} value={it.qty || 1} onChange={(qty) => set({ qty: qty! })} min={1} digits={4} aria-label="Количество" />
+          <span className={b("unit")}>шт.</span>
         </span>
-        <span className={b("pill", { empty: it.price == null })}>
-          <NumInput className={b("pill-input")} value={it.price} onChange={(price) => set({ price })} placeholder="по запросу" aria-label="Цена за штуку" />
-          сум
+        <span className={b("field", { price: true, empty: it.price == null })}>
+          <NumInput className={b("input")} value={it.price} onChange={(price) => set({ price })} placeholder="цена" aria-label="Цена за штуку" />
+          <span className={b("unit")}>сум</span>
         </span>
-        <span className={b("sum")}>{fmtP(lineTotal(it))}</span>
+        <span className={b("sum", { none: line == null })}>{line == null ? "по запросу" : fmtP(line)}</span>
       </div>
       <div className={b("tools")}>
-        <button type="button" className={b("tool", { on: details })} aria-label="Заметка и ссылка на оригинал" aria-expanded={details} onClick={() => setMore(!details)}>
-          ⋯
+        <button type="button" className={b("tool", { on: details })} aria-label="Заметка и ссылка на оригинал" title="Заметка и ссылка на оригинал" aria-expanded={details} onClick={() => setMore(!details)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="5" cy="12" r="1.8" />
+            <circle cx="12" cy="12" r="1.8" />
+            <circle cx="19" cy="12" r="1.8" />
+          </svg>
         </button>
-        <button type="button" className={b("tool", { remove: true })} aria-label="Убрать" onClick={() => remove(i)}>
-          ✕
+        <button type="button" className={b("tool", { remove: true })} aria-label="Убрать" title="Убрать" onClick={() => remove(i)}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
         </button>
       </div>
       {details && (
         <div className={b("details")}>
           <input className={b("detail-input")} value={it.note ?? ""} onChange={(e) => set({ note: e.target.value.slice(0, 500) })} placeholder="Заметка: что поправить, для кого, куда повесить" aria-label="Заметка к позиции" />
-          <input className={b("detail-input")} value={it.original ?? ""} onChange={(e) => set({ original: e.target.value.slice(0, 1000) })} placeholder="Ссылка на оригинал для печати (Google Диск, Telegram…)" aria-label="Ссылка на оригинал" inputMode="url" />
+          <input className={b("detail-input")} value={it.original ?? ""} onChange={(e) => set({ original: e.target.value.slice(0, 1000) })} placeholder="Ссылка на оригинал для печати" aria-label="Ссылка на оригинал" inputMode="url" />
           <button type="button" className={b("detail-button")} onClick={() => duplicate(i)}>
             Дублировать
           </button>

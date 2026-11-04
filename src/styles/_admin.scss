@@ -86,6 +86,7 @@
 @mixin pill-field($bg: var(--paper)) {
   display: flex;
   align-items: center;
+  min-height: 32px;
   gap: 4px;
   background: $bg;
   padding: 6px 10px;
