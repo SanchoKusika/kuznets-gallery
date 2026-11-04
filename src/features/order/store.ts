@@ -66,12 +66,12 @@ export function useOrder() {
 export const order = {
   open: () => set({ drawerOpen: true }),
   close: () => set({ drawerOpen: false }),
-  /** Adds a line and opens the drawer (`open: false` — just adds; the caller opens it later). */
-  add: (item: Omit<OrderItem, "key">, { open = true } = {}) => {
+  /** Adds a line; the drawer stays as it is. */
+  add: (item: Omit<OrderItem, "key">) => {
     const items = getSnapshot().items;
     // Timestamp, bumped past existing keys so two adds in one millisecond stay distinct.
     const key = Math.max(Date.now(), ...items.map((i) => i.key + 1));
-    set({ items: [...items, { ...item, key }], ...(open && { drawerOpen: true }) });
+    set({ items: [...items, { ...item, key }] });
   },
   remove: (key: number) => set({ items: getSnapshot().items.filter((i) => i.key !== key) }),
   clear: () => set({ items: [] }),
