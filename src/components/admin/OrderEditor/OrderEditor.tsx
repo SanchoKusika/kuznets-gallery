@@ -5,7 +5,6 @@ import { CatalogPicker } from "@/components/admin/CatalogPicker/CatalogPicker";
 import { ItemThumb } from "@/components/admin/ItemThumb/ItemThumb";
 import { OrderTotal } from "@/components/admin/OrderTotal/OrderTotal";
 import { Chip } from "@/components/admin/ui/Chip/Chip";
-import { DsButton } from "@/components/admin/ui/DsButton/DsButton";
 import { NumInput } from "@/components/admin/ui/NumInput/NumInput";
 import { PillSelect } from "@/components/admin/ui/PillSelect/PillSelect";
 import { SearchField } from "@/components/admin/ui/SearchField/SearchField";
@@ -13,7 +12,7 @@ import { count, fmtP, num, PICTURES } from "@/features/admin/format";
 import { checkFile, uploadImage } from "@/features/admin/images";
 import { useLayout } from "@/features/admin/layout";
 import { FRAME_NAMES, FRAME_SHORT, MAX_ITEMS, isCustom, lineTotal, pieces, separateFrame, type Product, type Req } from "@/features/admin/model";
-import { CUSTOM_TITLE, customItem, fromFileName, fromProduct, lineId, parseTable, priceList, resize, type PriceList } from "@/features/admin/order";
+import { CUSTOM_TITLE, customItem, fromFileName, fromProduct, lineId, priceList, resize, type PriceList } from "@/features/admin/order";
 import { useAdmin } from "@/features/admin/store";
 import { bem } from "@/lib/bem";
 import { plural } from "@/lib/format";
@@ -44,8 +43,8 @@ const isLink = (v: string | undefined) => !!v && /^https?:\/\/\S+$/i.test(v.trim
 
 /**
  * A request's items on the whole screen, for large orders: a table with filters and search, bulk changes of the
- * selected lines, lines from the catalogue and custom prints, a pack of files (one line per picture), rows pasted
- * from a spreadsheet, the total and the total agreed with the client. Saves as you type, like the request card.
+ * selected lines, lines from the catalogue and custom prints, a pack of files (one line per picture), the progress
+ * (lines marked made), the total and the total agreed with the client. Saves as you type, like the request card.
  */
 export function OrderEditor({ r }: { r: Req }) {
   const { mode, tier } = useLayout();
@@ -55,8 +54,7 @@ export function OrderEditor({ r }: { r: Req }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReadonlySet<number>>(new Set());
-  const [panel, setPanel] = useState<"catalog" | "paste" | null>(null);
-  const [pasted, setPasted] = useState("");
+  const [picking, setPicking] = useState(false);
   const [upload, setUpload] = useState<{ done: number; total: number } | null>(null);
   const [over, setOver] = useState(false);
   const [bulkPrice, setBulkPrice] = useState<number | null>(null);
@@ -111,8 +109,8 @@ export function OrderEditor({ r }: { r: Req }) {
   const duplicate = useCallback(
     (idx: readonly number[]) => {
       const copy = new Set(idx);
-      // The copy is a line of its own: it does not share the original's id.
-      setItems((items) => items.flatMap((it, j) => (copy.has(j) ? [it, { ...it, id: undefined }] : [it])));
+      // The copy is a line of its own: it does not share the original's id and is not made yet.
+      setItems((items) => items.flatMap((it, j) => (copy.has(j) ? [it, { ...it, id: undefined, done: undefined }] : [it])));
       setSelected(new Set());
     },
     [setItems],
@@ -187,7 +185,6 @@ export function OrderEditor({ r }: { r: Req }) {
     return () => removeEventListener("beforeunload", onLeave);
   }, [upload]);
 
-  const parsed = useMemo(() => (panel === "paste" && pasted.trim() ? parseTable(pasted, products, prices) : []), [panel, pasted, products, prices]);
 
   const q = query.trim().toLowerCase();
   const test = FILTERS.find((f) => f.k === filter)!.test;
@@ -204,6 +201,10 @@ export function OrderEditor({ r }: { r: Req }) {
   };
   const custom = r.items.filter(isCustom).length;
   const missing = r.items.filter(FILTERS[3].test).length;
+  // Progress in pieces: a line marked made counts with its quantity.
+  const total = pieces(r.items);
+  const made = pieces(r.items.filter((i) => i.done));
+  const pct = total ? Math.round((made / total) * 100) : 0;
 
   return (
     <div
@@ -233,9 +234,18 @@ export function OrderEditor({ r }: { r: Req }) {
         </div>
         <OrderTotal r={r} className={b("total")} />
       </div>
+      <div className={b("progress")}>
+        <div className={b("progress-head")}>
+          <span className={b("progress-label")}>Готово</span>
+          <span className={b("progress-value")}>{`${num(made)} из ${count(total, PICTURES)} · ${pct}%`}</span>
+        </div>
+        <div className={b("progress-track")} role="progressbar" aria-label="Готово картин" aria-valuemin={0} aria-valuemax={total} aria-valuenow={made}>
+          <div className={b("progress-fill", { full: total > 0 && made === total })} style={{ width: `${pct}%` }} />
+        </div>
+      </div>
 
       <div className={b("adds")}>
-        <button type="button" className={b("add", { on: panel === "catalog" })} onClick={() => setPanel((p) => (p === "catalog" ? null : "catalog"))}>
+        <button type="button" className={b("add", { on: picking })} onClick={() => setPicking((v) => !v)}>
           + Из каталога
         </button>
         <button type="button" className={b("add")} onClick={() => append([customItem(prices)], true)}>
@@ -255,48 +265,10 @@ export function OrderEditor({ r }: { r: Req }) {
             }}
           />
         </label>
-        <button type="button" className={b("add", { on: panel === "paste" })} onClick={() => setPanel((p) => (p === "paste" ? null : "paste"))}>
-          Вставить таблицу
-        </button>
         <span className={b("hint")}>или перетащите картинки на страницу: каждая станет позицией, название и размер возьмутся из имени файла</span>
       </div>
 
-      {panel === "catalog" && <CatalogPicker limit={8} onPick={(p) => append([fromProduct(p)])} />}
-      {panel === "paste" && (
-        <div className={b("paste")}>
-          <p className={b("paste-hint")}>
-            Скопируйте строки из Excel или Google Таблиц — по позиции на строку. Колонки в любом порядке: название, размер (60×90), количество, цена за штуку, оформление (холст, багет, стекло), ссылка на оригинал или код KZ-…
-          </p>
-          <textarea className={b("paste-input")} value={pasted} onChange={(e) => setPasted(e.target.value)} rows={6} placeholder={"Ферма\t60x90\t4\t310000\nПортрет\t40x50\t10"} aria-label="Строки таблицы" />
-          {parsed.length > 0 && (
-            <div className={b("preview")}>
-              {parsed.slice(0, 50).map((it, i) => (
-                <div key={i} className={b("preview-row")}>
-                  <span className={b("preview-title")}>{it.title}</span>
-                  <span>{it.code || CUSTOM_TITLE}</span>
-                  <span>{it.w ? `${it.w} × ${it.h} см` : "размер ?"}</span>
-                  <span>{`${it.qty} шт.`}</span>
-                  <span>{fmtP(it.price)}</span>
-                </div>
-              ))}
-              {parsed.length > 50 && <div className={b("preview-more")}>{`и ещё ${parsed.length - 50}`}</div>}
-            </div>
-          )}
-          <div className={b("paste-foot")}>
-            <DsButton
-              disabled={!parsed.length}
-              onClick={() => {
-                append(parsed);
-                toast(`Добавлено: ${parsed.length} ${plural(parsed.length, ...POSITIONS)}`);
-                setPasted("");
-                setPanel(null);
-              }}
-            >
-              {parsed.length ? `Добавить ${parsed.length} ${plural(parsed.length, ...POSITIONS)}` : "Добавить"}
-            </DsButton>
-          </div>
-        </div>
-      )}
+      {picking && <CatalogPicker limit={8} onPick={(p) => append([fromProduct(p)])} />}
 
       <div className={b("toolbar")}>
         <div className={b("chips", { scroll: tier === 0 })}>
@@ -365,6 +337,12 @@ export function OrderEditor({ r }: { r: Req }) {
                 Задать
               </button>
             </span>
+            <button type="button" className={b("bulk-button")} onClick={() => bulk({ done: true })}>
+              Готово
+            </button>
+            <button type="button" className={b("bulk-button")} onClick={() => bulk({ done: undefined })}>
+              Не готово
+            </button>
             <button type="button" className={b("bulk-button")} onClick={() => duplicate(sel)}>
               Дублировать
             </button>
@@ -510,6 +488,11 @@ const Row = memo(function Row({ it, i, product, prices, selected, patch, patchLi
         <span className={b("sum", { none: line == null })}>{line == null ? "по запросу" : fmtP(line)}</span>
       </div>
       <div className={b("tools")}>
+        <button type="button" className={b("done", { on: !!it.done })} aria-label="Готово" aria-pressed={!!it.done} title={it.done ? "Готово — снять отметку" : "Отметить готовой"} onClick={() => set({ done: it.done ? undefined : true })}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12.5l4.5 4.5L19 7.5" />
+          </svg>
+        </button>
         <button type="button" className={b("tool", { on: details })} aria-label="Заметка и ссылка на оригинал" title="Заметка и ссылка на оригинал" aria-expanded={details} onClick={() => setMore(!details)}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <circle cx="5" cy="12" r="1.8" />
